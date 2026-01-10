@@ -14,7 +14,7 @@
 	<packaging>pom</packaging>
 	<name>${project.artifactId}</name>
 	<description>bill of material for r-uu maven modules, see readme.md</description>
-	<url>https://github.com/r-uu/r-uu.bom</url>
+	<url>https://github.com/r-uu/main/tree/main/bom</url>
 
 	<!-- no child modules for bill of material -->
 	<!-- <modules></modules>                   -->
