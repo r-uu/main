@@ -1,0 +1,131 @@
+package de.ruu.app.jeeeraaah.frontend.api.client.ws.rs.dbcommand;
+
+import de.ruu.app.jeeeraaah.common.api.bean.TaskBean;
+import de.ruu.app.jeeeraaah.common.api.bean.TaskGroupBean;
+import de.ruu.app.jeeeraaah.common.api.domain.RemoveNeighboursFromTaskConfig;
+import de.ruu.app.jeeeraaah.common.api.domain.TaskGroupFlat;
+import de.ruu.app.jeeeraaah.frontend.api.client.ws.rs.TaskGroupServiceClient;
+import de.ruu.app.jeeeraaah.frontend.api.client.ws.rs.TaskServiceClient;
+import de.ruu.lib.cdi.se.CDIContainer;
+import de.ruu.lib.jpa.core.Entity;
+import de.ruu.lib.ws.rs.NonTechnicalException;
+import de.ruu.lib.ws.rs.TechnicalException;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static java.util.Objects.nonNull;
+import static java.util.Objects.requireNonNull;
+
+@Slf4j
+@Dependent
+public class DBClean
+{
+	@Inject private TaskGroupServiceClient taskGroupServiceClient;
+	@Inject private TaskServiceClient      taskServiceClient;
+
+	@PostConstruct private void postConstruct()
+	{
+		log.debug("taskGroupServiceClient available: {}", nonNull(taskGroupServiceClient));
+		log.debug("taskServiceClient      available: {}", nonNull(taskServiceClient));
+	}
+
+	public void run() throws NonTechnicalException, TechnicalException { cleanTaskGroups(); }
+
+	private void cleanTaskGroups() throws NonTechnicalException, TechnicalException
+	{
+		Set<TaskGroupFlat> groups = taskGroupServiceClient.findAllFlat();
+
+		log.debug("task group count before clean db {}", groups.size());
+		for (TaskGroupFlat group : groups) { cleanTasksOfGroup(group); }
+		log.debug("task group count after  clean db {}", taskGroupServiceClient.findAllFlat().size());
+	}
+
+	private void cleanTasksOfGroup(Entity<Long> group) throws NonTechnicalException, TechnicalException
+	{
+		Long taskGroupId = requireNonNull(group.id(), "task group id must not be null, persist task group to retrieve id");
+
+		// get task group with tasks from backend
+		Optional<TaskGroupBean> optionalTaskGroup = taskGroupServiceClient.findWithTasksAndDirectNeighbours(taskGroupId);
+
+		if (optionalTaskGroup.isPresent())
+		{
+			TaskGroupBean taskGroup = optionalTaskGroup.get();
+
+			if (taskGroup.tasks().isPresent())
+			{
+				Set<TaskBean> tasks = taskGroup.tasks().get();
+				cleanTasksOfGroup(tasks);
+				log.debug("deleted {} tasks for task group {}", tasks.size(), taskGroup);
+			}
+
+			log.debug("deleting task group {}", taskGroup);
+			taskGroupServiceClient.delete(taskGroupId);
+			log.debug("deleted  task group {}", taskGroup);
+		}
+	}
+
+	private void cleanTasksOfGroup(Set<TaskBean> tasks) throws NonTechnicalException, TechnicalException
+	{
+		Set<TaskBean> mainTasks = tasks.stream().filter(t -> t.superTask().isEmpty()).collect(Collectors.toSet());
+
+		for (TaskBean mainTask : mainTasks)
+		{
+			cleanSuperSubTaskHierarchy(mainTask);
+			log.debug("deleted main task {}", mainTask);
+		}
+	}
+
+	private void cleanSuperSubTaskHierarchy(TaskBean task) throws NonTechnicalException, TechnicalException
+	{
+		// call this method recursively for all subtasks
+		if (task.subTasks().isPresent())
+				for (TaskBean subTask : task.subTasks().get()) { cleanSuperSubTaskHierarchy(subTask); }
+
+		// remove all neighbours from task
+		RemoveNeighboursFromTaskConfig config = newRemoveNeighboursFromTaskConfig(task);
+		taskServiceClient.removeNeighboursFromTask(config);
+
+		// delete task itself
+		taskServiceClient.delete(requireNonNull(task.id()));
+
+		log.debug("deleted task {}", task);
+	}
+
+	private RemoveNeighboursFromTaskConfig newRemoveNeighboursFromTaskConfig(TaskBean task)
+	{
+		Set<Long> predecessorIds = new HashSet<>();
+		Set<Long> subTaskIds     = new HashSet<>();
+		Set<Long> successorIds   = new HashSet<>();
+
+		task.predecessors()
+				.ifPresent(predecessors -> predecessors.forEach(predecessor -> predecessorIds.add(predecessor.id())));
+		task.subTasks()
+				.ifPresent(subTasks     -> subTasks    .forEach(subTask     -> subTaskIds    .add(subTask    .id())));
+		task.successors()
+				.ifPresent(successors   -> successors  .forEach(successor   -> successorIds  .add(successor  .id())));
+
+		return new RemoveNeighboursFromTaskConfig
+		(
+				task.id(),
+				true,
+				predecessorIds,
+				subTaskIds,
+				successorIds
+		);
+	}
+
+	public static void main(String[] args) throws NonTechnicalException, TechnicalException
+	{
+		CDIContainer.bootstrap(DBClean.class.getClassLoader());
+		DBClean command = CDI.current().select(DBClean.class).get();
+		command.run();
+	}
+}

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="3.0"
+             xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
+
+    <persistence-unit name="jeeeraaah_test" transaction-type="JTA">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <jta-data-source>jdbc/datasource_postgresql</jta-data-source>
+        <non-jta-data-source>jdbc/datasource_postgresql</non-jta-data-source>
+
+        <!-- Entity Classes -->
+        <class>de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskGroupJPA</class>
+        <class>de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskJPA</class>
+
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+        <properties>
+            <!-- Hibernate Provider -->
+            <property name="jakarta.persistence.provider" value="org.hibernate.jpa.HibernatePersistenceProvider"/>
+            
+            <!-- Transaction Management -->
+            <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.WebSphereLibertyJtaPlatform"/>
+            <property name="jakarta.persistence.transactionType" value="JTA"/>
+            
+            <!-- Database Settings -->
+            <property name="hibernate.connection.datasource" value="jdbc/datasource_postgresql"/>
+            
+            <!-- Schema Management -->
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.hbm2ddl.schema_validation_mode" value="NONE"/>
+            
+            <!-- SQL Logging -->
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+            
+            <!-- Batch Processing -->
+            <property name="hibernate.jdbc.batch_size" value="25"/>
+            <property name="hibernate.order_inserts" value="true"/>
+            <property name="hibernate.order_updates" value="true"/>
+            <property name="hibernate.jdbc.batch_versioned_data" value="true"/>
+            <property name="hibernate.jdbc.fetch_size" value="100"/>
+            
+            <!-- Caching -->
+            <property name="hibernate.cache.use_second_level_cache" value="false"/>
+            <property name="hibernate.cache.use_query_cache" value="false"/>
+            
+            <!-- Validation -->
+            <property name="jakarta.persistence.validation.mode" value="callback"/>
+            
+            <!-- Statistics -->
+            <property name="hibernate.generate_statistics" value="false"/>
+            
+            <!-- JMX -->
+            <property name="hibernate.jmx.enabled" value="false"/>
+            
+            <!-- Remove duplicate/legacy properties -->
+            <!-- hibernate.hbm2ddl.ddl_auto is redundant with hibernate.hbm2ddl.auto -->
+        </properties>
+    </persistence-unit>
+
+</persistence>

@@ -1,0 +1,14 @@
+- es gibt 3 konkrete ausprägungen von task hierarchien
+  - predecessor
+  - super/sub
+  - successor
+- alle task hierarchien haben gemeinsam,
+  - dass sie jeweils eine der drei task relationen (predecessor-, super/sub-, successor-relation) abbilden
+  - dass ihre hierarchy views von einer gemeinsamen abstract hierarchy view erben
+  - dass ihre hierarchy views eine task view enthalten
+  - dass sie eine referenz auf eine aktive taskgruppe haben
+  - dass sie eine referenz auf eine in der hierarchy view selektierte task haben
+- flow of contol
+  - der dash controller beobachtet den in der super/sub view selektierten task
+    - wechselt der task, ruft er in der predecessor und successor view jeweils die methode selectedSuperSubTaskTreeItemChanged auf
+    - selectedSuperSubTaskTreeItemChanged muss dann die komplette view (re)initialisieren

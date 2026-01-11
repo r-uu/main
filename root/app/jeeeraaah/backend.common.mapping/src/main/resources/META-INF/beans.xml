@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="https://jakarta.ee/xml/ns/jakartaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/beans_4_0.xsd"
+	version="4.0"
+	bean-discovery-mode="annotated">
+	<!-- CDI bean discovery for backend.common.mapping module
+         bean-discovery-mode="annotated" - only scan classes with CDI annotations like @ApplicationScoped
+         This enables discovery of TaskLazyMapperCDI and other CDI beans in this module -->
+</beans>

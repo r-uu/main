@@ -1,0 +1,255 @@
+<!-- xml -->
+<server description="jeeeraaah server">
+
+	<!-- ===================================================================
+	     FEATURE MANAGER - Defines which Jakarta EE and MicroProfile features are enabled
+	     =================================================================== -->
+	<featureManager>
+		<!-- Use umbrella features to avoid version drift and conflicts -->
+		<feature>jakartaee-10.0</feature>
+		<feature>microProfile-6.1</feature>
+
+		<!-- Feature Upgrade Status (Dec 2025):
+		     Current: OpenLiberty 25.0.0.12 supports Jakarta EE 10.0 and MicroProfile 6.1
+		     Note: MicroProfile 7.0 was released in OpenLiberty 24.0.0.12 (Dec 2024)
+		           but requires different Jakarta EE alignment
+		     Future: Jakarta EE 11.0 requires OpenLiberty 26.x (expected Q1/Q2 2026)
+		     
+		     Tested Dec 6, 2025: Upgrade attempt to jakartaee-11.0 failed with:
+		     "CWWKF1299E: features could not be obtained: jakartaee-11.0"
+		     
+		     Current configuration is stable and production-ready.
+		     Monitor OpenLiberty releases for Jakarta EE 11 support. -->
+
+		<!-- MicroProfile JWT Authentication (Keycloak Integration)
+		     Enables JWT token validation for securing REST endpoints.
+		     Works with OAuth2/OIDC providers like Keycloak. -->
+		<feature>mpJwt-2.1</feature>
+
+		<!-- Application Security
+		     Provides authentication and authorization capabilities.
+		     Required for @RolesAllowed and other security annotations. -->
+		<feature>appSecurity-5.0</feature>
+	</featureManager>
+
+	<!-- ===================================================================
+	     HTTP ENDPOINT CONFIGURATION
+	     Defines how the server listens for HTTP/HTTPS requests
+	     =================================================================== -->
+	
+	<!-- HTTP Endpoint Configuration
+	     The 'host' attribute controls which network interfaces the server listens on.
+	     Value is configured in server.env as default_host_name.
+	     
+	     For WSL2 development with Windows browser access:
+	     - Set default_host_name=* in server.env (listen on all interfaces)
+	     - Clients use 'localhost' for connections (automatic port forwarding)
+	     
+	     See server.env for detailed configuration options.
+	-->
+	<httpEndpoint id="defaultHttpEndpoint"
+		httpPort="${default_http_port}"
+		httpsPort="${default_https_port}"
+		host="${default_host_name}" />
+
+	<!-- ===================================================================
+	     SECURITY CONFIGURATION
+	     Database authentication and SSL/TLS settings
+	     =================================================================== -->
+
+	<!-- Database Authentication
+	     Credentials for PostgreSQL database connection.
+	     Values are loaded from server.env file. -->
+	<authData id="datasource_postgresql_auth"
+		user="${datasource_database_username}"
+		password="${datasource_database_password}" />
+
+	<!-- Default Keystore Configuration
+	     Auto-generated keystore for SSL/TLS connections.
+	     The keystore file is created automatically if it doesn't exist. -->
+	<keyStore id="defaultKeyStore" password="${default_keystore_password}" />
+
+	<!-- SSL Configuration
+	     Binds SSL/TLS settings to the default keystore.
+	     Used for HTTPS connections. -->
+	<ssl id="defaultSSLConfig" keyStoreRef="defaultKeyStore" />
+
+	<!-- ===================================================================
+	     JWT AUTHENTICATION CONFIGURATION (KEYCLOAK)
+	     Configures MicroProfile JWT for authentication with Keycloak
+	     =================================================================== -->
+
+	<!-- MicroProfile JWT Consumer Configuration
+	     Validates JWT tokens issued by Keycloak for securing REST endpoints.
+	     
+	     - id: Unique identifier for this JWT configuration
+	     - jwksUri: Keycloak's public key endpoint for token signature verification
+	     - issuer: Expected token issuer (must match Keycloak realm URL)
+	     - audiences: Expected audience in the token (client ID)
+	     - userNameAttribute: JWT claim to use as the authenticated user's name
+	     
+	     Environment-specific URLs:
+	     - Development (Keycloak in Docker, Liberty on host): localhost:8080
+	     - Both in Docker: Use container name keycloak-jeeeraaah:8080
+	     - Production: Replace with actual domain name
+	     
+	     The jwksUri endpoint provides public keys used to verify token signatures.
+	     Liberty will automatically fetch and cache these keys. -->
+	<mpJwt id="jwtConsumer"
+		jwksUri="http://localhost:8080/realms/jeeeraaah-realm/protocol/openid-connect/certs"
+		issuer="http://localhost:8080/realms/jeeeraaah-realm"
+		audiences="jeeeraaah-backend"
+		userNameAttribute="preferred_username" />
+
+	<!-- ===================================================================
+	     DATABASE CONFIGURATION
+	     PostgreSQL datasource and connection settings
+	     =================================================================== -->
+
+	<!-- ===================================================================
+	     DATABASE CONFIGURATION
+	     PostgreSQL datasource and connection settings
+	     =================================================================== -->
+
+	<!-- Global Library
+	     Contains shared JAR files, including the PostgreSQL JDBC driver.
+	     Located in server.config.dir/lib/global -->
+	<library id="globalLibrary">
+		<fileset dir="${server.config.dir}/lib/global" includes="*.jar" />
+	</library>
+
+	<!-- PostgreSQL DataSource
+	     Main database connection pool for the application.
+	     
+	     - id: Internal reference identifier
+	     - jndiName: JNDI name for lookup in application code
+	     - type: DataSource type for standard JDBC connections
+	     - authDataRef: Reference to database credentials (defined above)
+	     
+	     Connection properties are loaded from server.env:
+	     - serverName: Database server hostname
+	     - portNumber: Database server port (default: 5432)
+	     - databaseName: Name of the database to connect to
+	     - currentSchema: Default PostgreSQL schema (default: public) -->
+	<dataSource id="datasource_postgresql"
+		jndiName="jdbc/datasource_postgresql"
+		type="javax.sql.DataSource"
+		authDataRef="datasource_postgresql_auth">
+		<jdbcDriver libraryRef="globalLibrary" />
+		<properties.postgresql
+			serverName="${datasource_server_host}"
+			portNumber="${datasource_server_port}"
+			databaseName="${datasource_database}"
+			user="${datasource_database_username}"
+			password="${datasource_database_password}"
+			currentSchema="public" />
+	</dataSource>
+
+	<!-- ===================================================================
+	     JPA CONFIGURATION
+	     Java Persistence API settings with Hibernate provider
+	     =================================================================== -->
+
+	<!-- JPA Configuration
+	     Configures the JPA provider and default settings.
+	     
+	     - defaultPersistenceProvider: Use Hibernate as JPA implementation
+	     - enableJPA: Enable JPA processing for the application
+	     - enableBeanValidation: Enable Bean Validation (JSR 380) integration
+	     - defaultJtaDataSourceRef: Default datasource for JTA transactions
+	     
+	     Note: Additional Hibernate-specific properties are configured in
+	     persistence.xml within the application. -->
+	<jpa defaultPersistenceProvider="org.hibernate.jpa.HibernatePersistenceProvider"
+		enableJPA="true"
+		enableBeanValidation="true"
+		defaultJtaDataSourceRef="jdbc/datasource_postgresql">
+		<!-- Hibernate properties are now configured in persistence.xml -->
+	</jpa>
+
+	<!-- ===================================================================
+	     APPLICATION DEPLOYMENT
+	     Defines how the application WAR file is deployed
+	     =================================================================== -->
+
+	<!-- ===================================================================
+	     APPLICATION DEPLOYMENT
+	     Defines how the application WAR file is deployed
+	     =================================================================== -->
+
+	<!-- Web Application Configuration
+	     Deploys the jeeeraaah application WAR file.
+	     
+	     - id: Unique application identifier
+	     - name: Application name (used in logging and monitoring)
+	     - type: Application type (war = Web Archive)
+	     - contextRoot: Base URL path for the application
+	       * Set to "/" so the application is available at the root path
+	       * Example URLs: http://localhost:9080/taskgroup/allFlat
+	       * Should not be empty/omitted to avoid automatic assignment
+	     - location: Path to the WAR file (relative to server config)
+	     
+	     Note: Do not add explicit webApplication entries to avoid duplicates.
+	     The application element handles both the deployment and web configuration. -->
+	<application id="jeeeraaah"
+		name="jeeeraaah"
+		type="war"
+		contextRoot="/"
+		location="r-uu.space-02.app.jeeeraaah.backend.api.ws.rs-0.0.1.war" />
+
+	<!-- ===================================================================
+	     JVM OPTIONS
+	     Java Virtual Machine configuration and system properties
+	     =================================================================== -->
+
+	<!-- JVM Configuration
+	     Defines JVM memory settings and system properties.
+	     
+	     Memory Settings:
+	     - Xms256m: Initial heap size (256 MB)
+	     - Xmx1024m: Maximum heap size (1 GB)
+	     
+	     System Properties:
+	     - file.encoding=UTF-8: Force UTF-8 character encoding
+	     - user.timezone=UTC: Use UTC timezone for consistency
+	     - net.bytebuddy.experimental=true: Enable ByteBuddy experimental features
+	       (required for some Hibernate and proxy operations)
+	     - mp.openapi.extensions.enabled=true: Enable MicroProfile OpenAPI extensions
+	       (provides enhanced API documentation capabilities) -->
+	<jvmOptions>
+		<option value="-Xms256m" />
+		<option value="-Xmx1024m" />
+		<option value="-Dfile.encoding=UTF-8" />
+		<option value="-Duser.timezone=UTC" />
+		<option value="-Dnet.bytebuddy.experimental=true" />
+		<option value="-Dmp.openapi.extensions.enabled=true" />
+	</jvmOptions>
+
+	<!-- ===================================================================
+	     LOGGING CONFIGURATION
+	     Defines log levels and log file rotation settings
+	     =================================================================== -->
+
+	<!-- Logging Configuration
+	     Controls what gets logged and how log files are managed.
+	     
+	     Trace Specification:
+	     - com.ibm.ws.webcontainer.*=all: Web container (servlet) logging
+	     - com.ibm.ws.http.*=all: HTTP transport logging
+	     - com.ibm.ws.jaxrs.*=all: JAX-RS (REST) logging
+	     - com.ibm.ws.jpa.*=all: JPA/persistence logging
+	     - com.ibm.ws.transaction.*=all: Transaction management logging
+	     
+	     Note: "all" level produces verbose output. For production, consider using
+	     "info" or "warning" levels to reduce log volume.
+	     
+	     File Rotation:
+	     - maxFileSize: Maximum size per log file in MB (20 MB)
+	     - maxFiles: Maximum number of historical log files to keep (10 files)
+	       Total max log storage: ~200 MB (20 MB × 10 files) -->
+	<logging
+		traceSpecification="com.ibm.ws.webcontainer.*=all:com.ibm.ws.http.*=all:com.ibm.ws.jaxrs.*=all:com.ibm.ws.jpa.*=all:com.ibm.ws.transaction.*=all"
+		maxFileSize="20"
+		maxFiles="10" />
+
+</server>

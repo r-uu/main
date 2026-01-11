@@ -1,0 +1,7 @@
+# EditorConfig für DTO Klassen - verhindert automatisches Formatieren
+root = true
+
+[*DTO.java]
+# Formatierung komplett deaktivieren für DTO Klassen
+trim_trailing_whitespace = false
+insert_final_newline = false
