@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+  # ═══════════════════════════════════════════════════════════════════
+  # PostgreSQL Datenbank für Entwicklung
+  # ═══════════════════════════════════════════════════════════════════
+  postgres:
+    image: postgres:16-alpine
+    container_name: ruu-postgres
+    environment:
+      # Diese Werte können in config/local/docker/.env.local überschrieben werden
+      POSTGRES_DB: ${POSTGRES_DB:-ruu_dev}
+      POSTGRES_USER: ${POSTGRES_USER:-ruu}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      # Daten werden lokal gespeichert (nicht im Git)
+      - ${POSTGRES_DATA_PATH:-../../local/docker/data/postgres}:/var/lib/postgresql/data
+      - ${POSTGRES_BACKUP_PATH:-../../local/docker/backups}:/backups
+      # Init-Skripte für automatische Datenbank-Initialisierung
+      - ./initdb:/docker-entrypoint-initdb.d:ro
+    networks:
+      - ruu-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ruu}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ═══════════════════════════════════════════════════════════════════
+  # Keycloak - Identity and Access Management
+  # ═══════════════════════════════════════════════════════════════════
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: ruu-keycloak
+    environment:
+      # Admin Credentials
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+
+      # Database Configuration
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://ruu-postgres:5432/${KEYCLOAK_DB:-keycloak}
+      KC_DB_USERNAME: ${POSTGRES_USER:-ruu}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+
+      # Server Configuration
+      KC_HOSTNAME_STRICT: false
+      KC_HTTP_ENABLED: true
+      KC_PROXY: edge
+      KC_HEALTH_ENABLED: true
+      KC_METRICS_ENABLED: true
+    ports:
+      - "${KEYCLOAK_PORT:-8080}:8080"
+    command: start-dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ruu-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+networks:
+  ruu-network:
+    driver: bridge
+    name: ruu-network
+
+volumes:
+  # Benannte Volumes für einfacheres Management
+  postgres-data:
+    name: ruu-postgres-data
+  postgres-backups:
+    name: ruu-postgres-backups
+
+# ═══════════════════════════════════════════════════════════════════
+# Hinweise
+# ═══════════════════════════════════════════════════════════════════
+#
+# Überschreibe Umgebungsvariablen in config/local/docker/.env.local
+# Niemals Passwörter in diese Datei committen!
+#
+# Keycloak Admin Console: http://localhost:8080/admin
+# Standard Login: admin / admin (ändern in .env.local!)
+#
+# PostgreSQL Zugriff:
+#   Host: localhost
+#   Port: 5432
+#   User: ruu (oder aus .env.local)
+#   Database: ruu_dev (oder aus .env.local)
+#
+# Init-Skripte:
+#   Lege SQL-Skripte in ./initdb/ ab
+#   Sie werden beim ersten Start automatisch ausgeführt
+#   Reihenfolge: alphabetisch (z.B. 01-init.sql, 02-data.sql)
+#
+# Rebuild (Daten löschen):
+#   docker-compose down -v
+#   docker volume rm ruu-postgres-data
+#   docker-compose up -d
+

@@ -2,7 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
     <!-- ######################### -->
     <!-- maven project coordinates -->
     <!-- ######################### -->
@@ -14,7 +13,22 @@
     <name>${project.artifactId}</name>
     <description>root parent for several r-uu maven modules, see readme.md</description>
     <url>https://github.com/r-uu/main/tree/main/root</url>
-
+    <modules>
+        <module>lib</module>
+        <module>app</module>
+    </modules>
+    <!-- ########## -->
+    <!-- properties -->
+    <!-- ########## -->
+    <properties>
+        <argLine>-Duser.language=en</argLine>
+        <java.version>25</java.version>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
     <dependencyManagement>
         <dependencies>
             <!-- import BOM -->
@@ -27,5 +41,31 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- Compiler Plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.13.0</version>
+                    <configuration>
+                        <release>${java.version}</release>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                    </configuration>
+                </plugin>
+                <!-- Versions Plugin -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>2.16.2</version>
+                    <configuration>
+                        <generateBackupPoms>false</generateBackupPoms>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>

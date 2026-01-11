@@ -1,0 +1,18 @@
+#!/bin/bash
+# Lokale WSL Aliase für r-uu Projekt
+# Kopiere diese Datei nach: config/local/wsl/aliases.sh
+# und passe sie an deine persönlichen Bedürfnisse an
+#
+# WICHTIG: config/local/wsl/aliases.sh wird NICHT ins Git committed!
+
+# Überschreibe Projekt-Pfade falls nötig
+# export RUU_HOME="/mein/anderer/pfad"
+
+# Persönliche Aliase
+# alias mein-alias='mein-command'
+
+# Maschinenspezifische Konfiguration
+# export MY_API_KEY='geheim'
+
+echo "✓ r-uu lokale Aliase geladen"
+

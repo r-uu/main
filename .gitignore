@@ -1,0 +1,70 @@
+# =============================================
+# config/ - Entwicklungsumgebung Konfiguration
+# =============================================
+
+# Alle lokalen (maschinenspezifischen) Konfigurationen
+config/local/
+
+# Lokale Umgebungsvariablen mit Secrets
+config/**/.env.local
+config/**/docker/.env.local
+
+# Alte Pfade (können später entfernt werden, wenn nicht mehr verwendet)
+config/wsl/docker/data/
+config/wsl/docker/backups/
+config/wsl/docker/.env.local
+
+# Postgres configuration with passwords
+r-uu/postgresutil.config.properties
+
+# Testing configuration with credentials
+r-uu/testing.properties
+
+# Liberty Server Environment Files (contains database credentials)
+**/server.env
+
+# Dump artifacts accidentally placed in repo root
+*.sql
+*.dump
+
+# IDE / editor
+# IntelliJ IDEA
+*.iml
+*.ipr
+*.iws
+
+# Root .idea should not exist (project should be opened from r-uu/)
+/.idea/
+
+# r-uu/.idea is the correct location
+r-uu/.idea/*
+!r-uu/.idea/runConfigurations/
+!r-uu/.idea/compiler.xml
+!r-uu/.idea/workspace-shared.xml
+r-uu/.idea/workspace.xml
+r-uu/.idea/usage.statistics.xml
+r-uu/.idea/shelf/
+
+# IntelliJ Run Configurations (new location)
+!.run/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# Maven build output
+target/
+**/target/
+
+# Python / Node / generic clutter (extend as needed)
+*.pyc
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# generator output
+**/src/gen
