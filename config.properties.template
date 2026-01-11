@@ -1,0 +1,64 @@
+# ================================================================================
+# Configuration Template
+# ================================================================================
+# Copy this file to config.properties and adjust values for your local environment
+#
+# Command:
+#   cp config.properties.template config.properties
+#
+# Then edit config.properties with your local values
+# ================================================================================
+# IMPORTANT: config.properties is NOT under Git control (.gitignore)
+# ================================================================================
+
+# ================================================================================
+# PostgreSQL Database Configuration (Required for JDBC/JPA Tests)
+# ================================================================================
+db.host=localhost
+db.port=5432
+db.database=lib_test
+db.username=r_uu
+db.password=r_uu_password
+
+# ================================================================================
+# Backup/Restore Configuration (Optional)
+# ================================================================================
+db.backup.host=${db.host}
+db.backup.port=${db.port}
+db.backup.database=${db.database}
+db.backup.username=${db.username}
+db.backup.password=${db.password}
+db.backup.directory=/tmp/db-backup
+db.backup.executable=/usr/bin/pg_dump
+
+db.restore.host=${db.host}
+db.restore.port=${db.port}
+db.restore.database=${db.database}
+db.restore.username=${db.username}
+db.restore.password=${db.password}
+db.restore.executable=/usr/bin/pg_restore
+
+# ================================================================================
+# REST API Configuration (Optional)
+# ================================================================================
+rest.api.host=localhost
+rest.api.port=9080
+
+# ================================================================================
+# Keycloak Configuration (Optional)
+# ================================================================================
+keycloak.host=localhost
+keycloak.port=8080
+keycloak.realm=realm_default
+keycloak.client.id=keycloak_client_id
+keycloak.client.secret=keycloak_client_secret
+
+# ================================================================================
+# Open Liberty Server Configuration (Optional)
+# ================================================================================
+liberty.datasource.server.host=${db.host}
+liberty.datasource.server.port=${db.port}
+liberty.datasource.database=${db.database}
+liberty.datasource.username=${db.username}
+liberty.datasource.password=${db.password}
+

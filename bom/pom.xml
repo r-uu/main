@@ -218,6 +218,7 @@
 				<groupId>com.sun.activation</groupId>
 				<artifactId>jakarta.activation</artifactId>
 				<version>2.0.1</version>
+				<!-- Note: Version mismatch with API (2.1.2). Consider updating to 2.1.x if available -->
 			</dependency>
 			<dependency>
 				<groupId>jakarta.annotation</groupId>
@@ -427,9 +428,11 @@
 				<scope>import</scope>
 			</dependency>
 			<dependency>
-				<groupId>org.eclipse.microprofile</groupId>
+				<groupId>org.eclipse.microprofile.config</groupId>
 				<artifactId>microprofile-config-api</artifactId>
 				<version>3.1</version>
+				<!-- Note: Version 3.1 is latest stable with good JPMS compatibility -->
+				<!-- Future: Watch for 4.x with full module-info.java support -->
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.microprofile.health</groupId>
@@ -630,8 +633,10 @@
 							<arg>-Amapstruct.defaultComponentModel=default</arg>
 							<arg>-Amapstruct.suppressGeneratorTimestamp=true</arg>
 							<arg>-Amapstruct.suppressGeneratorVersionComment=true</arg>
+							<!-- Keep varargs warnings disabled for now (less critical) -->
 							<arg>-Xlint:-varargs</arg>
-							<arg>-Xlint:-module</arg>
+							<!-- REMOVED: -Xlint:-module to enable JPMS/Module warnings! -->
+							<!-- This will show important module-system related issues -->
 						</compilerArgs>
 						<annotationProcessorPaths>
 							<path>

@@ -6,11 +6,13 @@
 
 | Dokument | Beschreibung | Start hier? |
 |----------|--------------|-------------|
-| **[JDBC-PROBLEM-COMPLETE-FIX.md](JDBC-PROBLEM-COMPLETE-FIX.md)** | **JDBC Test Fix** - Property-Namen | 🔴 **WICHTIG!** |
-| **[FINAL-DECISION-SIMPLE-SOLUTION.md](FINAL-DECISION-SIMPLE-SOLUTION.md)** | Maven-Struktur - Einfach! | 🎯 Architektur |
-| **[CONFIG-PROPERTIES-QUICK-FIX.md](CONFIG-PROPERTIES-QUICK-FIX.md)** | config.properties Setup | 🔧 Setup |
-| **[QUICKSTART-NEXT-STEPS.md](QUICKSTART-NEXT-STEPS.md)** | Schnellstart-Guide | ✅ Start |
-| **[COMPLETE-SOLUTION-SUMMARY.md](COMPLETE-SOLUTION-SUMMARY.md)** | Gesamtübersicht | 📊 Übersicht |
+| **[OPTIMIZATIONS-COMPLETE.md](OPTIMIZATIONS-COMPLETE.md)** | **🎯 OPTIMIERUNGEN KOMPLETT!** | ⭐ **NEU!** |
+| **[BUILD-WARNING-FINAL-SUMMARY.md](BUILD-WARNING-FINAL-SUMMARY.md)** | Build-Analyse & Warnings | 📊 Analyse |
+| **[SESSION-SUMMARY.md](SESSION-SUMMARY.md)** | Alle Änderungen chronologisch | 📝 Übersicht |
+| **[START-HERE.md](START-HERE.md)** | Quick Start für neue Entwickler | 🚀 Setup |
+| **[AUTOMATIC-MODULES-DOCUMENTATION.md](AUTOMATIC-MODULES-DOCUMENTATION.md)** | Automatic Modules dokumentiert | 📦 JPMS |
+| **[QUARTERLY-REVIEW-CHECKLIST.md](QUARTERLY-REVIEW-CHECKLIST.md)** | Wartungs-Prozess | 📋 Review |
+| **[config/README.md](README.md)** | Projekt-Übersicht | 📚 Index |
 
 ---
 

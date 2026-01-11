@@ -23,6 +23,12 @@ import java.util.Properties;
 @Slf4j
 public class Wsl2IpResolver
 {
+	/** Private constructor - utility class should not be instantiated */
+	private Wsl2IpResolver()
+	{
+		throw new UnsupportedOperationException("Utility class - do not instantiate");
+	}
+
 	private static final String WSL2_IP_PLACEHOLDER = "${WSL2_IP}";
 	private static String cachedWsl2Ip = null;
 

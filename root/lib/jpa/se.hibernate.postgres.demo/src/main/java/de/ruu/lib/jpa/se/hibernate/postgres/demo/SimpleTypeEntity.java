@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
-@Table(schema = "test", name = "simple_type")
+@Table(name = "simple_type")  // Verwendet standard "public" schema
 @Getter
 @Accessors(fluent = true) // generate fluent style getters but also implement java bean style getters
 // to comply to java bean conventions

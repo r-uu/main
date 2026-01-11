@@ -45,6 +45,19 @@ alias ruu-install-fast='cd $RUU_HOME && mvn clean install -DskipTests'
 alias ruu-test='cd $RUU_HOME && mvn test'
 alias ruu-verify='cd $RUU_HOME && mvn verify'
 
+# Build-Skripte (empfohlen!)
+# Als Funktion, damit aktuelles Verzeichnis wiederhergestellt wird
+build-all() {
+    local current_dir=$(pwd)
+    cd "$RUU_HOME" || return 1
+    ./config/shared/scripts/build-all.sh "$@"
+    local exit_code=$?
+    cd "$current_dir"
+    return $exit_code
+}
+alias ruu-build='build-all'
+alias ruu-build-all='build-all'
+
 # Einzelne Module
 alias ruu-bom-install='cd $RUU_BOM && mvn clean install'
 alias ruu-root-install='cd $RUU_ROOT && mvn clean install'
@@ -71,12 +84,28 @@ alias ruu-docker-ps='docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports
 # ═══════════════════════════════════════════════════════════════════
 # Docker - PostgreSQL
 # ═══════════════════════════════════════════════════════════════════
+# PostgreSQL Service (lokal, nicht Docker)
+alias ruu-postgres-service-start='sudo service postgresql start'
+alias ruu-postgres-service-stop='sudo service postgresql stop'
+alias ruu-postgres-service-status='sudo service postgresql status'
+alias ruu-postgres-service-restart='sudo service postgresql restart'
+alias ruu-postgres-setup='sudo $RUU_HOME/config/shared/scripts/setup-postgresql.sh'
+
+# PostgreSQL Docker (postgres-jeeeraaah Container)
+alias ruu-postgres-docker-setup='docker exec -it postgres-jeeeraaah psql -U postgres -c "CREATE USER r_uu WITH PASSWORD '"'"'r_uu_password'"'"';" 2>/dev/null || docker exec -it postgres-jeeeraaah psql -U postgres -c "ALTER USER r_uu WITH PASSWORD '"'"'r_uu_password'"'"';" && docker exec -it postgres-jeeeraaah psql -U postgres -c "CREATE DATABASE lib_test OWNER r_uu;" 2>/dev/null || true && docker exec -it postgres-jeeeraaah psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE lib_test TO r_uu;" && docker exec -it postgres-jeeeraaah psql -U postgres -d lib_test -c "GRANT ALL ON SCHEMA public TO r_uu;"'
+alias ruu-postgres-docker-shell='docker exec -it postgres-jeeeraaah psql -U postgres'
+alias ruu-postgres-docker-shell-ruu='docker exec -it postgres-jeeeraaah psql -U r_uu -d lib_test'
+
+# PostgreSQL Docker
 alias ruu-postgres-start='cd $RUU_DOCKER && docker-compose up -d postgres'
 alias ruu-postgres-stop='docker container stop ruu-postgres'
 alias ruu-postgres-restart='ruu-postgres-stop && ruu-postgres-start'
 alias ruu-postgres-logs='docker logs -f ruu-postgres'
 alias ruu-postgres-shell='docker exec -it ruu-postgres psql -U ${POSTGRES_USER:-ruu} -d ${POSTGRES_DB:-ruu_dev}'
 alias ruu-postgres-rebuild='ruu-postgres-stop && docker volume rm ruu-postgres-data 2>/dev/null; ruu-postgres-start'
+
+# PostgreSQL Client (lokal)
+alias ruu-psql='PGPASSWORD=r_uu_password psql -h localhost -U r_uu -d lib_test'
 
 # ═══════════════════════════════════════════════════════════════════
 # Docker - Keycloak
@@ -134,5 +163,5 @@ alias ruu-quickstart='cd $RUU_HOME/config && cat QUICKSTART.md'
 # Initialisierung
 # ═══════════════════════════════════════════════════════════════════
 echo "✓ r-uu gemeinsame Aliase geladen"
-echo "  Hilfe: ruu-help | Navigation: cdruu | Maven: ruu-install | Docker: ruu-docker-up"
+echo "  Hilfe: ruu-help | Build: build-all | PostgreSQL Setup: ruu-postgres-setup"
 

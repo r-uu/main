@@ -51,7 +51,7 @@ import lombok.experimental.Accessors;
 // @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true) // generate
 // no args constructor for jsonb, jaxb, jpa, mapstruct, ...
 @Entity
-@Table(schema = "test", name = "task")
+@Table(name = "task")
 public class TaskJPA implements TaskEntity<TaskGroupJPA, TaskJPA> {
 	/**
 	 * may be
@@ -170,7 +170,7 @@ public class TaskJPA implements TaskEntity<TaskGroupJPA, TaskJPA> {
 			// cascading deletes that wipe out both sides
 			// of the relation entirely
 			cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(schema = "test", name = "PREDECESSOR_SUCCESSOR", joinColumns = {
+	@JoinTable(name = "PREDECESSOR_SUCCESSOR", joinColumns = {
 			@JoinColumn(name = "idPredecessor") }, inverseJoinColumns = { @JoinColumn(name = "idSuccessor") })
 	private Set<TaskJPA> predecessors;
 

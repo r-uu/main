@@ -40,7 +40,7 @@ import lombok.experimental.Accessors;
                           // with ide, fluent accessors will (usually / by default) be ignored by mapstruct
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true) // generate no args constructor for jsonb, jaxb, jpa, mapstruct, ...
 @Entity
-@Table(schema = "test", name = "task_group")
+@Table(name = "task_group")
 public class TaskGroupJPA implements TaskGroupEntity<TaskJPA>
 {
 	@Serial private static final long serialVersionUID = 1L;
