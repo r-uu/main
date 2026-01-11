@@ -33,6 +33,13 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+		<!-- Plugin versions -->
+		<version.maven-compiler-plugin>3.14.1</version.maven-compiler-plugin>
+		<version.lombok>1.18.42</version.lombok>
+		<version.lombok-mapstruct-binding>0.2.0</version.lombok-mapstruct-binding>
+		<version.mapstruct>1.6.3</version.mapstruct>
+		<version.hibernate-jpamodelgen>6.6.5.Final</version.hibernate-jpamodelgen>
+
 <!--		&lt;!&ndash; ================================================================================== &ndash;&gt;-->
 <!--		&lt;!&ndash; database configuration properties                                                  &ndash;&gt;-->
 <!--		&lt;!&ndash; ================================================================================== &ndash;&gt;-->
@@ -98,17 +105,17 @@
 			<dependency>
 				<groupId>net.bytebuddy</groupId>
 				<artifactId>byte-buddy</artifactId>
-				<version>1.15.10</version>
+				<version>1.18.3</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml</groupId>
 				<artifactId>classmate</artifactId>
-				<version>1.5.1</version>
+				<version>1.7.3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.controlsfx</groupId>
 				<artifactId>controlsfx</artifactId>
-				<version>11.2.0</version>
+				<version>11.2.3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.controlsfx</groupId>
@@ -145,12 +152,12 @@
 			</dependency>
 			<dependency>			<groupId>org.kordamp.ikonli</groupId>
 				<artifactId>ikonli-fontawesome5-pack</artifactId>
-				<version>12.3.1</version>
+				<version>12.4.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.kordamp.ikonli</groupId>
 				<artifactId>ikonli-javafx</artifactId>
-				<version>12.3.1</version>
+				<version>12.4.0</version>
 			</dependency>
 			<dependency>				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-annotations</artifactId>
@@ -199,7 +206,7 @@
 			<dependency>
 				<groupId>org.keycloak</groupId>
 				<artifactId>keycloak-core</artifactId>
-				<version>26.0.7</version>
+				<version>26.5.0</version>
 			</dependency>
 			<dependency>
 				<groupId>jakarta.activation</groupId>
@@ -251,7 +258,7 @@
 			<dependency>
 				<groupId>jakarta.json.bind</groupId>
 				<artifactId>jakarta.json.bind-api</artifactId>
-				<version>3.0.0</version>
+				<version>3.0.1</version>
 			</dependency>
 			<dependency>
 				<groupId>jakarta.persistence</groupId>
@@ -266,7 +273,7 @@
 			<dependency>
 				<groupId>jakarta.validation</groupId>
 				<artifactId>jakarta.validation-api</artifactId>
-				<version>3.0.2</version>
+				<version>3.1.0</version>
 			</dependency>
 			<dependency>
 				<groupId>jakarta.ws.rs</groupId>
@@ -281,7 +288,7 @@
 			<dependency>
 				<groupId>io.smallrye</groupId>
 				<artifactId>jandex</artifactId>
-				<version>3.2.2</version>
+				<version>3.2.3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jaxb</groupId>
@@ -387,13 +394,13 @@
 				<artifactId>log4j-slf4j2-impl</artifactId>
 				<version>2.25.3</version>
 			</dependency>
-			<dependency>
-				<groupId>org.projectlombok</groupId>
-				<artifactId>lombok</artifactId>
-				<version>1.18.38</version>
-				<scope>provided</scope>
-				<optional>true</optional>
-			</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.42</version>
+			<scope>provided</scope>
+			<optional>true</optional>
+		</dependency>
 			<dependency>
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok-mapstruct-binding</artifactId>
@@ -447,7 +454,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.7.3</version>
+				<version>42.7.8</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
@@ -610,13 +617,12 @@
 					<version>1.2.1</version>
 				</plugin>
 				<plugin>
-					<!-- maven compiler plugin -->
+					<!-- Maven Compiler Plugin with Lombok support -->
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.14.1</version>
+					<version>${version.maven-compiler-plugin}</version>
 					<configuration>
 						<release>${java.version}</release>
-						<!-- fork is required for the compilerArgs to take effect -->
 						<fork>true</fork>
 						<proc>full</proc>
 						<compilerArgs>
@@ -624,27 +630,31 @@
 							<arg>-Amapstruct.defaultComponentModel=default</arg>
 							<arg>-Amapstruct.suppressGeneratorTimestamp=true</arg>
 							<arg>-Amapstruct.suppressGeneratorVersionComment=true</arg>
+							<arg>-Xlint:-varargs</arg>
+							<arg>-Xlint:-module</arg>
 						</compilerArgs>
 						<annotationProcessorPaths>
 							<path>
 								<groupId>org.projectlombok</groupId>
 								<artifactId>lombok</artifactId>
+								<version>${version.lombok}</version>
 							</path>
 							<path>
 								<groupId>org.projectlombok</groupId>
 								<artifactId>lombok-mapstruct-binding</artifactId>
+								<version>${version.lombok-mapstruct-binding}</version>
 							</path>
 							<path>
 								<groupId>org.mapstruct</groupId>
 								<artifactId>mapstruct-processor</artifactId>
+								<version>${version.mapstruct}</version>
 							</path>
 							<path>
 								<groupId>org.hibernate.orm</groupId>
 								<artifactId>hibernate-jpamodelgen</artifactId>
+								<version>${version.hibernate-jpamodelgen}</version>
 							</path>
 						</annotationProcessorPaths>
-						<!-- force the use of the javac compiler instead of the default eclipse compiler -->
-						<!--<forceLegacyJavacApi>true</forceLegacyJavacApi>-->
 						<showWarnings>true</showWarnings>
 						<showDeprecation>true</showDeprecation>
 					</configuration>
@@ -687,6 +697,15 @@
 					<artifactId>liberty-maven-plugin</artifactId>
 					<version>3.11.5</version>
 				</plugin>
+				<plugin>
+					<!-- Versions Plugin -->
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>versions-maven-plugin</artifactId>
+					<version>2.16.2</version>
+					<configuration>
+						<generateBackupPoms>false</generateBackupPoms>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 
@@ -714,56 +733,9 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<!-- maven compiler plugin (applied to modules) -->
+				<!-- Activate maven compiler plugin from pluginManagement -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.14.1</version>
-				<configuration>
-					<release>${java.version}</release>
-					<fork>true</fork>
-					<proc>full</proc>
-					<compilerArgs>
-						<arg>-parameters</arg>
-						<arg>-Amapstruct.defaultComponentModel=default</arg>
-						<arg>-Amapstruct.suppressGeneratorTimestamp=true</arg>
-						<arg>-Amapstruct.suppressGeneratorVersionComment=true</arg>
-						<!-- Suppress varargs warnings - methods are properly annotated with @SafeVarargs -->
-						<arg>-Xlint:-varargs</arg>
-						<!--
-                            Suppress automatic module warnings for dependencies without module-info.
-                            HINWEIS: Module, die automatische Module verwenden (jersey.client, microprofile.config.api),
-                            sollten mit Vorsicht auf Maven Central veröffentlicht werden, da sich automatische
-                            Modulnamen ändern können. GitHub-Veröffentlichung ist unproblematisch.
-                            Betroffene Module: lib/mp.config, lib/junit, lib/jpa/se.hibernate.postgres,
-                            lib/postgres.util.ui, app/jeeeraaah/frontend/api.client/ws.rs
-                        -->
-						<arg>-Xlint:-module</arg>
-					</compilerArgs>
-					<annotationProcessorPaths>
-						<path>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-							<version>1.18.38</version>
-						</path>
-						<path>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok-mapstruct-binding</artifactId>
-							<version>0.2.0</version>
-						</path>
-						<path>
-							<groupId>org.mapstruct</groupId>
-							<artifactId>mapstruct-processor</artifactId>
-							<version>1.6.3</version>
-						</path>
-						<path>
-							<groupId>org.hibernate.orm</groupId>
-							<artifactId>hibernate-jpamodelgen</artifactId>
-							<version>6.6.5.Final</version>
-						</path>
-					</annotationProcessorPaths>
-					<showWarnings>true</showWarnings>
-					<showDeprecation>true</showDeprecation>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

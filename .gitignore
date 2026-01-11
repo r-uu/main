@@ -17,6 +17,9 @@ config/wsl/docker/.env.local
 # Postgres configuration with passwords
 r-uu/postgresutil.config.properties
 
+# Local configuration file (machine-specific, may contain credentials)
+config.properties
+
 # Testing configuration with credentials
 r-uu/testing.properties
 

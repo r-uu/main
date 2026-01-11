@@ -2,6 +2,21 @@
 
 Kurze Anleitung für die Einrichtung deiner lokalen Entwicklungsumgebung.
 
+## 0️⃣ GraalVM 25 installieren (Optional, aber empfohlen)
+
+```bash
+cd /home/r-uu/develop/github/main/config/shared/scripts
+sudo ./install-graalvm.sh
+```
+
+Nach der Installation:
+```bash
+source ~/.bashrc
+ruu-graalvm-version
+```
+
+→ **Vollständige Anleitung:** [GRAALVM-INSTALLATION.md](GRAALVM-INSTALLATION.md)
+
 ## 1️⃣ Setup ausführen
 
 ```bash

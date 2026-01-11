@@ -50,6 +50,21 @@ fi
 # Prüfe Maven Installation
 echo ""
 echo "🔍 Prüfe Abhängigkeiten..."
+
+# Java / GraalVM
+if command -v java &> /dev/null; then
+    JAVA_VERSION=$(java --version 2>&1 | head -n1)
+    if [[ "$JAVA_VERSION" == *"GraalVM"* ]]; then
+        echo "  ✓ GraalVM $(echo $JAVA_VERSION | grep -oP 'JDK \K[0-9.]+')"
+    else
+        echo "  ⚠ Java gefunden, aber nicht GraalVM"
+        echo "    Installieren Sie GraalVM mit: $CONFIG_DIR/shared/scripts/install-graalvm.sh"
+    fi
+else
+    echo "  ✗ Java nicht gefunden"
+    echo "    Installieren Sie GraalVM mit: $CONFIG_DIR/shared/scripts/install-graalvm.sh"
+fi
+
 if command -v mvn &> /dev/null; then
     echo "  ✓ Maven $(mvn -version | head -n1 | cut -d' ' -f3)"
 else

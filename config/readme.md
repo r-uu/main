@@ -1,87 +1,83 @@
 # config - Entwicklungsumgebung Konfiguration
-```
-fi
-    source "$PROJECT_ROOT/config/local/wsl/aliases.sh"
-if [ -f "$PROJECT_ROOT/config/local/wsl/aliases.sh" ]; then
-# Lade lokale Aliase (falls vorhanden)
-
-fi
-    source "$PROJECT_ROOT/config/shared/wsl/aliases.sh"
-if [ -f "$PROJECT_ROOT/config/shared/wsl/aliases.sh" ]; then
-# Lade gemeinsame Aliase
-
-PROJECT_ROOT="/home/r-uu/develop/github/main"
-# r-uu projekt konfiguration
-```bash
-
-Füge in deine `~/.bashrc` oder `~/.bash_profile` ein:
-
-## Einbindung in Shell
-
-| Setup-Dokumentation                  | `shared/docs/`    | ✅      |
-| KI-API Keys                          | `local/`          | ❌      |
-| AI-Prompt Libraries                  | `shared/ai-prompts/` | ✅   |
-| Persönliche WSL-Aliase               | `local/wsl/`      | ❌      |
-| WSL-Aliase für Projekt-Commands      | `shared/wsl/`     | ✅      |
-| Wiederverwendbare Skripte            | `shared/scripts/` | ✅      |
-| Umgebungsvariablen mit Secrets       | `local/docker/`   | ❌      |
-| Standard Docker Compose Files        | `shared/docker/`  | ✅      |
-|--------------------------------------|-------------------|---------|
-| Typ                                  | Speicherort       | Im Git? |
-
-## Best Practices
-
-- Lokale Datenbank-Konfigurationen
-- Persönliche Aliase und Shortcuts
-- Maschinen-spezifische Pfade
-- Passwörter, API-Keys
-Änderungen in `config/local/` bleiben auf deinem Rechner:
-
-### Lokale Konfigurationen
-
-```
-git commit -m "Update shared configuration"
-git add config/shared/
-```bash
-Änderungen in `config/shared/` werden versioniert und mit allen Entwicklern geteilt:
-
-### Gemeinsame Konfigurationen aktualisieren
-
-3. Die `config/local/` Dateien werden automatisch von Git ignoriert (siehe `.gitignore`)
-
-2. Passe die lokalen Dateien an deine Entwicklungsumgebung an
-
-   ```
-   cp config/templates/wsl-aliases.template config/local/wsl/.bash_aliases
-   cp config/templates/.env.template config/local/docker/.env.local
-   ```bash
-1. Kopiere Templates nach `config/local/`:
-
-### Erstmalige Einrichtung
-
-## Verwendung
-
-```
-    └── ...
-    ├── wsl-aliases.template
-    ├── .env.template
-└── templates/          # ✅ Vorlagen für lokale Konfigurationen (im Git)
-│
-│   └── ...
-│   ├── docker/        # Lokale Docker Übersteuerungen (.env.local, etc.)
-│   ├── wsl/           # Lokale WSL Anpassungen
-├── local/              # ❌ maschinenspezifische Konfigurationen (NICHT im Git)
-│
-│   └── scripts/        # Gemeinsame Build/Setup Skripte
-│   ├── ai-prompts/     # KI-Prompt Templates
-│   ├── docker/         # Docker Compose Templates
-│   ├── wsl/            # WSL Aliase, Skripte, etc.
-├── shared/              # ✅ gemeinsame Konfigurationen (im Git)
-config/
-```
-
-## Struktur
-
+> 🔥 **Neu:** [INTELLIJ-WSL-SETUP.md](INTELLIJ-WSL-SETUP.md) - IntelliJ IDEA mit WSL und GraalVM 25  
+> 🔧 **Problem gelöst:** [JAVA-HOME-FIX.md](JAVA-HOME-FIX.md) - "JAVA_HOME not defined" Fehler behoben
+## 📋 Übersicht
 Dieses Verzeichnis enthält gemeinsame und maschinenspezifische Konfigurationen für die Entwicklungsumgebung.
-
-
+### Wichtigste Dokumentationen
+| Datei | Beschreibung |
+|-------|--------------|
+| [INDEX.md](INDEX.md) | Vollständige Übersicht aller Konfigurationen |
+| [QUICKSTART.md](QUICKSTART.md) | Schnellstart für neue Entwickler |
+| [INTELLIJ-WSL-SETUP.md](INTELLIJ-WSL-SETUP.md) | IntelliJ IDEA mit WSL konfigurieren |
+| [JAVA-HOME-FIX.md](JAVA-HOME-FIX.md) | JAVA_HOME Problem-Lösung |
+| [GRAALVM-INSTALLATION.md](GRAALVM-INSTALLATION.md) | GraalVM 25 Installation |
+| [GRAALVM-25-MIGRATION.md](GRAALVM-25-MIGRATION.md) | Migration zu GraalVM 25 |
+## 🚀 Quick Start
+### 1. Neu im Projekt?
+➡️ Folge dem [QUICKSTART.md](QUICKSTART.md)
+### 2. IntelliJ IDEA Setup Problem?
+➡️ Folge dem [INTELLIJ-WSL-SETUP.md](INTELLIJ-WSL-SETUP.md)
+**Häufigster Fehler:**
+```
+The JAVA_HOME environment variable is not defined correctly
+```
+**Lösung:** [JAVA-HOME-FIX.md](JAVA-HOME-FIX.md)
+### 3. GraalVM installieren/aktualisieren?
+```bash
+cd ~/develop/github/main/config/shared/scripts
+sudo ./install-graalvm.sh
+source ~/.bashrc
+ruu-graalvm-version
+```
+➡️ Dokumentation: [GRAALVM-INSTALLATION.md](GRAALVM-INSTALLATION.md)
+## 📁 Struktur
+```
+config/
+├── shared/              # ✅ gemeinsame Konfigurationen (im Git)
+│   ├── wsl/            # WSL Aliase, Skripte
+│   ├── docker/         # Docker Compose Templates
+│   ├── scripts/        # Gemeinsame Build/Setup Skripte
+│   └── ai-prompts/     # KI-Prompt Templates
+├── local/              # ❌ maschinenspezifische Konfigurationen (NICHT im Git)
+│   ├── wsl/           # Lokale WSL Anpassungen
+│   └── docker/        # Lokale Docker Übersteuerungen (.env.local)
+├── templates/          # ✅ Vorlagen für lokale Konfigurationen (im Git)
+│   ├── .env.template
+│   └── wsl-aliases.template
+└── *.md               # Dokumentation
+```
+## 🔧 Verwendung
+### Gemeinsame Konfigurationen aktualisieren
+```bash
+# Änderungen in config/shared/ werden mit allen Entwicklern geteilt
+git add config/shared/
+git commit -m "Update shared configuration"
+git push
+```
+### Lokale Konfigurationen
+```bash
+# Änderungen in config/local/ bleiben auf deinem Rechner
+# Diese Dateien werden automatisch von Git ignoriert
+nano config/local/wsl/aliases.sh
+source config/local/wsl/aliases.sh
+```
+## 🛠️ Shell Integration
+Füge in deine `~/.bashrc` ein:
+```bash
+# r-uu projekt konfiguration
+PROJECT_ROOT="/home/r-uu/develop/github/main"
+# Lade gemeinsame Aliase
+if [ -f "$PROJECT_ROOT/config/shared/wsl/aliases.sh" ]; then
+    source "$PROJECT_ROOT/config/shared/wsl/aliases.sh"
+fi
+# Lade lokale Aliase (falls vorhanden)
+if [ -f "$PROJECT_ROOT/config/local/wsl/aliases.sh" ]; then
+    source "$PROJECT_ROOT/config/local/wsl/aliases.sh"
+fi
+```
+Dann:
+```bash
+source ~/.bashrc
+```
+## 📚 Weiterführende Dokumentation
+Siehe [INDEX.md](INDEX.md) für die vollständige Übersicht aller Konfigurationen und Dokumentationen.

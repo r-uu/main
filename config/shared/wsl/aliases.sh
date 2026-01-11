@@ -3,6 +3,13 @@
 # Diese Datei wird versioniert und mit allen Entwicklern geteilt
 
 # ═══════════════════════════════════════════════════════════════════
+# Java / GraalVM
+# ═══════════════════════════════════════════════════════════════════
+export GRAALVM_HOME="/opt/graalvm-jdk-25"
+export JAVA_HOME="$GRAALVM_HOME"
+export PATH="$JAVA_HOME/bin:$PATH"
+
+# ═══════════════════════════════════════════════════════════════════
 # Projekt-Pfade
 # ═══════════════════════════════════════════════════════════════════
 export RUU_HOME="/home/r-uu/develop/github/main"
@@ -106,6 +113,12 @@ alias ruu-ports='netstat -tulpn 2>/dev/null | grep LISTEN'
 alias ruu-java-version='java --version'
 alias ruu-maven-version='mvn --version'
 alias ruu-docker-version='docker --version && docker-compose --version'
+
+# GraalVM-spezifische Befehle
+alias ruu-graalvm-version='echo "GraalVM: $(java --version | head -n1)" && echo "Path: $JAVA_HOME"'
+alias ruu-native-image='native-image'
+alias ruu-gu='gu'
+alias ruu-java-check='bash $RUU_CONFIG/shared/scripts/check-java.sh'
 
 # ═══════════════════════════════════════════════════════════════════
 # Hilfe & Dokumentation

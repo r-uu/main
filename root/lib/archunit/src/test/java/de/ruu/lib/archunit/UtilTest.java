@@ -79,13 +79,13 @@ class UtilTest
 	    Optional<FieldWithAccessors> optional =
 			    fields
               .stream()
-              .filter(field -> "intField".equals(field.field().getName()))
+              .filter(field -> "intField".equals(field.javaField().getName()))
               .findFirst();
 
 	    assertThat(optional.isPresent(), is(true));
 
 	    FieldWithAccessors fieldWithAccessors = optional.get();
-			assertThat(Util.isPrimitive(fieldWithAccessors.field().getType()), is(true));
+			assertThat(Util.isPrimitive(fieldWithAccessors.javaField().getType()), is(true));
     }
 
     @Test void isNumeric_shouldDetectIntegerAsNumeric()
@@ -152,10 +152,10 @@ class UtilTest
         assertThat(methodNames, is(sortedNames));
     }
 
-		private Optional<FieldWithAccessors> tryToExtractFrom(List<FieldWithAccessors> fields, String name)
-		{
-			return fields.stream().filter(field -> name.equals(field.field().getName())).findFirst();
-		}
+	private Optional<FieldWithAccessors> tryToExtractFrom(List<FieldWithAccessors> fields, String name)
+	{
+		return fields.stream().filter(field -> name.equals(field.javaField().getName())).findFirst();
+	}
 
     // --- helper classes for testing ------------------------------------------
 

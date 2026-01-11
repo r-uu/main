@@ -27,10 +27,8 @@ class TestFieldWithAccessors
 		FieldWithAccessors fieldAndAccessors =
 				new FieldWithAccessors(clazz.getAllFields().iterator().next());
 
-		assertThat(fieldAndAccessors.getterJavaBeanStyle().isPresent(), is(false));
-		assertThat(fieldAndAccessors.setterJavaBeanStyle().isPresent(), is(false));
-
-		assertThat(fieldAndAccessors.getterFluentStyle().isPresent(), is(true));
-		assertThat(fieldAndAccessors.setterFluentStyle().isPresent(), is(true));
+		// For fluent style accessors, the getter and setter should be present
+		assertThat(fieldAndAccessors.getter().isPresent(), is(true));
+		assertThat(fieldAndAccessors.setter().isPresent(), is(true));
 	}
 }

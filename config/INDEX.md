@@ -98,6 +98,9 @@ ruu-install
 | [QUICKSTART.md](QUICKSTART.md) | 🚀 Schnellstart-Anleitung |
 | [readme.md](readme.md) | 📖 Vollständige Dokumentation |
 | [STRUCTURE.md](STRUCTURE.md) | 🗂️ Detaillierte Struktur |
+| [GRAALVM-INSTALLATION.md](GRAALVM-INSTALLATION.md) | 🔥 GraalVM 25 Installation |
+| [GRAALVM-25-MIGRATION.md](GRAALVM-25-MIGRATION.md) | ✅ GraalVM 25 Migration (2026-01-11) |
+| [INTELLIJ-WSL-SETUP.md](INTELLIJ-WSL-SETUP.md) | 🔧 IntelliJ IDEA WSL Setup |
 
 ## 🔐 Sicherheit
 

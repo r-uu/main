@@ -17,36 +17,37 @@ import java.util.Optional;
 @Accessors(fluent = true)
 public class FieldWithAccessors
 {
-	private final @NonNull JavaField field;
+	private final @NonNull JavaField javaField;
 
-	private final Optional<JavaMethod> getterJavaBeanStyle;
-	private final Optional<JavaMethod> setterJavaBeanStyle;
+	private final Optional<JavaMethod> getter;
+	private final Optional<JavaMethod> setter;
 
-	private final Optional<JavaMethod> getterFluentStyle;
-	private final Optional<JavaMethod> setterFluentStyle;
-
-	public FieldWithAccessors(@NonNull JavaField field)
+	public FieldWithAccessors(@NonNull JavaField javaField)
 	{
-		this.field = field;
+		this.javaField = javaField;
 
-		getterJavaBeanStyle = findGetterJavaBeanStyle(field);
-		setterJavaBeanStyle = findSetterJavaBeanStyle(field);
-
-		getterFluentStyle = findGetterFluentStyle(field);
-		setterFluentStyle = findSetterFluentStyle(field);
+		getter = findGetter(javaField);
+		setter = findSetter(javaField);
 	}
 
-	/**
-	 * looks for java bean style getter
-	 * @param field
-	 * @return java bean style getter or empty optional if none was found
-	 */
-	private Optional<JavaMethod> findGetterJavaBeanStyle(@NonNull JavaField field)
-	{
-		JavaClass clazz = field.getOwner();
 
+	/**
+	 * looks for getter (java bean style or fluent style)
+	 * @param javaField
+	 * @return getter or empty optional if none was found
+	 */
+	private Optional<JavaMethod> findGetter(@NonNull JavaField javaField)
+	{
+		JavaClass clazz = javaField.getOwner();
+
+		// Try Java Bean style first (getXxx or isXxx for boolean)
 		Optional<JavaMethod> result =
-				clazz.tryGetMethod("lookup" + Strings.firstLetterToUpperCase(field.getName()));
+				clazz.tryGetMethod("get" + Strings.firstLetterToUpperCase(javaField.getName()));
+
+		if (result.isPresent()) return result;
+
+		// Try fluent style
+		result = clazz.tryGetMethod(javaField.getName());
 
 		if (result.isPresent()) return result;
 
@@ -54,49 +55,23 @@ public class FieldWithAccessors
 	}
 
 	/**
-	 * looks for java bean style setter
-	 * @param field
-	 * @return java bean style setter or empty optional if none was found
+	 * looks for setter (java bean style or fluent style)
+	 * @param javaField
+	 * @return setter or empty optional if none was found
 	 */
-	private Optional<JavaMethod> findSetterJavaBeanStyle(@NonNull JavaField field)
+	private Optional<JavaMethod> findSetter(@NonNull JavaField javaField)
 	{
-		JavaClass clazz = field.getOwner();
+		JavaClass clazz = javaField.getOwner();
 
+		// Try Java Bean style first
 		Optional<JavaMethod> result =
 				clazz.tryGetMethod(
-						"set" + Strings.firstLetterToUpperCase(field.getName()), field.getType().getName());
+						"set" + Strings.firstLetterToUpperCase(javaField.getName()), javaField.getType().getName());
 
 		if (result.isPresent()) return result;
 
-		return Optional.empty();
-	}
-
-	/**
-	 * looks for fluent style getter
-	 * @param field
-	 * @return fluent style getter or empty optional if none was found
-	 */
-	private Optional<JavaMethod> findGetterFluentStyle(@NonNull JavaField field)
-	{
-		JavaClass clazz = field.getOwner();
-
-		Optional<JavaMethod> result = clazz.tryGetMethod(field.getName());
-
-		if (result.isPresent()) return result;
-
-		return Optional.empty();
-	}
-
-	/**
-	 * looks for fluent style setter
-	 * @param field
-	 * @return fluent style setter or empty optional if none was found
-	 */
-	private Optional<JavaMethod> findSetterFluentStyle(@NonNull JavaField field)
-	{
-		JavaClass clazz = field.getOwner();
-
-		Optional<JavaMethod> result = clazz.tryGetMethod(field.getName(), field.getType().getName());
+		// Try fluent style
+		result = clazz.tryGetMethod(javaField.getName(), javaField.getType().getName());
 
 		if (result.isPresent()) return result;
 
