@@ -202,26 +202,30 @@
 	<pageFooter>
 		<band height="60">
 			<!-- Zwischensumme nur anzeigen, wenn nicht letzte Seite -->
-			<textField evaluationTime="Auto">
-				<reportElement x="0" y="10" width="535" height="1"/>
-				<printWhenExpression><![CDATA[$V{PAGE_NUMBER} < $V{PAGE_COUNT}]]></printWhenExpression>
-			</textField>
+			<line>
+				<reportElement x="0" y="10" width="535" height="1">
+					<printWhenExpression><![CDATA[$V{PAGE_NUMBER} < $V{PAGE_COUNT}]]></printWhenExpression>
+				</reportElement>
+			</line>
 
 			<staticText>
-				<reportElement x="350" y="10" width="120" height="20"/>
-				<printWhenExpression><![CDATA[$V{PAGE_NUMBER} < $V{PAGE_COUNT}]]></printWhenExpression>
+				<reportElement x="350" y="10" width="120" height="20">
+					<printWhenExpression><![CDATA[$V{PAGE_NUMBER} < $V{PAGE_COUNT}]]></printWhenExpression>
+				</reportElement>
 				<textElement textAlignment="Right"><font isBold="true"/></textElement>
 				<text><![CDATA[Zwischensumme Seite ]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="470" y="10" width="10" height="20"/>
-				<printWhenExpression><![CDATA[$V{PAGE_NUMBER} < $V{PAGE_COUNT}]]></printWhenExpression>
+				<reportElement x="470" y="10" width="10" height="20">
+					<printWhenExpression><![CDATA[$V{PAGE_NUMBER} < $V{PAGE_COUNT}]]></printWhenExpression>
+				</reportElement>
 				<textElement><font isBold="true"/></textElement>
 				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00 €">
-				<reportElement x="480" y="10" width="55" height="20"/>
-				<printWhenExpression><![CDATA[$V{PAGE_NUMBER} < $V{PAGE_COUNT}]]></printWhenExpression>
+				<reportElement x="480" y="10" width="55" height="20">
+					<printWhenExpression><![CDATA[$V{PAGE_NUMBER} < $V{PAGE_COUNT}]]></printWhenExpression>
+				</reportElement>
 				<textElement textAlignment="Right"><font isBold="true"/></textElement>
 				<textFieldExpression><![CDATA[$V{PAGE_TOTAL}]]></textFieldExpression>
 			</textField>

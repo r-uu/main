@@ -151,6 +151,8 @@ Eclipse kann via WSL auf das JDK zugreifen, aber das ist langsamer. Für reine T
 
 ## Teil 2: Jaspersoft Studio Plugin installieren
 
+> **⚠️ Hinweis**: Beim ersten Start zeigt Jaspersoft Studio möglicherweise einen "Community Login" Dialog. Dies ist optional - klicken Sie einfach **Cancel** oder aktivieren Sie "Don't ask again". Siehe [Troubleshooting](#problem-jaspersoft-studio---connection-timeout-zu-heartbeatcloudjaspersoftcom) für Details.
+
 ### Schritt 2.1: Marketplace öffnen
 
 1. **Help → Eclipse Marketplace**
@@ -483,6 +485,108 @@ git commit -m "Template: Logo und Farben angepasst"
 ---
 
 ## Teil 7: Troubleshooting
+
+### Problem: XML-Validierungsfehler beim Öffnen des Templates
+
+**Symptom**: 
+```
+net.sf.jasperreports.engine.JRException: org.xml.sax.SAXParseException; lineNumber: 207; columnNumber: 26; 
+cvc-complex-type.2.4.a: Invalid content was found starting with element 'printWhenExpression'. 
+One of 'box, textElement, textFieldExpression, ...' is expected.
+```
+
+**Ursache**: Die XML-Elemente in einem `<textField>` müssen in einer **strikten Reihenfolge** stehen:
+1. `<reportElement>` (immer zuerst)
+2. `<printWhenExpression>` (optional, aber wenn vorhanden, vor anderen Elementen)
+3. `<textElement>` (optional)
+4. `<textFieldExpression>` (Pflicht)
+
+**Falsch** ❌:
+```xml
+<textField>
+    <reportElement x="470" y="10" width="10" height="20"/>
+    <textElement><font isBold="true"/></textElement>
+    <printWhenExpression><![CDATA[$V{PAGE_NUMBER} < $V{PAGE_COUNT}]]></printWhenExpression>
+    <textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+</textField>
+```
+
+**Richtig** ✅:
+```xml
+<textField>
+    <reportElement x="470" y="10" width="10" height="20"/>
+    <printWhenExpression><![CDATA[$V{PAGE_NUMBER} < $V{PAGE_COUNT}]]></printWhenExpression>
+    <textElement><font isBold="true"/></textElement>
+    <textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+</textField>
+```
+
+**Lösung**: Öffnen Sie die `.jrxml` Datei im Text-Editor und verschieben Sie `<printWhenExpression>` direkt nach `<reportElement>`.
+
+**Tipp**: Jaspersoft Studio korrigiert solche Fehler manchmal automatisch. Öffnen Sie die Datei im **Source-Tab**, speichern Sie (`Ctrl+S`), und wechseln Sie zum **Design-Tab**.
+
+---
+
+### Problem: Jaspersoft Studio - Connection Timeout zu heartbeat.cloud.jaspersoft.com
+
+**Symptom**: 
+```
+org.apache.http.conn.ConnectTimeoutException: Connect to heartbeat.cloud.jaspersoft.com:443 failed: Connection timed out
+```
+
+**Ursache**: Jaspersoft Studio versucht, sich mit der Jaspersoft Community Cloud zu verbinden (Telemetrie/Login-Feature). Dies ist **nicht erforderlich** für lokale Entwicklung.
+
+**Lösung 1: Community Login Dialog schließen (Schnell)**
+
+Beim Start von Jaspersoft Studio:
+1. **Community Login Dialog** erscheint
+2. **Cancel** oder **X** (Schließen) klicken
+3. Optional: ☑ **"Don't ask me again"** aktivieren
+4. Studio öffnet sich normal
+
+**Lösung 2: Offline-Modus aktivieren (Dauerhaft)**
+
+1. **Window → Preferences**
+2. **Jaspersoft Studio → Properties**
+3. ☑ **"Work Offline"** aktivieren
+4. **Apply and Close**
+5. Jaspersoft Studio neu starten
+
+**Lösung 3: Heartbeat-Feature deaktivieren (Erweitert)**
+
+Jaspersoft Studio Konfigurationsdatei bearbeiten:
+
+**Linux/WSL**:
+```bash
+# Konfigurationsdatei öffnen
+nano ~/.eclipse/com.jaspersoft.studio/configuration/config.ini
+
+# Folgende Zeile hinzufügen:
+jaspersoft.studio.heartbeat.enabled=false
+
+# Speichern: Ctrl+O, Enter, Ctrl+X
+```
+
+**Windows**:
+```
+Datei: C:\Users\<YourUser>\.eclipse\com.jaspersoft.studio\configuration\config.ini
+
+Zeile hinzufügen:
+jaspersoft.studio.heartbeat.enabled=false
+```
+
+**Lösung 4: Proxy/Firewall umgehen (Wenn hinter Corporate Firewall)**
+
+Falls Sie hinter einer Firewall sind:
+
+1. **Window → Preferences**
+2. **General → Network Connections**
+3. **Active Provider**: Direct
+4. **Apply and Close**
+
+**Hinweis**: Diese Timeouts beeinträchtigen **nicht** die Funktionalität von Jaspersoft Studio für lokale Template-Entwicklung!
+
+---
 
 ### Problem: Eclipse startet nicht
 
