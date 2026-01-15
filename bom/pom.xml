@@ -208,10 +208,11 @@
 				<artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
 				<version>2.18.3</version>
 			</dependency>
+			<!-- Apache POI für Office-Formate (DOCX, XLSX) -->
 			<dependency>
-				<groupId>net.sf.jasperreports</groupId>
-				<artifactId>jasperreports</artifactId>
-				<version>6.21.0</version>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-ooxml</artifactId>
+				<version>5.5.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.keycloak</groupId>
