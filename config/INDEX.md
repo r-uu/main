@@ -102,6 +102,7 @@ ruu-install
 | [../GIT-PUSH-FINAL-SOLUTION.md](../GIT-PUSH-FINAL-SOLUTION.md) | 🔐 Git Push in IntelliJ (WSL) |
 | [GRAALVM-25-MIGRATION.md](GRAALVM-25-MIGRATION.md) | ✅ GraalVM 25 Migration (2026-01-11) |
 | [INTELLIJ-WSL-SETUP.md](INTELLIJ-WSL-SETUP.md) | 🔧 IntelliJ IDEA WSL Setup |
+| [shared/docker/JASPERREPORTS-QUICKSTART.md](shared/docker/JASPERREPORTS-QUICKSTART.md) | 📊 JasperReports Docker Service |
 
 ## 🔐 Sicherheit
 

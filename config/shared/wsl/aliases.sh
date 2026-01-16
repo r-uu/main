@@ -117,6 +117,20 @@ alias ruu-keycloak-logs='docker logs -f ruu-keycloak'
 alias ruu-keycloak-admin='echo "Keycloak Admin: http://localhost:8080/admin (admin/admin)"'
 
 # ═══════════════════════════════════════════════════════════════════
+# JasperReports Service (isoliert, kein JPMS)
+# ═══════════════════════════════════════════════════════════════════
+export RUU_JASPER="$RUU_ROOT/sandbox/office/microsoft/word/jasperreports"
+alias jasper='bash $RUU_JASPER/jasper-service.sh'
+alias jasper-start='bash $RUU_JASPER/jasper-service.sh start'
+alias jasper-stop='bash $RUU_JASPER/jasper-service.sh stop'
+alias jasper-restart='bash $RUU_JASPER/jasper-service.sh restart'
+alias jasper-logs='bash $RUU_JASPER/jasper-service.sh logs'
+alias jasper-status='bash $RUU_JASPER/jasper-service.sh status'
+alias jasper-test='bash $RUU_JASPER/jasper-service.sh test'
+alias jasper-shell='bash $RUU_JASPER/jasper-service.sh shell'
+alias jasper-clean='bash $RUU_JASPER/jasper-service.sh clean'
+
+# ═══════════════════════════════════════════════════════════════════
 # Git
 # ═══════════════════════════════════════════════════════════════════
 alias ruu-status='cd $RUU_HOME && git status'
