@@ -109,6 +109,7 @@
                 <version>3.5.0</version>
                 <configuration>
                     <mainClass>de.ruu.jasper.example.InvoiceExample</mainClass>
+                    <workingDirectory>${project.basedir}</workingDirectory>
                 </configuration>
             </plugin>
         </plugins>

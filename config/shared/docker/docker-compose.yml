@@ -60,11 +60,31 @@ services:
     networks:
       - ruu-network
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/8080 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\n\\r\\n' >&3 && timeout 1 cat <&3 | grep -q '200\\|UP' || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
+    restart: unless-stopped
+
+  # JasperReports Service - Isolierte Report-Generierung
+  jasperreports:
+    build: ../../../root/sandbox/office/microsoft/word/jasperreports
+    container_name: jasperreports-service
+    ports:
+      - "8090:8090"
+    volumes:
+      - ../../../root/sandbox/office/microsoft/word/jasperreports/templates:/app/templates:ro
+      - ../../../root/sandbox/office/microsoft/word/jasperreports/output:/app/output
+    environment:
+      - JAVA_OPTS=-Xmx512m
+    networks:
+      - ruu-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:8090/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     restart: unless-stopped
 
 networks:
