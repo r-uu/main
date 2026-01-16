@@ -9,13 +9,13 @@ import java.util.List;
  */
 public class InvoiceData {
 
-    private String invoiceNumber;
-    private LocalDate invoiceDate;
-    private LocalDate dueDate;
-    private String customerName;
-    private String customerAddress;
+    private String            invoiceNumber;
+    private LocalDate         invoiceDate;
+    private LocalDate         dueDate;
+    private String            customerName;
+    private String            customerAddress;
     private List<InvoiceItem> items = new ArrayList<>();
-    private String notes;
+    private String            notes;
 
     // Getter/Setter
 

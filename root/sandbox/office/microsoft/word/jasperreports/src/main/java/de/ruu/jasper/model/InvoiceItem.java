@@ -13,8 +13,8 @@ import java.math.BigDecimal;
  */
 public class InvoiceItem
 {
-	private int position;
-	private String description;
+	private int        position;
+	private String     description;
 	private BigDecimal quantity;
 	private BigDecimal unitPrice;
 	private BigDecimal total;

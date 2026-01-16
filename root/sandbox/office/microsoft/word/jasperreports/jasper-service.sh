@@ -29,30 +29,30 @@ case "${1:-help}" in
     start)
         echo_info "Starte JasperReports Service..."
         cd "$SCRIPT_DIR"
-        docker-compose -f "$COMPOSE_FILE" up -d --build
+        docker compose -f "$COMPOSE_FILE" up -d --build
         echo_info "Service läuft auf http://localhost:8090"
         ;;
 
     stop)
         echo_info "Stoppe JasperReports Service..."
         cd "$SCRIPT_DIR"
-        docker-compose -f "$COMPOSE_FILE" down
+        docker compose -f "$COMPOSE_FILE" down
         echo_info "Service gestoppt"
         ;;
 
     restart)
         echo_info "Starte JasperReports Service neu..."
         cd "$SCRIPT_DIR"
-        docker-compose -f "$COMPOSE_FILE" restart
+        docker compose -f "$COMPOSE_FILE" restart
         echo_info "Service neu gestartet"
         ;;
 
     rebuild)
         echo_info "Rebuilde JasperReports Service..."
         cd "$SCRIPT_DIR"
-        docker-compose -f "$COMPOSE_FILE" down
-        docker-compose -f "$COMPOSE_FILE" build --no-cache
-        docker-compose -f "$COMPOSE_FILE" up -d
+        docker compose -f "$COMPOSE_FILE" down
+        docker compose -f "$COMPOSE_FILE" build --no-cache
+        docker compose -f "$COMPOSE_FILE" up -d
         echo_info "Service neu gebaut und gestartet"
         ;;
 

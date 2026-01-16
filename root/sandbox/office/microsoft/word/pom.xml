@@ -17,6 +17,7 @@
 
 	<modules>
 		<module>docx4j</module>
+		<module>jasperreports</module>
 	</modules>
 
 </project>
