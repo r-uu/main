@@ -33,5 +33,5 @@ RUN mvn package -DskipTests
 EXPOSE 8090
 
 # Entry Point - kann als CLI oder Server laufen
-ENTRYPOINT ["java", "-jar", "target/jasperreports-service.jar"]
+ENTRYPOINT ["java", "-jar", "target/jasperreports-service-1.0.0.jar"]
 
