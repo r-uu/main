@@ -1,0 +1,80 @@
+<mxGraphModel dx="1000" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+    <mxCell id="client_web" value="Web Client" style="shape=actor;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+      <mxGeometry x="40" y="200" width="40" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="client_mobile" value="Mobile App" style="shape=actor;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+      <mxGeometry x="40" y="320" width="40" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="gateway" value="API Gateway /&#xa;Load Balancer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1" vertex="1" parent="1">
+      <mxGeometry x="160" y="180" width="120" height="220" as="geometry" />
+    </mxCell>
+    <mxCell id="c1_gw" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="client_web" target="gateway">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="c2_gw" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="client_mobile" target="gateway">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="infra_bg" value="Microservices Ecosystem Infrastructure" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;fontColor=#333333;strokeColor=#b85450;verticalAlign=top;fontStyle=1;fontSize=14;dashed=1;opacity=70;" vertex="1" parent="1">
+      <mxGeometry x="320" y="80" width="480" height="420" as="geometry" />
+    </mxCell>
+    <mxCell id="svc_a" value="Business Service A" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="360" y="220" width="120" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="svc_b" value="Business Service B" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="360" y="300" width="120" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="registry" value="Service Registry&#xa;(z.B. Eureka)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+      <mxGeometry x="560" y="120" width="140" height="80" as="geometry" />
+    </mxCell>
+    <mxCell id="config" value="Config Server" style="ellipse;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+      <mxGeometry x="360" y="120" width="120" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="tracing" value="Distributed Tracing /&#xa;Logging (z.B. Zipkin)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+      <mxGeometry x="560" y="360" width="140" height="80" as="geometry" />
+    </mxCell>
+    <mxCell id="gw_svc_a" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="gateway" target="svc_a">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="gw_svc_b" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="gateway" target="svc_b">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="reg_a" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;fillColor=#f8cecc;strokeColor=#b85450;" edge="1" parent="1" source="svc_a" target="registry">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="520" y="250" />
+          <mxPoint x="520" y="160" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="reg_b" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;fillColor=#f8cecc;strokeColor=#b85450;" edge="1" parent="1" source="svc_b" target="registry">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="540" y="330" />
+          <mxPoint x="540" y="180" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="trace_a" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;fillColor=#f8cecc;strokeColor=#b85450;" edge="1" parent="1" source="svc_a" target="tracing">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="510" y="270" />
+          <mxPoint x="510" y="400" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="trace_b" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;fillColor=#f8cecc;strokeColor=#b85450;" edge="1" parent="1" source="svc_b" target="tracing">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="500" y="350" />
+          <mxPoint x="500" y="420" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="conf_a" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;dashed=1;" edge="1" parent="1" source="svc_a" target="config">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+  </root>
+</mxGraphModel>

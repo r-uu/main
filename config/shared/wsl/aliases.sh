@@ -94,6 +94,8 @@ alias ruu-keycloak-stop='docker container stop keycloak-service'
 alias ruu-keycloak-restart='ruu-keycloak-stop && ruu-keycloak-start'
 alias ruu-keycloak-logs='docker logs -f keycloak-service'
 alias ruu-keycloak-admin='echo "Keycloak Admin: http://localhost:8080/admin (siehe config.properties)"'
+alias ruu-keycloak-setup='cd $RUU_ROOT/lib/keycloak.admin && mvn exec:java -Dexec.mainClass="de.ruu.lib.keycloak.admin.setup.KeycloakRealmSetup"'
+alias ruu-keycloak-setup-bash='bash $RUU_DOCKER/setup-keycloak-realm.sh'
 
 # ═══════════════════════════════════════════════════════════════════
 # Docker - JasperReports

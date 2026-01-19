@@ -31,6 +31,7 @@ public class InvoiceExample
 		}
 
 		// 2. Create invoice data (with Builder Pattern)
+		InvoiceData.builder();
 		InvoiceData invoice = InvoiceData.builder()
 				                      .invoiceNumber("INV-2026-001")
 				                      .invoiceDate(LocalDate.now())

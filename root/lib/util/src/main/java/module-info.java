@@ -4,7 +4,7 @@ module de.ruu.lib.util
     requires transitive org.slf4j;
     requires transitive java.compiler;
     
-    requires transitive lombok;
+    requires static lombok; // Lombok is only needed at compile-time
     requires static java.instrument;
     requires static com.fasterxml.jackson.databind;
 
