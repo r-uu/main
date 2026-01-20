@@ -1,0 +1,2 @@
+- warum gibt es für jasperreports kein Dockerfile?
+- prüfen, ob jasperreports in der docker-compose.yml aktiviert ist

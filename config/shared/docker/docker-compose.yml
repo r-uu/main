@@ -57,9 +57,9 @@ services:
     image: quay.io/keycloak/keycloak:latest
     container_name: keycloak
     environment:
-      # Admin Credentials
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      # Admin Credentials (neue Variablennamen seit Keycloak 23+)
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
 
       # Database Configuration - Eigene PostgreSQL-Instanz
       KC_DB: postgres
@@ -90,28 +90,29 @@ services:
     restart: unless-stopped
 
   # JasperReports Service - Isolierte Report-Generierung
-  jasperreports:
-    build:
-      context: ../../..  # Root-Verzeichnis (enthält bom/ und root/)
-      dockerfile: root/sandbox/office/microsoft/word/jasperreports/Dockerfile
-    container_name: jasperreports
-    ports:
-      - "8090:8090"
-    volumes:
-      # Templates werden im Build kopiert, hier optional für Live-Updates
-      - ../../../root/sandbox/office/microsoft/word/jasperreports/templates:/app/templates:ro
-      # Output-Verzeichnis für generierte Reports
-      - ../../../root/sandbox/office/microsoft/word/jasperreports/server/output:/app/output
-    environment:
-      - JAVA_OPTS=-Xmx512m
-    networks:
-      - ruu-network
-    healthcheck:
-      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:8090/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    restart: unless-stopped
+  # DEAKTIVIERT: Dockerfile fehlt noch
+  # jasperreports:
+  #   build:
+  #     context: ../../..  # Root-Verzeichnis (enthält bom/ und root/)
+  #     dockerfile: root/sandbox/office/microsoft/word/jasperreports/Dockerfile
+  #   container_name: jasperreports
+  #   ports:
+  #     - "8090:8090"
+  #   volumes:
+  #     # Templates werden im Build kopiert, hier optional für Live-Updates
+  #     - ../../../root/sandbox/office/microsoft/word/jasperreports/templates:/app/templates:ro
+  #     # Output-Verzeichnis für generierte Reports
+  #     - ../../../root/sandbox/office/microsoft/word/jasperreports/server/output:/app/output
+  #   environment:
+  #     - JAVA_OPTS=-Xmx512m
+  #   networks:
+  #     - ruu-network
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:8090/health || exit 1"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #   restart: unless-stopped
 
 networks:
   ruu-network:
@@ -159,6 +160,10 @@ volumes:
 #
 # Keycloak Admin Console: http://localhost:8080/admin
 # Standard Login: admin / admin (ändern via KEYCLOAK_ADMIN_PASSWORD!)
+#
+# JASPERREPORTS:
+#   Status: DEAKTIVIERT (Dockerfile fehlt noch)
+#   Siehe: config/JASPERREPORTS-DEAKTIVIERT.md
 #
 # Init-Skripte:
 #   JEEERAaH: Lege SQL in ./initdb/jeeeraaah/ ab

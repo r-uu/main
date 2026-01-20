@@ -66,25 +66,25 @@ Java-basierte Anwendungen wurden lange als sogenannte Monolithen erstellt. Monol
 
 <p align="center">
   <img src="monolith-3d-beige.svg"
-       alt="Modulith - Ein Monolith aus Bausteinen aka Modulen"
+       alt="Monolith - Ein strukturiertes System aus Bausteinen"
        width="500"
        style="border:1px solid #ccc; padding:0.5cm; background-color:beige;"/>
   <br/>
-  <em>Abb. 3: Modulith - Ein Monolith aus Bausteinen aka Modulen</em>
+  <em>Abb. 3: Monolith - Ein strukturiertes System aus Bausteinen</em>
 </p>
 
 Dies erleichtert vieles, hat aber auch seinen Preis: Innerhalb eines solchen Monolithen war es lange schwer, die enthaltenen Teilsysteme sauber voneinander zu trennen. So schlichen sich, bewusst oder unbewusst, unnötige Abhängigkeiten zwischen Teilsystemen ein. Viele Monolithen wurden so zu einem "big ball of mud", deren Wart-, Test- und Erweiterbarkeit zunehmend komplexer bis unmöglich wurden (**Abb. 4**). Es gab schlicht keine effektiven und technisch wasserdichten Mechanismen, mit denen sich die Abhängigkeiten von Teilsystemen besser hätten kontrollieren und ggf. verhindern lassen können.
 
 <p align="center">
   <img src="monolith-3d-beige with chaotic dependencies.svg"
-       alt="Modulith - Ein Monolith aus Bausteinen"
+       alt="Monolith - Ein System aus Bausteinen mit Erosionserscheinungen"
        width="500"
        style="border:1px solid #ccc; padding:0.5cm; background-color:beige;"/>
   <br/>
-  <em>Abb. 4: Modulith - Ein Monolith aus Bausteinen im Detail</em>
+  <em>Abb. 4: Monolith - Ein System aus Bausteinen mit Erosionserscheinungen</em>
 </p>
 
-Sicher machte man sich z. B. in Java von Beginn an bekannte Konzepte wie Kapselung von Objektstruktur und -verhalten in Klassen und die Organisation von Code in Packages zunutze, um eine interne Struktur des Gesamtsystems herzustellen ([vgl. unten](#wie-code-in-java-strukturiert-wird---kapselung-durch-zugriffskontrolle-und-packages)). Bei Kapselung von Objekten geht es um deren Schutz vor unerwünschtem Zugriff auf interne Daten von aussen. Dies erreicht man durch sorgfältiges Design von Schnittstellen und der damit verbundenen Steuerung von Zugriffsmöglichkeiten. Die Kapselungsmechanismen in Java waren lange aber zu durchlässig, um die Einhaltung der Strukturen, also die Sicherstellung einer konsistenten Architektur, systemweit zu erzwingen.
+Sicher machte man sich auch in Java von Beginn an bekannte Konzepte wie Kapselung von Objektstruktur und -verhalten in Klassen und die Organisation von Code in Packages zunutze, um eine interne Struktur des Gesamtsystems herzustellen ([vgl. unten](#wie-code-in-java-strukturiert-wird---kapselung-durch-zugriffskontrolle-und-packages)). Bei Kapselung von Objekten geht es um deren Schutz vor unerwünschtem Zugriff auf interne Daten von aussen. Dies erreicht man durch sorgfältiges Design von Schnittstellen und der damit verbundenen Steuerung von Zugriffsmöglichkeiten. Die Kapselungsmechanismen in Java waren lange aber zu durchlässig, um die Einhaltung der Strukturen, also die Sicherstellung einer konsistenten Architektur, systemweit zu erzwingen.
 
 So beruhte in Java bis einschließlich zur Version 8 eine gute Systemarchitektur oft auf viel Disziplin bei der Einhaltung von Konventionen. (Unbewusste) Verstösse gegen diese mussten dabei aber erst einmal mit viel Mühe erkannt werden, bevor sie korrigiert werden konnten. Tools wie z. B. [archunit](https://www.archunit.org/) ermöglichen eine automatisierte und regelbasierte Unterstützung dabei, die Regeln aber müssen für jedes System korrekt und möglichst vollständig konfiguriert und getestet werden. Ist die automatisierte Überprüfung der Systemstruktur in den Buildprozess integriert, erhält man frühzeitig Hinweise auf Verstöße. Natürlich darf in solchen Fällen nicht einfach die entsprechende Regel gelockert, ignoriert oder gar deaktiviert werden. Stattdessen muss der Code so geändert (refaktorisiert) werden, dass die Regeln eingehalten werden. Das ist natürlich nicht immer einfach, aber es war lange der einzige Weg, um die Modularisierung des Systems zu verbessern und damit die Beherrschbarkeit zu erhöhen.
 
@@ -140,7 +140,7 @@ Um dem Wildwuchs an Abhängigkeiten ("big ball of mud") besser Herr zu werden, s
 
 </div>
 
-Diese Einheiten werden als (Lego-) Bausteine aufgefasst, aus denen sich größere Konstruktionen zusammensetzen lassen. Benutzer der größeren Einheiten sollen dabei keinen direkten Zugriff auf die internen Bausteine der Einheiten haben, es sei denn, der Zugriff wird über eine öffentliche Schnittstelle explizit erlaubt. Code wird also so organisiert, dass große Bausteine aus kleineren zusammengesetzt werden können. Dieses Muster lässt sich natürlich beliebig oft wiederholen.
+Diese Einheiten werden insofern als (Lego-) Bausteine aufgefasst, als sich aus ihnen größere Konstruktionen zusammensetzen lassen. Benutzer der größeren Einheiten sollen dabei keinen direkten Zugriff auf die internen Bausteine der Einheiten haben, es sei denn, der Zugriff wird über eine öffentliche Schnittstelle explizit erlaubt. Code wird also so organisiert, dass große Bausteine aus kleineren zusammengesetzt werden können. Dieses Muster lässt sich natürlich beliebig oft wiederholen.
 
 Leider zeigt sich schnell, dass die beschriebenen Mechanismen nicht ausreichend sind, um die Entstehung von big balls of mud wirksam zu verhindern (vgl. **Abb. 4**).
 
@@ -161,7 +161,7 @@ Genau dies ist ein Ausgangspunkt für die Entstehung von big balls of mud: Früh
 
 Mehrere Probleme monolithischer Systeme ([siehe "Kapselung in Java-Monolithen"](#klassische-ansätze---kapselung-in-java-monolithen)) haben vor Jahren das Aufkommen von Microservices stark begünstigt.
 
-Microservices verfolgen insbesondere bei der Kapselung von Code einen rigoroseren Ansatz als herkömmliche Systemarchitekturen: Für jeden Microservice wird eine (oft plattformunabhängige) Schnittstelle vereinbart. Die Implementierung dieser Schnittstelle erfolgt vollständig autonom, bis hin zur Wahl der verwendeten Technologie. Auch teilen sich Microservices nicht einen gemeinsamen Betriebssystemprozess, sondern jeder bekommt exklusiv einen eigenen. Offensichtlich werden so unerwünschte Querverbindungen zwischen den Teilsystemen, also solche, die nicht dessen Schnittstelle verwenden, kategorisch unterbunden. Auf diese Weise lässt sich ein sehr hoher Grad an Modularisierung erreichen.
+Microservices stellen quasi die ultimative Modularisierung von Softwaresystemen dar und verfolgen insbesondere bei der Kapselung von Code einen rigoroseren Ansatz als herkömmliche Systemarchitekturen: Für jeden Microservice wird eine (oft plattformunabhängige) Schnittstelle vereinbart. Die Implementierung dieser Schnittstelle erfolgt vollständig autonom, bis hin zur Wahl der verwendeten Technologie. Auch teilen sich Microservices nicht einen gemeinsamen Betriebssystemprozess, sondern jeder bekommt exklusiv einen eigenen. Offensichtlich werden so unerwünschte Querverbindungen zwischen den Teilsystemen, also solche, die nicht dessen Schnittstelle verwenden, kategorisch unterbunden. Auf diese Weise lässt sich ein sehr hoher Grad an Modularisierung erreichen.
 
 Es zeigte sich aber, dass mit wachsender Zahl von Microservices die Komplexität an anderen Stellen, z. B. bei der benötigten Infrastruktur und deren Management, enorm steigt.
 

@@ -19,6 +19,9 @@
             <!-- Hibernate Provider -->
             <property name="jakarta.persistence.provider" value="org.hibernate.jpa.HibernatePersistenceProvider"/>
             
+            <!-- Database Dialect -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+
             <!-- Transaction Management -->
             <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.WebSphereLibertyJtaPlatform"/>
             <property name="jakarta.persistence.transactionType" value="JTA"/>
