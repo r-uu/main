@@ -7,6 +7,8 @@ import de.ruu.lib.keycloak.admin.KeycloakUserManager;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.representations.idm.ClientRepresentation;
+import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 
@@ -41,7 +43,7 @@ public class KeycloakRealmSetup
 	private static final String KEYCLOAK_URL = System.getProperty("keycloak.url", "http://localhost:8080");
 	private static final String ADMIN_USER = System.getProperty("keycloak.admin.user", "admin");
 	private static final String ADMIN_PASSWORD = System.getProperty("keycloak.admin.password",
-			System.getenv().getOrDefault("KEYCLOAK_ADMIN_PASSWORD", "admin"));
+			System.getenv().getOrDefault("KEYCLOAK_ADMIN_PASSWORD", "changeme_in_local_env"));
 	private static final String REALM_NAME = System.getProperty("keycloak.realm", "realm_default");
 	private static final String CLIENT_ID = System.getProperty("keycloak.client.id", "jeeeraaah-frontend");
 	private static final String TEST_USER = System.getProperty("keycloak.test.user", "r_uu");
@@ -145,28 +147,66 @@ public class KeycloakRealmSetup
 				.build())
 		{
 			// Prüfe ob Client existiert
-			clientManager.findClientByClientId(CLIENT_ID);
-			log.info("✓ Client '{}' existiert bereits", CLIENT_ID);
-		}
-		catch (Exception e)
-		{
-			// Client existiert nicht, erstelle ihn
-			log.info("Erstelle Client '{}'...", CLIENT_ID);
+			org.keycloak.representations.idm.ClientRepresentation existingClient =
+				clientManager.findClientByClientId(CLIENT_ID);
 
-			try (KeycloakClientManager clientManager = KeycloakClientManager.builder()
-					.serverUrl(KEYCLOAK_URL)
-					.realm(REALM_NAME)
-					.adminUsername(ADMIN_USER)
-					.adminPassword(ADMIN_PASSWORD)
-					.build())
+			if (existingClient != null)
 			{
-				clientManager.createPublicClient(
+				String clientUuid = existingClient.getId();
+				log.info("✓ Client '{}' existiert bereits (UUID: {})", CLIENT_ID, clientUuid);
+
+				// Stelle sicher, dass Direct Access Grants aktiviert ist
+				try
+				{
+					org.keycloak.representations.idm.ClientRepresentation client =
+						keycloak.realm(REALM_NAME).clients().get(clientUuid).toRepresentation();
+
+					if (!Boolean.TRUE.equals(client.isDirectAccessGrantsEnabled()))
+					{
+						log.info("Aktiviere Direct Access Grants für Client '{}'...", CLIENT_ID);
+						client.setDirectAccessGrantsEnabled(true);
+						client.setPublicClient(true);
+						keycloak.realm(REALM_NAME).clients().get(clientUuid).update(client);
+						log.info("✅ Direct Access Grants aktiviert");
+					}
+					else
+					{
+						log.info("✓ Direct Access Grants bereits aktiviert");
+					}
+				}
+				catch (Exception ex)
+				{
+					log.warn("Konnte Direct Access Grants nicht prüfen/setzen: {}", ex.getMessage());
+				}
+			}
+			else
+			{
+				// Client existiert nicht, erstelle ihn
+				log.info("Erstelle Client '{}'...", CLIENT_ID);
+
+				String clientUuid = clientManager.createPublicClient(
 						CLIENT_ID,
 						Arrays.asList("*"),  // redirectUris
 						Arrays.asList("*")   // webOrigins
 				);
 
-				log.info("✅ Client '{}' erfolgreich erstellt", CLIENT_ID);
+				log.info("✅ Client '{}' erstellt (UUID: {})", CLIENT_ID, clientUuid);
+
+				// Direct Access Grants explizit aktivieren
+				try
+				{
+					org.keycloak.representations.idm.ClientRepresentation client =
+						keycloak.realm(REALM_NAME).clients().get(clientUuid).toRepresentation();
+					client.setDirectAccessGrantsEnabled(true);
+					client.setPublicClient(true);
+					keycloak.realm(REALM_NAME).clients().get(clientUuid).update(client);
+					log.info("✅ Direct Access Grants aktiviert für Client '{}'", CLIENT_ID);
+				}
+				catch (Exception ex)
+				{
+					log.error("FEHLER: Konnte Direct Access Grants nicht aktivieren: {}", ex.getMessage());
+					throw new KeycloakAdminException("Direct Access Grants konnte nicht aktiviert werden", ex);
+				}
 			}
 		}
 	}
@@ -192,7 +232,15 @@ public class KeycloakRealmSetup
 
 				// Aktualisiere Passwort und lösche Required Actions
 				log.info("Aktualisiere User-Konfiguration...");
-				userManager.setPassword(userId, TEST_PASSWORD, false);
+
+				// Passwort direkt über Keycloak API setzen
+				org.keycloak.representations.idm.CredentialRepresentation credential =
+					new org.keycloak.representations.idm.CredentialRepresentation();
+				credential.setType(org.keycloak.representations.idm.CredentialRepresentation.PASSWORD);
+				credential.setValue(TEST_PASSWORD);
+				credential.setTemporary(false);
+				keycloak.realm(REALM_NAME).users().get(userId).resetPassword(credential);
+				log.info("✅ Passwort für User '{}' gesetzt", TEST_USER);
 
 				// Required Actions explizit löschen über Keycloak API
 				try
@@ -201,6 +249,8 @@ public class KeycloakRealmSetup
 					user.setRequiredActions(new java.util.ArrayList<>());  // Leere Liste
 					user.setEmailVerified(true);
 					user.setEnabled(true);
+					user.setFirstName("Test");  // firstName ist erforderlich für Keycloak User Profile
+					user.setLastName("User");   // lastName ist erforderlich für Keycloak User Profile
 					keycloak.realm(REALM_NAME).users().get(userId).update(user);
 					log.info("✅ User '{}' aktualisiert (Required Actions gelöscht)", TEST_USER);
 				}
@@ -223,6 +273,15 @@ public class KeycloakRealmSetup
 
 				log.info("✅ User '{}' erstellt (ID: {})", TEST_USER, userId);
 
+				// Passwort nochmal explizit setzen (zur Sicherheit)
+				org.keycloak.representations.idm.CredentialRepresentation credential =
+					new org.keycloak.representations.idm.CredentialRepresentation();
+				credential.setType(org.keycloak.representations.idm.CredentialRepresentation.PASSWORD);
+				credential.setValue(TEST_PASSWORD);
+				credential.setTemporary(false);
+				keycloak.realm(REALM_NAME).users().get(userId).resetPassword(credential);
+				log.info("✅ Passwort für User '{}' gesetzt", TEST_USER);
+
 				// Required Actions explizit löschen
 				try
 				{
@@ -230,6 +289,8 @@ public class KeycloakRealmSetup
 					user.setRequiredActions(new java.util.ArrayList<>());  // Leere Liste
 					user.setEmailVerified(true);
 					user.setEnabled(true);
+					user.setFirstName("Test");  // firstName ist erforderlich für Keycloak User Profile
+					user.setLastName("User");   // lastName ist erforderlich für Keycloak User Profile
 					keycloak.realm(REALM_NAME).users().get(userId).update(user);
 					log.info("✅ Required Actions für User '{}' gelöscht", TEST_USER);
 				}

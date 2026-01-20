@@ -100,6 +100,12 @@ public class KeycloakValidationEndpoint
 	@Operation(
 			summary = "Validate JWT token",
 			description = "Performs comprehensive validation of a JWT token including roles, audience, and lifetime")
+	@org.eclipse.microprofile.openapi.annotations.parameters.RequestBody(
+			description = "Token validation request containing the JWT token to validate",
+			required = true,
+			content = @org.eclipse.microprofile.openapi.annotations.media.Content(
+					mediaType = MediaType.APPLICATION_JSON,
+					schema = @org.eclipse.microprofile.openapi.annotations.media.Schema(implementation = TokenValidationRequest.class)))
 	@APIResponse(
 			responseCode = "200",
 			description = "Token validation completed",
@@ -108,9 +114,7 @@ public class KeycloakValidationEndpoint
 	@APIResponse(
 			responseCode = "400",
 			description = "Invalid token format")
-	public Response validateToken(
-			@Parameter(description = "Token validation request", required = true)
-			TokenValidationRequest request)
+	public Response validateToken(TokenValidationRequest request)
 	{
 		if (request == null || request.getToken() == null || request.getToken().isBlank())
 		{

@@ -42,13 +42,13 @@ cd /home/r-uu/develop/github/main/config/shared/docker
 #### 1. Keycloak-Realm exportieren (optional)
 ```bash
 # Falls Keycloak läuft und Realm vorhanden
-docker exec ruu-keycloak /opt/keycloak/bin/kc.sh export \
+docker exec keycloak /opt/keycloak/bin/kc.sh export \
     --dir /tmp/keycloak-export \
     --realm jeeeraaah \
     --users realm_file
 
 # Backup lokal speichern
-docker cp ruu-keycloak:/tmp/keycloak-export ./keycloak-backup
+docker cp keycloak:/tmp/keycloak-export ./keycloak-backup
 ```
 
 #### 2. Container stoppen und löschen
@@ -72,10 +72,10 @@ docker compose up -d
 #### 5. Keycloak-Realm wiederherstellen
 ```bash
 # Warte bis Keycloak bereit ist
-docker exec ruu-keycloak curl -sf http://localhost:8080/health/ready
+docker exec keycloak-service curl -sf http://localhost:9000/health/ready
 
 # Kopiere Backup in Container
-docker cp ./keycloak-backup ruu-keycloak:/tmp/keycloak-import
+docker cp ./keycloak-backup keycloak-service:/tmp/keycloak-import
 
 # Import via Admin Console:
 # http://localhost:8080/admin → Realm → Create Realm → Import
@@ -91,10 +91,10 @@ Nach dem Reset sollten folgende Container laufen:
 |------|-------|------|-------|
 | `postgres-jeeeraaah` | postgres:16-alpine | 5432 | JEEERAaH DB |
 | `postgres-keycloak` | postgres:16-alpine | 5433 | Keycloak DB |
-| **`ruu-keycloak`** | keycloak:latest | 8080 | **Ein Keycloak (nicht zwei!)** |
-| `jasperreports-service` | custom | 8090 | JasperReports |
+| **`keycloak`** | keycloak:latest | 8080 | **Identity & Access Management** |
+| `jasperreports` | custom | 8090 | JasperReports |
 
-**Wichtig:** Es gibt nur **einen** Keycloak-Container: `ruu-keycloak`
+**Wichtig:** Es gibt nur **einen** Keycloak-Container: `keycloak`
 
 ---
 
@@ -110,8 +110,8 @@ docker compose ps
 # NAME                   STATUS         PORTS
 # postgres-jeeeraaah     Up (healthy)   0.0.0.0:5432->5432/tcp
 # postgres-keycloak      Up (healthy)   0.0.0.0:5433->5432/tcp
-# ruu-keycloak           Up (healthy)   0.0.0.0:8080->8080/tcp
-# jasperreports-service  Up (healthy)   0.0.0.0:8090->8090/tcp
+# keycloak               Up (healthy)   0.0.0.0:8080->8080/tcp
+# jasperreports          Up (healthy)   0.0.0.0:8090->8090/tcp
 
 # Health-Checks
 docker exec postgres-jeeeraaah pg_isready
@@ -135,7 +135,7 @@ curl -f http://localhost:8090/health
 
 ### Option B: CLI
 ```bash
-docker exec ruu-keycloak /opt/keycloak/bin/kc.sh import \
+docker exec keycloak-service /opt/keycloak/bin/kc.sh import \
     --dir /tmp/keycloak-import \
     --override true
 ```
@@ -145,11 +145,15 @@ docker exec ruu-keycloak /opt/keycloak/bin/kc.sh import \
 ## 📝 ALTE CONTAINER-NAMEN (VERALTET)
 
 Falls in Dokumentation erwähnt - **IGNORIEREN:**
-- ❌ `keycloak-jeeeraaah` - Gibt es nicht mehr
+- ❌ `keycloak-jeeeraaah` - Alter Name, nicht mehr in Gebrauch
+- ❌ `ruu-keycloak` - Alter Name, nicht mehr in Gebrauch
+- ❌ `keycloak-service` - Alter Name, nicht mehr in Gebrauch
+- ✅ `keycloak` - **Aktueller Container-Name**
+- ❌ `jasperreports-service` - Alter Name
+- ✅ `jasperreports` - **Aktueller Container-Name**
 - ❌ `ruu-postgres` - Durch zwei Container ersetzt
-- ✅ `ruu-keycloak` - **Aktueller Name**
 
-**Nur ein Keycloak-Container:** `ruu-keycloak`
+**Nur ein Keycloak-Container:** `keycloak`
 
 ---
 
@@ -159,7 +163,7 @@ Falls alte Volumes von früheren Setups existieren:
 
 ```bash
 # Liste alte Volumes
-docker volume ls | grep -E "ruu-postgres|keycloak-jeeeraaah"
+docker volume ls | grep -E "ruu-postgres|keycloak-service"
 
 # Entfernen
 docker volume rm ruu-postgres-data ruu-postgres-backups 2>/dev/null || true

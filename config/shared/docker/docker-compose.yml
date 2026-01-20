@@ -55,7 +55,7 @@ services:
   # ═══════════════════════════════════════════════════════════════════
   keycloak:
     image: quay.io/keycloak/keycloak:latest
-    container_name: keycloak-service
+    container_name: keycloak
     environment:
       # Admin Credentials
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
@@ -82,11 +82,11 @@ services:
     networks:
       - ruu-network
     healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/8080 || exit 1"]
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q '\"status\": \"UP\"' <&3"]
       interval: 30s
       timeout: 10s
       retries: 10
-      start_period: 120s
+      start_period: 60s
     restart: unless-stopped
 
   # JasperReports Service - Isolierte Report-Generierung
@@ -94,7 +94,7 @@ services:
     build:
       context: ../../..  # Root-Verzeichnis (enthält bom/ und root/)
       dockerfile: root/sandbox/office/microsoft/word/jasperreports/Dockerfile
-    container_name: jasperreports-service
+    container_name: jasperreports
     ports:
       - "8090:8090"
     volumes:

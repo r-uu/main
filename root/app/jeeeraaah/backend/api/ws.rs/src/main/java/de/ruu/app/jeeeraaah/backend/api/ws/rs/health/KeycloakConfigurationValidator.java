@@ -176,7 +176,7 @@ public class KeycloakConfigurationValidator
 		List<String> sortedRoles = requiredRoles.stream().sorted().collect(Collectors.toList());
 		for (String role : sortedRoles)
 		{
-			log.info("   docker exec keycloak-jeeeraaah /opt/keycloak/bin/kcadm.sh create roles \\");
+			log.info("   docker exec keycloak /opt/keycloak/bin/kcadm.sh create roles \\");
 			log.info("     -r jeeeraaah-realm -s name={}", role);
 		}
 		
@@ -186,7 +186,7 @@ public class KeycloakConfigurationValidator
 		
 		for (String role : sortedRoles)
 		{
-			log.info("   docker exec keycloak-jeeeraaah /opt/keycloak/bin/kcadm.sh add-roles \\");
+			log.info("   docker exec keycloak /opt/keycloak/bin/kcadm.sh add-roles \\");
 			log.info("     -r jeeeraaah-realm --uusername r-uu --rolename {}", role);
 		}
 		

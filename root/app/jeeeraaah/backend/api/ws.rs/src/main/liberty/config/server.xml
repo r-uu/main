@@ -195,7 +195,7 @@
 		name="jeeeraaah"
 		type="war"
 		contextRoot="/"
-		location="r-uu.space-02.app.jeeeraaah.backend.api.ws.rs-0.0.1.war" />
+		location="r-uu.app.jeeeraaah.backend.api.ws.rs-0.0.1.war" />
 
 	<!-- ===================================================================
 	     JVM OPTIONS

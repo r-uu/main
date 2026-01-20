@@ -51,7 +51,7 @@ cd "$SCRIPT_DIR"
 docker compose down 2>/dev/null || echo "   Keine Compose-Services aktiv"
 
 # Entferne alte Container (falls manuell erstellt)
-OLD_CONTAINERS="postgres-jeeeraaah keycloak-jeeeraaah ruu-postgres"
+OLD_CONTAINERS="postgres-jeeeraaah keycloak ruu-postgres"
 for container in $OLD_CONTAINERS; do
     if docker ps -a --format '{{.Names}}' | grep -q "^$container$"; then
         echo "   Entferne alten Container: $container"

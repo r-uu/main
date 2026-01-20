@@ -38,7 +38,7 @@
 			<pen lineWidth="0.5"/>
 		</element>
 		<element kind="staticText" uuid="83e46641-de13-41ae-80b2-7d79036c58a9" x="10" y="5" width="285" height="15" fontSize="10.0" bold="true">
-			<text><![CDATA[Beschreibung 123]]></text>
+			<text><![CDATA[Beschreibung]]></text>
 		</element>
 		<element kind="staticText" uuid="36c28cd1-6af5-4fea-bc44-5cf43b7e4e3c" x="300" y="5" width="60" height="15" fontSize="10.0" bold="true" hTextAlign="Right">
 			<text><![CDATA[Menge]]></text>

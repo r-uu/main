@@ -200,7 +200,7 @@ public class KeycloakConfigValidator
 			for (String role : missingRoles)
 			{
 				recommendations.add(String.format(
-						"  docker exec keycloak-jeeeraaah /opt/keycloak/bin/kcadm.sh create roles " +
+						"  docker exec keycloak /opt/keycloak/bin/kcadm.sh create roles " +
 						"-r jeeeraaah-realm -s name=%s", role));
 			}
 			return recommendations;

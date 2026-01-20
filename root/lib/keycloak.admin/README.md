@@ -115,11 +115,11 @@ curl -X POST \
 **Lösung:**
 ```bash
 # Rolle in Keycloak erstellen
-docker exec keycloak-jeeeraaah /opt/keycloak/bin/kcadm.sh create roles \
+docker exec keycloak /opt/keycloak/bin/kcadm.sh create roles \
   -r jeeeraaah-realm -s name=task-read
 
 # Rolle dem User zuweisen
-docker exec keycloak-jeeeraaah /opt/keycloak/bin/kcadm.sh add-roles \
+docker exec keycloak /opt/keycloak/bin/kcadm.sh add-roles \
   -r jeeeraaah-realm --uusername r-uu --rolename task-read
 ```
 
