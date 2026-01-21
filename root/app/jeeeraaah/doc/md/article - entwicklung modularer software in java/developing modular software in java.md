@@ -161,6 +161,15 @@ Genau dies ist ein Ausgangspunkt für die Entstehung von big balls of mud: Früh
 
 Mehrere Probleme monolithischer Systeme ([siehe "Kapselung in Java-Monolithen"](#klassische-ansätze---kapselung-in-java-monolithen)) haben vor Jahren das Aufkommen von Microservices stark begünstigt.
 
+<p align="center">
+  <img src="monolith modulith microservices.svg"
+       alt="Monolith/Modulith - Microservices"
+       width="1000"
+       style="border:1px solid #ccc; padding:0.5cm; background-color:beige;"/>
+  <br/>
+  <em>Abb. 6: Monolith/Modulith - Microservices</em>
+</p>
+
 Microservices stellen quasi die ultimative Modularisierung von Softwaresystemen dar und verfolgen insbesondere bei der Kapselung von Code einen rigoroseren Ansatz als herkömmliche Systemarchitekturen: Für jeden Microservice wird eine (oft plattformunabhängige) Schnittstelle vereinbart. Die Implementierung dieser Schnittstelle erfolgt vollständig autonom, bis hin zur Wahl der verwendeten Technologie. Auch teilen sich Microservices nicht einen gemeinsamen Betriebssystemprozess, sondern jeder bekommt exklusiv einen eigenen. Offensichtlich werden so unerwünschte Querverbindungen zwischen den Teilsystemen, also solche, die nicht dessen Schnittstelle verwenden, kategorisch unterbunden. Auf diese Weise lässt sich ein sehr hoher Grad an Modularisierung erreichen.
 
 Es zeigte sich aber, dass mit wachsender Zahl von Microservices die Komplexität an anderen Stellen, z. B. bei der benötigten Infrastruktur und deren Management, enorm steigt.
