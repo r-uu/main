@@ -23,7 +23,7 @@ import java.util.Arrays;
  *
  * <h2>Erstellt folgende Ressourcen:</h2>
  * <ul>
- *   <li>Realm: realm_default</li>
+ *   <li>Realm: jeeeraaah-realm</li>
  *   <li>Client: jeeeraaah-frontend (Public Client, Direct Access Grants)</li>
  *   <li>User: r_uu / r_uu_password</li>
  * </ul>
@@ -44,7 +44,7 @@ public class KeycloakRealmSetup
 	private static final String ADMIN_USER = System.getProperty("keycloak.admin.user", "admin");
 	private static final String ADMIN_PASSWORD = System.getProperty("keycloak.admin.password",
 			System.getenv().getOrDefault("KEYCLOAK_ADMIN_PASSWORD", "changeme_in_local_env"));
-	private static final String REALM_NAME = System.getProperty("keycloak.realm", "realm_default");
+	private static final String REALM_NAME = System.getProperty("keycloak.realm", "jeeeraaah-realm");
 	private static final String CLIENT_ID = System.getProperty("keycloak.client.id", "jeeeraaah-frontend");
 	private static final String TEST_USER = System.getProperty("keycloak.test.user", "r_uu");
 	private static final String TEST_PASSWORD = System.getProperty("keycloak.test.password", "r_uu_password");

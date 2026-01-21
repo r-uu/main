@@ -92,11 +92,26 @@ public class DashApp extends FXCApp
 		authService = CDI.current().select(KeycloakAuthService.class).get();
 		log.info("KeycloakAuthService obtained - instance ID: {}", System.identityHashCode(authService));
 		
+		// Clear any potentially stale tokens from previous sessions
+		authService.logout();
+		log.info("Cleared any existing tokens to ensure fresh login");
+
 		// STEP 1: Check if testing mode is enabled and auto-login with test credentials
 		boolean testingMode = ConfigProvider.getConfig()
 				.getOptionalValue("testing", Boolean.class)
 				.orElse(false);
 		
+		log.info("=== TESTING MODE STATUS ===");
+		log.info("  testing property value: {}", testingMode);
+		log.info("  isLoggedIn(): {}", authService.isLoggedIn());
+		log.info("  Will attempt auto-login: {}", testingMode && !authService.isLoggedIn());
+
+		// Debug: Show all config sources
+		log.info("=== CONFIG SOURCES ===");
+		ConfigProvider.getConfig().getConfigSources().forEach(source -> {
+			log.info("  Source: {} (ordinal: {})", source.getName(), source.getOrdinal());
+		});
+
 		if (testingMode && !authService.isLoggedIn())
 		{
 			log.info("=== Testing mode enabled - attempting automatic login ===");
@@ -175,6 +190,25 @@ public class DashApp extends FXCApp
 		log.info("  isLoggedIn(): {}", authService.isLoggedIn());
 		log.info("  Access token present: {}", authService.getAccessToken() != null);
 
+		if (!authService.isLoggedIn())
+		{
+			log.error("CRITICAL: User is not logged in after authentication phase!");
+			log.error("This should never happen. Exiting application.");
+			Platform.exit();
+			return;
+		}
+
+		if (authService.getAccessToken() == null)
+		{
+			log.error("CRITICAL: Access token is null after authentication!");
+			log.error("This should never happen. Exiting application.");
+			Platform.exit();
+			return;
+		}
+
+		log.info("Authentication verified successfully. Access token length: {}",
+				authService.getAccessToken().length());
+
 		// Configure window properties BEFORE calling super.start()
 		primaryStage.setResizable(true);
 
@@ -183,7 +217,39 @@ public class DashApp extends FXCApp
 		super.start(primaryStage);
 		log.info("=== UI initialization complete ===");
 
-		// STEP 5: Apply window customizations AFTER UI is loaded
+		// STEP 5: Load data from backend now that authentication is complete
+		log.info("=== Loading initial data from backend ===");
+		log.info("  Verifying authentication status before data load...");
+		log.info("  isLoggedIn(): {}", authService.isLoggedIn());
+		log.info("  Access token present: {}", authService.getAccessToken() != null);
+		log.info("  Access token length: {}",
+				authService.getAccessToken() != null ? authService.getAccessToken().length() : 0);
+
+		optionalPrimaryView().ifPresentOrElse(
+			view -> {
+				// Cast to Dash to access getController()
+				if (view instanceof Dash dash)
+				{
+					DashController controller = dash.getController();
+					if (controller != null)
+					{
+						controller.loadInitialData();
+						log.info("Initial data loaded successfully");
+					}
+					else
+					{
+						log.error("Controller is null - cannot load initial data!");
+					}
+				}
+				else
+				{
+					log.error("View is not an instance of Dash - cannot access controller!");
+				}
+			},
+			() -> log.error("View is not present - cannot access controller!")
+		);
+
+		// STEP 6: Apply window customizations AFTER UI is loaded
 		primaryStage.setMaximized(true);
 
 		// Optional: Set global font size for the entire application

@@ -62,7 +62,7 @@ Wie hat die Softwareindustrie darauf reagiert und wie erfolgreich ist bzw. war s
 
 ## Klassische Ansätze - Kapselung in Java-Monolithen
 
-Java-basierte Anwendungen wurden lange als sogenannte Monolithen erstellt. Monolithen werden typischerweise als eine große Struktur konzipiert, in der sich mehrere Teilsysteme befinden (beige Kugeln in **Abb. 3**). Der Monolith wird dabei in einer einzigen, großen Einheit erstellt (deployment unit) und (in einem Applikationsserver) in einem einzigen Betriebssystemprozess ausgeführt.
+Java-basierte Anwendungen wurden lange als sogenannte Monolithen erstellt. Monolithen werden typischerweise als eine große Struktur konzipiert, in der sich mehrere Teilsysteme befinden (beige Kugeln in **Abb. 4**). Der Monolith wird dabei in einer einzigen, großen Einheit erstellt (deployment unit) und (in einem Applikationsserver) in einem einzigen Betriebssystemprozess ausgeführt.
 
 <p align="center">
   <img src="monolith-3d-beige.svg"
@@ -70,18 +70,18 @@ Java-basierte Anwendungen wurden lange als sogenannte Monolithen erstellt. Monol
        width="500"
        style="border:1px solid #ccc; padding:0.5cm; background-color:beige;"/>
   <br/>
-  <em>Abb. 3: Monolith - Ein strukturiertes System aus Bausteinen</em>
+  <em>Abb. 4: Monolith - Ein strukturiertes System aus Bausteinen</em>
 </p>
 
-Dies erleichtert vieles, hat aber auch seinen Preis: Innerhalb eines solchen Monolithen war es lange schwer, die enthaltenen Teilsysteme sauber voneinander zu trennen. So schlichen sich, bewusst oder unbewusst, unnötige Abhängigkeiten zwischen Teilsystemen ein. Viele Monolithen wurden so zu einem "big ball of mud", deren Wart-, Test- und Erweiterbarkeit zunehmend komplexer bis unmöglich wurden (**Abb. 4**). Es gab schlicht keine effektiven und technisch wasserdichten Mechanismen, mit denen sich die Abhängigkeiten von Teilsystemen besser hätten kontrollieren und ggf. verhindern lassen können.
+Dies erleichtert vieles, hat aber auch seinen Preis: Innerhalb eines solchen Monolithen war es lange schwer, die enthaltenen Teilsysteme sauber voneinander zu trennen. So schlichen sich, bewusst oder unbewusst, unnötige Abhängigkeiten zwischen Teilsystemen ein. Viele Monolithen wurden so zu einem "big ball of mud", deren Wart-, Test- und Erweiterbarkeit zunehmend komplexer bis unmöglich wurden (**Abb. 5**). Es gab schlicht keine effektiven und technisch wasserdichten Mechanismen, mit denen sich die Abhängigkeiten von Teilsystemen besser hätten kontrollieren und ggf. verhindern lassen können.
 
 <p align="center">
   <img src="monolith-3d-beige with chaotic dependencies.svg"
-       alt="Monolith - Ein System aus Bausteinen mit Erosionserscheinungen"
+       alt="big ball of mud - Ein System aus Bausteinen mit Erosionserscheinungen"
        width="500"
        style="border:1px solid #ccc; padding:0.5cm; background-color:beige;"/>
   <br/>
-  <em>Abb. 4: Monolith - Ein System aus Bausteinen mit Erosionserscheinungen</em>
+  <em>Abb. 5: big ball of mud - Ein System aus Bausteinen mit Erosionserscheinungen</em>
 </p>
 
 Sicher machte man sich auch in Java von Beginn an bekannte Konzepte wie Kapselung von Objektstruktur und -verhalten in Klassen und die Organisation von Code in Packages zunutze, um eine interne Struktur des Gesamtsystems herzustellen ([vgl. unten](#wie-code-in-java-strukturiert-wird---kapselung-durch-zugriffskontrolle-und-packages)). Bei Kapselung von Objekten geht es um deren Schutz vor unerwünschtem Zugriff auf interne Daten von aussen. Dies erreicht man durch sorgfältiges Design von Schnittstellen und der damit verbundenen Steuerung von Zugriffsmöglichkeiten. Die Kapselungsmechanismen in Java waren lange aber zu durchlässig, um die Einhaltung der Strukturen, also die Sicherstellung einer konsistenten Architektur, systemweit zu erzwingen.
@@ -142,9 +142,9 @@ Um dem Wildwuchs an Abhängigkeiten ("big ball of mud") besser Herr zu werden, s
 
 Diese Einheiten werden insofern als (Lego-) Bausteine aufgefasst, als sich aus ihnen größere Konstruktionen zusammensetzen lassen. Benutzer der größeren Einheiten sollen dabei keinen direkten Zugriff auf die internen Bausteine der Einheiten haben, es sei denn, der Zugriff wird über eine öffentliche Schnittstelle explizit erlaubt. Code wird also so organisiert, dass große Bausteine aus kleineren zusammengesetzt werden können. Dieses Muster lässt sich natürlich beliebig oft wiederholen.
 
-Leider zeigt sich schnell, dass die beschriebenen Mechanismen nicht ausreichend sind, um die Entstehung von big balls of mud wirksam zu verhindern (vgl. **Abb. 4**).
+Leider zeigt sich schnell, dass die beschriebenen Mechanismen nicht ausreichend sind, um die Entstehung von big balls of mud wirksam zu verhindern (vgl. **Abb. 5**).
 
-Dies liegt unter anderem an einem Mangel der java-```package```s: Will man eine Klasse in einem ```package``` von ausserhalb des ```package```s nutzbar machen, muss man die Klasse öffentlich (```public```) machen (mittlerer Teil in **Abb. 5**). Und genau das ermöglicht ja erst das beschriebene Bausteinprinzip. Es gab aber lange (bis einschließlich Version 8, zumindest in Standard-Java) keinen Mechanismus, um die Sichtbarkeit von ```package```s zu kontrollieren: Gibt es in einem ```package``` eine Klasse, die in einem anderen ```package``` verwendet werden soll, muss, wie gesagt, die Klasse ```public``` gemacht werden. Damit ist sie aber öffentlich für ALLE Systemteile, in denen das zugehörige ```package``` direkt oder indirekt verwendet werden kann. Was dann passieren kann zeigt der rechte Teil in **Abb. 5**.
+Dies liegt unter anderem an einem Mangel der java-```package```s: Will man eine Klasse in einem ```package``` von ausserhalb des ```package```s nutzbar machen, muss man die Klasse öffentlich (```public```) machen (mittlerer Teil in **Abb. 6**). Und genau das ermöglicht ja erst das beschriebene Bausteinprinzip. Es gab aber lange (bis einschließlich Version 8, zumindest in Standard-Java) keinen Mechanismus, um die Sichtbarkeit von ```package```s zu kontrollieren: Gibt es in einem ```package``` eine Klasse, die in einem anderen ```package``` verwendet werden soll, muss, wie gesagt, die Klasse ```public``` gemacht werden. Damit ist sie aber öffentlich für ALLE Systemteile, in denen das zugehörige ```package``` direkt oder indirekt verwendet werden kann. Was dann passieren kann zeigt der rechte Teil in **Abb. 6**.
 
 <p align="center">
   <img src="java-package-visibility.all-or-nothing-3d-balls.svg"
@@ -152,7 +152,7 @@ Dies liegt unter anderem an einem Mangel der java-```package```s: Will man eine 
        width="1000"
        style="border:1px solid #ccc; padding:0.5cm; background-color:beige;"/>
   <br/>
-  <em>Abb. 5: Java Package Sichtbarkeit - Alles oder nichts</em>
+  <em>Abb. 6: Java Package Sichtbarkeit - Alles oder nichts</em>
 </p>
 
 Genau dies ist ein Ausgangspunkt für die Entstehung von big balls of mud: Früher oder später wird es dazu kommen, dass die Klasse von "weit entfernten" Stellen aus verwendet wird, die eigentlich keinen Zugriff haben sollten, da die Klasse für sie ein zu verbergendes Implementierungsdetail eines größeren Bausteins ist.
@@ -162,17 +162,26 @@ Genau dies ist ein Ausgangspunkt für die Entstehung von big balls of mud: Früh
 Mehrere Probleme monolithischer Systeme ([siehe "Kapselung in Java-Monolithen"](#klassische-ansätze---kapselung-in-java-monolithen)) haben vor Jahren das Aufkommen von Microservices stark begünstigt.
 
 <p align="center">
-  <img src="monolith modulith microservices.svg"
+  <img src="monolith-modulith-microservices.svg"
        alt="Monolith/Modulith - Microservices"
        width="1000"
        style="border:1px solid #ccc; padding:0.5cm; background-color:beige;"/>
   <br/>
-  <em>Abb. 6: Monolith/Modulith - Microservices</em>
+  <em>Abb. 7: Monolith/Modulith - Microservices</em>
 </p>
 
 Microservices stellen quasi die ultimative Modularisierung von Softwaresystemen dar und verfolgen insbesondere bei der Kapselung von Code einen rigoroseren Ansatz als herkömmliche Systemarchitekturen: Für jeden Microservice wird eine (oft plattformunabhängige) Schnittstelle vereinbart. Die Implementierung dieser Schnittstelle erfolgt vollständig autonom, bis hin zur Wahl der verwendeten Technologie. Auch teilen sich Microservices nicht einen gemeinsamen Betriebssystemprozess, sondern jeder bekommt exklusiv einen eigenen. Offensichtlich werden so unerwünschte Querverbindungen zwischen den Teilsystemen, also solche, die nicht dessen Schnittstelle verwenden, kategorisch unterbunden. Auf diese Weise lässt sich ein sehr hoher Grad an Modularisierung erreichen.
 
 Es zeigte sich aber, dass mit wachsender Zahl von Microservices die Komplexität an anderen Stellen, z. B. bei der benötigten Infrastruktur und deren Management, enorm steigt.
+
+<p align="center">
+  <img src="microservice-infrastructure.svg"
+       alt="Microservices Infrastructure"
+       width="1000"
+       style="border:1px solid #ccc; padding:0.5cm; background-color:beige;"/>
+  <br/>
+  <em>Abb. 8: Microservices Infrastructure</em>
+</p>
 
 Warum ist das so?
 
@@ -208,6 +217,26 @@ Die Java-Plattform bietet seit Version 9 das Java Platform Module System ([JPMS]
 
 Mit JPMS können Entwickler Module definieren, die ausschließlich über eine selbst festgelegte Schnittstelle genutzt werden können und gleichzeitig den Zugriff auf interne Teile des Moduls unterbinden. Es ist also möglich, Module zu definieren, die nur über eine explizit definierte Schnittstelle von aussen zugreifbar sind. Der Zugriff auf interne Teile des Moduls ist dabei nicht möglich. Damit wird das Bausteinprinzip konsequent umgesetzt und gleichzeitig die Entstehung von big balls of mud verhindert.
 
+```markdown
+### Beispiel: module-info.java
+
+Ein Modul definiert seine Schnittstelle in `module-info.java`:
+
+```java
+module de.ruu.lib.jpa.core
+{
+    // Was exportiert das Modul?
+    exports de.ruu.lib.jpa.core;
+    
+    // Was braucht das Modul?
+    requires jakarta.persistence;
+    requires transitive de.ruu.lib.util;
+    
+    // Was bleibt verborgen?
+    // → Alle anderen packages!
+}
+```
+
 Mit JPMS ist es sogar möglich, dass Module bis ins Detail selbst steuern, welche anderen Module auf welche Teile der bereitgestellten Schnittstelle zugreifen können. Die durchgängige Verwendung von Modulen erfordert dabei zwar im ersten Moment einen gewissen Zusatzaufwand, garantiert aber danach eine viel stabilere interne Struktur des Gesamtsystems. Dies wird erreicht, indem die beschriebene Inflation von (internen) Abhängigkeiten effektiv verhindert wird.
 
 ## Modulithen mit Java - Monolithische Systeme aus Modulen
@@ -215,10 +244,10 @@ Mit JPMS ist es sogar möglich, dass Module bis ins Detail selbst steuern, welch
 <p align="center">
   <img src="system-architecture%20-%20big-ball-of-mud%20-%20modules.drawio.svg" alt="Modulith - Ein Monolith aus Modulen" width="500"/>
   <br/>
-  <em>Abb. 4: Modulith - Ein Monolith aus Modulen</em>
+  <em>Abb. 9: Modulith - Ein Monolith aus Modulen</em>
 </p>
 
-**Abb. 4** zeigt, wie aus einem komplexer werdenden monolithischen System ein Modulith wird: Teilsysteme innerhalb des Monolithen werden zu Modulen.
+**Abb. 9** zeigt, wie aus einem komplexer werdenden monolithischen System ein Modulith wird: Teilsysteme innerhalb des Monolithen werden zu Modulen.
 
 Was ist hier der entscheidende Punkt?
 
@@ -230,14 +259,20 @@ Durch die Modulgrenzen kann der (willkürliche, ungewollte, unerwünschte) Zugri
 
 Bevor im Folgenden ein konkretes Beispiel vorgestellt wird noch eine Bemerkung zu Microservices: Selbstverständlich ist es möglich und häufig auch sinnvoll, Modulithen mit Microservices zu kombinieren. Dies kommt immer dann in Betracht, wenn für bestimmte Systemteile Kriterien wie Skalierbarkeit wichtig sind. Microservices skalieren besser als Modulithen. Ausserdem erweisen sie sich als vorteilhaft, wenn Teilsysteme häufig und schnell geändert werden müssen. Modulithen sind vergleichsweise große Deploymenteinheiten, die oft längere Releasezyklen haben, als die kleineren Microservices. Insofern ist eine Koexistenz von Modulithen und Microservices keineswegs unüblich.
 
+<p align="center">
+  <img src="from-module-to-microservice.svg" alt="Vom Modul zum Microservice" width="500"/>
+  <br/>
+  <em>Abb. 10: Vom Modul zum Microservice</em>
+</p>
+
 # Ein Anwendungsbeispiel - jeeeraaah
 
-Im Projekt jeeeraaah geht es im Kern um die Verwaltung von Aufgaben (Tasks) und die Planung von Arbeitsabläufen. Dazu sollen zusammengehörige Tasks in Gruppen (TaskGroups) organisiert werden. **Abb. 5** zeigt das zentrale Objektmodell:
+Im Projekt jeeeraaah geht es im Kern um die Verwaltung von Aufgaben (Tasks) und die Planung von Arbeitsabläufen. Dazu sollen zusammengehörige Tasks in Gruppen (TaskGroups) organisiert werden. **Abb. 10** zeigt das zentrale Objektmodell:
 
 <p align="center">
   <img src="jeeeraaah-uml-taskgroup-task.drawio.svg" alt="TaskGroup - Task" width="350"/>
   <br/>
-  <em>Abb. 5: TaskGroup - Task</em>
+  <em>Abb. 10: TaskGroup - Task</em>
 </p>
 
 Die Idee ist, Aufgaben in Teilaufgaben zu gliedern (Tasks und SubTasks) und für alle Aufgaben Abläufe (Predecessor- und Successor-Tasks) planen zu können. 
@@ -245,7 +280,7 @@ Die Idee ist, Aufgaben in Teilaufgaben zu gliedern (Tasks und SubTasks) und für
 <p align="center">
   <img src="jeeeraaah-uml-task-objects.png" alt="Task-Objects" width="350"/>
   <br/>
-  <em>Abb. 6: Task-Objekte</em>
+  <em>Abb. 11: Task-Objekte</em>
 </p>
 
 In der Anwendung sieht 

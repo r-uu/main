@@ -163,7 +163,19 @@ class DashController extends DefaultFXCController<Dash, DashService> implements 
 		taskHierarchySuperSubTasks.service().selectedItem()
 				.addListener((obs, old, val) -> onSelectedSuperSubTaskChanged(obs, old, val));
 
-		// fetch all task groups from the backend and populate the task group selector
+		// NOTE: Data loading moved to loadInitialData() method
+		// This is called after authentication is complete in DashApp.start()
+	}
+
+	/**
+	 * Loads initial data from backend after authentication is complete.
+	 *
+	 * <p>This method is called from DashApp.start() AFTER the user has been authenticated.
+	 * It must not be called from initialize() because authentication happens after FXML loading.</p>
+	 */
+	public void loadInitialData()
+	{
+		log.info("Loading initial data from backend...");
 		fetchTaskGroupsFromBackendAndPopulateTaskGroupSelector();
 	}
 

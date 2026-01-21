@@ -86,7 +86,7 @@ rest.api.port=9080
 ```properties
 keycloak.host=localhost
 keycloak.port=8080
-keycloak.realm=realm_default
+keycloak.realm=jeeeraaah-realm
 keycloak.client.id=keycloak_client_id
 keycloak.client.secret=keycloak_client_secret
 ```

@@ -42,7 +42,7 @@ KEYCLOAK SETUP - VOLLAUTOMATISCH
    ✅ Realm gelöscht
 
 3. Erstelle Realm neu via Java Setup...
-   ✅ Realm 'realm_default' erfolgreich erstellt
+   ✅ Realm 'jeeeraaah-realm' erfolgreich erstellt
    ✅ Client 'jeeeraaah-frontend' erstellt
    ✅ Direct Access Grants aktiviert
    ✅ User 'r_uu' erstellt
@@ -150,7 +150,7 @@ Das Java-Programm:
 3. **Prüfe Keycloak Admin Console:**
    - URL: http://localhost:8080/admin
    - Login: `admin` / `changeme_in_local_env`
-   - Realm: `realm_default`
+   - Realm: `jeeeraaah-realm`
    - Client: `jeeeraaah-frontend`
    - Prüfe: **Direct Access Grants Enabled** = ON
 

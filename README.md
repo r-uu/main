@@ -35,7 +35,7 @@ mvn exec:java -Dexec.mainClass="de.ruu.lib.keycloak.admin.setup.KeycloakRealmSet
 ```
 
 **Was wird erstellt:**
-- Realm: `realm_default`
+- Realm: `jeeeraaah-realm`
 - Client: `jeeeraaah-frontend` (Direct Access Grants aktiviert)
 - User: `r_uu` / `r_uu_password`
 
@@ -244,7 +244,7 @@ sudo lsof -i:5432    # PostgreSQL
 | Service | URL | Credentials |
 |---------|-----|-------------|
 | **Keycloak Admin** | http://localhost:8080/admin | admin / changeme_in_local_env |
-| **Keycloak Realm** | http://localhost:8080/realms/realm_default | - |
+| **Keycloak Realm** | http://localhost:8080/realms/jeeeraaah-realm | - |
 | **Backend API** | http://localhost:9080/jeeeraaah/ | - |
 | **Backend Health** | http://localhost:9080/health | - |
 | **JasperReports** | http://localhost:8090/health | - |
@@ -274,7 +274,7 @@ db.password=r_uu_password
 **Keycloak:**
 ```properties
 keycloak.url=http://localhost:8080
-keycloak.realm=realm_default
+keycloak.realm=jeeeraaah-realm
 keycloak.client=jeeeraaah-frontend
 ```
 
