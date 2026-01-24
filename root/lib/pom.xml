@@ -19,6 +19,7 @@
 	<modules>
 		<module>archunit</module>
 		<module>cdi</module>
+		<module>docker.health</module>
 		<module>fx</module>
 		<module>gen</module>
 		<module>jackson</module>

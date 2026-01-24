@@ -7,6 +7,13 @@ module de.ruu.lib.keycloak.admin
 	// JAX-RS API
 	requires jakarta.ws.rs;
 	
+	// Jackson - Required by Keycloak Admin Client
+	requires com.fasterxml.jackson.core;
+	requires com.fasterxml.jackson.databind;
+	requires com.fasterxml.jackson.annotation;
+	requires com.fasterxml.jackson.datatype.jdk8;
+	requires com.fasterxml.jackson.datatype.jsr310;
+
 	// Lombok needs java.beans for @Builder
 	requires static lombok;
 	requires java.desktop; // For java.beans package (used by Lombok)

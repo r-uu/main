@@ -14,6 +14,7 @@ module de.ruu.app.jeeeraaah.frontend.ui.fx
 	requires de.ruu.lib.cdi.common;
 	requires de.ruu.lib.mapstruct;
 	requires de.ruu.lib.ws.rs;
+	requires de.ruu.lib.docker.health;
 	requires transitive de.ruu.app.jeeeraaah.common.api.bean;
 	requires transitive de.ruu.app.jeeeraaah.common.api.domain;
 	requires de.ruu.app.jeeeraaah.common.api.ws.rs;
@@ -51,6 +52,7 @@ module de.ruu.app.jeeeraaah.frontend.ui.fx
 	exports de.ruu.app.jeeeraaah.frontend.ui.fx.taskgroup.edit;
 	exports de.ruu.app.jeeeraaah.frontend.ui.fx.taskgroup.selector;
 	exports de.ruu.app.jeeeraaah.frontend.ui.fx.test;
+	exports de.ruu.app.jeeeraaah.frontend.ui.fx.util;  // Session retry executor
 
 	// Open packages for CDI bean discovery and proxy generation (Weld SE) and JavaFX reflection
 	opens de.ruu.app.jeeeraaah.frontend.ui.fx;
@@ -76,4 +78,5 @@ module de.ruu.app.jeeeraaah.frontend.ui.fx
 	opens de.ruu.app.jeeeraaah.frontend.ui.fx.taskgroup.edit;
 	opens de.ruu.app.jeeeraaah.frontend.ui.fx.taskgroup.selector;
 	opens de.ruu.app.jeeeraaah.frontend.ui.fx.test;
+	opens de.ruu.app.jeeeraaah.frontend.ui.fx.util;  // Session retry executor
 }

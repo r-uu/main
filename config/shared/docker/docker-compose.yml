@@ -7,23 +7,28 @@ services:
     image: postgres:16-alpine
     container_name: postgres-jeeeraaah
     environment:
-      POSTGRES_DB: jeeeraaah
-      POSTGRES_USER: r_uu
-      POSTGRES_PASSWORD: r_uu_password
+      POSTGRES_DB: ${postgres_jeeeraaah_database_jeeeraaah}
+      POSTGRES_USER: ${postgres_jeeeraaah_user}
+      POSTGRES_PASSWORD: ${postgres_jeeeraaah_password}
     ports:
       - "5432:5432"
     volumes:
       - postgres-jeeeraaah-data:/var/lib/postgresql/data
       - postgres-jeeeraaah-backups:/backups
-      - ./initdb/jeeeraaah:/docker-entrypoint-initdb.d:ro
+      - ./initdb:/docker-entrypoint-initdb.d:ro
+      - ./postgres-entrypoint-wrapper.sh:/usr/local/bin/postgres-entrypoint-wrapper.sh:ro
+      - ./healthcheck/postgres-healthcheck.sh:/usr/local/bin/healthcheck.sh:ro
+    entrypoint: ["/bin/bash", "/usr/local/bin/postgres-entrypoint-wrapper.sh"]
+    command: ["postgres"]
     networks:
       - ruu-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U r_uu -d jeeeraaah"]
+      test: ["CMD-SHELL", "/usr/local/bin/healthcheck.sh"]
       interval: 10s
       timeout: 5s
       retries: 5
-    restart: unless-stopped
+      start_period: 30s
+    restart: always
 
   # ═══════════════════════════════════════════════════════════════════
   # PostgreSQL für Keycloak
@@ -32,9 +37,9 @@ services:
     image: postgres:16-alpine
     container_name: postgres-keycloak
     environment:
-      POSTGRES_DB: keycloak
-      POSTGRES_USER: r_uu
-      POSTGRES_PASSWORD: r_uu_password
+      POSTGRES_DB: ${postgres_keycloak_database}
+      POSTGRES_USER: ${postgres_keycloak_user}
+      POSTGRES_PASSWORD: ${postgres_keycloak_password}
     ports:
       - "5433:5432"  # Anderer externer Port, intern weiterhin 5432
     volumes:
@@ -44,11 +49,11 @@ services:
     networks:
       - ruu-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U r_uu -d keycloak"]
+      test: ["CMD-SHELL", "pg_isready -U ${postgres_keycloak_user} -d ${postgres_keycloak_database}"]
       interval: 10s
       timeout: 5s
       retries: 5
-    restart: unless-stopped
+    restart: always
 
   # ═══════════════════════════════════════════════════════════════════
   # Keycloak - Identity and Access Management
@@ -58,14 +63,14 @@ services:
     container_name: keycloak
     environment:
       # Admin Credentials (neue Variablennamen seit Keycloak 23+)
-      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN:-admin}
-      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${keycloak_admin_user}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${keycloak_admin_password}
 
       # Database Configuration - Eigene PostgreSQL-Instanz
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/keycloak
-      KC_DB_USERNAME: r_uu
-      KC_DB_PASSWORD: r_uu_password
+      KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/${postgres_keycloak_database}
+      KC_DB_USERNAME: ${postgres_keycloak_user}
+      KC_DB_PASSWORD: ${postgres_keycloak_password}
 
       # Server Configuration
       KC_HOSTNAME_STRICT: "false"
@@ -74,7 +79,12 @@ services:
       KC_HEALTH_ENABLED: "true"
       KC_METRICS_ENABLED: "true"
     ports:
-      - "${KEYCLOAK_PORT:-8080}:8080"
+      - "8080:8080"
+    volumes:
+      # Keycloak data directory for theme/realm configuration persistence
+      - keycloak-data:/opt/keycloak/data
+      # Healthcheck script
+      - ./healthcheck/keycloak-healthcheck.sh:/usr/local/bin/healthcheck.sh:ro
     command: start-dev
     depends_on:
       postgres-keycloak:
@@ -82,37 +92,40 @@ services:
     networks:
       - ruu-network
     healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q '\"status\": \"UP\"' <&3"]
+      test: ["CMD-SHELL", "/usr/local/bin/healthcheck.sh"]
       interval: 30s
       timeout: 10s
       retries: 10
       start_period: 60s
-    restart: unless-stopped
+    restart: always
 
-  # JasperReports Service - Isolierte Report-Generierung
-  # DEAKTIVIERT: Dockerfile fehlt noch
-  # jasperreports:
-  #   build:
-  #     context: ../../..  # Root-Verzeichnis (enthält bom/ und root/)
-  #     dockerfile: root/sandbox/office/microsoft/word/jasperreports/Dockerfile
-  #   container_name: jasperreports
-  #   ports:
-  #     - "8090:8090"
-  #   volumes:
-  #     # Templates werden im Build kopiert, hier optional für Live-Updates
-  #     - ../../../root/sandbox/office/microsoft/word/jasperreports/templates:/app/templates:ro
-  #     # Output-Verzeichnis für generierte Reports
-  #     - ../../../root/sandbox/office/microsoft/word/jasperreports/server/output:/app/output
-  #   environment:
-  #     - JAVA_OPTS=-Xmx512m
-  #   networks:
-  #     - ruu-network
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:8090/health || exit 1"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
-  #   restart: unless-stopped
+  # ═══════════════════════════════════════════════════════════════════
+  # JasperReports Service - Report Generation
+  # ═══════════════════════════════════════════════════════════════════
+  jasperreports:
+    build:
+      context: ../../..
+      dockerfile: root/lib/office/word/jasperreports/Dockerfile
+    container_name: jasperreports
+    ports:
+      - "8090:8090"
+    volumes:
+      # Templates directory (read-only)
+      - ../../../root/sandbox/office/microsoft/word/jasperreports/templates:/app/templates:ro
+      # Output directory for generated reports
+      - jasperreports-output:/app/output
+    environment:
+      - PORT=8090
+      - JAVA_OPTS=-Xmx512m
+    networks:
+      - ruu-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:8090/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: always
 
 networks:
   ruu-network:
@@ -132,50 +145,46 @@ volumes:
   postgres-keycloak-backups:
     name: postgres-keycloak-backups
 
+  # Keycloak data directory
+  keycloak-data:
+    name: keycloak-data
+
+  # Volumes für JasperReports
+  jasperreports-output:
+    name: jasperreports-output
+
 # ═══════════════════════════════════════════════════════════════════
 # Hinweise
 # ═══════════════════════════════════════════════════════════════════
 #
-# SEPARATE DATENBANKEN:
-# - postgres-jeeeraaah: Für JEEERAaH Application (Port 5432)
-# - postgres-keycloak:  Für Keycloak (Port 5433)
+# CREDENTIALS:
+# Alle Credentials werden aus der .env Datei geladen!
+# Siehe: .env.template für die Struktur
 #
-# CREDENTIALS (beide identisch):
-#   User:     r_uu
-#   Password: r_uu_password
+# PostgreSQL JEEERAaH (Port 5432):
+#   Database: ${POSTGRES_JEEERAAAH_DB}
+#   User:     ${POSTGRES_JEEERAAAH_USER}
+#   Password: ${POSTGRES_JEEERAAAH_PASSWORD}
 #
-# PostgreSQL Zugriff JEEERAaH:
-#   Host:     localhost
-#   Port:     5432
-#   User:     r_uu
-#   Password: r_uu_password
-#   Database: jeeeraaah
+# PostgreSQL Keycloak (Port 5433):
+#   Database: ${POSTGRES_KEYCLOAK_DB}
+#   User:     ${POSTGRES_KEYCLOAK_USER}
+#   Password: ${POSTGRES_KEYCLOAK_PASSWORD}
 #
-# PostgreSQL Zugriff Keycloak:
-#   Host:     localhost
-#   Port:     5433
-#   User:     r_uu
-#   Password: r_uu_password
-#   Database: keycloak
-#
-# Keycloak Admin Console: http://localhost:8080/admin
-# Standard Login: admin / admin (ändern via KEYCLOAK_ADMIN_PASSWORD!)
-#
-# JASPERREPORTS:
-#   Status: DEAKTIVIERT (Dockerfile fehlt noch)
-#   Siehe: config/JASPERREPORTS-DEAKTIVIERT.md
+# Keycloak Admin Console (http://localhost:8080/admin):
+#   Username: ${KC_BOOTSTRAP_ADMIN_USERNAME}
+#   Password: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
 #
 # Init-Skripte:
-#   JEEERAaH: Lege SQL in ./initdb/jeeeraaah/ ab
+#   JEEERAaH: Lege SQL in ./initdb/ ab
 #   Keycloak: Lege SQL in ./initdb/keycloak/ ab
 #   Ausführung beim ersten Start automatisch (alphabetisch sortiert)
 #
 # Rebuild (Daten löschen):
 #   docker compose down -v
-#   docker volume rm postgres-jeeeraaah-data postgres-keycloak-data
+#   docker volume rm postgres-jeeeraaah-data postgres-keycloak-data keycloak-data
 #   docker compose up -d
 #
 # Einzelnen Container neu starten:
-#   docker compose restart postgres-jeeeraaah
-#   docker compose restart postgres-keycloak
+#   docker compose restart <container-name>
 

@@ -119,34 +119,55 @@ public class AuthenticationHelper
 
 		try
 		{
-			// Use CompletableFuture to wait for dialog result from non-JavaFX thread
-			CompletableFuture<Boolean> future = new CompletableFuture<>();
+			// Check if we're already on the JavaFX Application Thread
+			if (Platform.isFxApplicationThread())
+			{
+				// We're on JavaFX thread - show dialog directly (no need for runLater)
+				log.debug("Already on JavaFX Application Thread - showing dialog directly");
+				SessionExpiredDialog dialog = CDIUtil.select(SessionExpiredDialog.class);
+				boolean reLoginSuccessful = dialog.showAndWait();
 
-			// Show dialog on JavaFX Application Thread
-			Platform.runLater(() -> {
-				try
+				if (!reLoginSuccessful && exitOnCancel)
 				{
-					SessionExpiredDialog dialog = CDIUtil.select(SessionExpiredDialog.class);
-					boolean reLoginSuccessful = dialog.showAndWait();
+					log.info("User cancelled re-login, exiting application");
+					Platform.exit();
+					System.exit(0);
+				}
 
-					if (!reLoginSuccessful && exitOnCancel)
+				return reLoginSuccessful;
+			}
+			else
+			{
+				// We're NOT on JavaFX thread - use CompletableFuture + Platform.runLater
+				log.debug("Not on JavaFX Application Thread - scheduling dialog with Platform.runLater");
+				CompletableFuture<Boolean> future = new CompletableFuture<>();
+
+				// Show dialog on JavaFX Application Thread
+				Platform.runLater(() -> {
+					try
 					{
-						log.info("User cancelled re-login, exiting application");
-						Platform.exit();
-						System.exit(0);
+						SessionExpiredDialog dialog = CDIUtil.select(SessionExpiredDialog.class);
+						boolean reLoginSuccessful = dialog.showAndWait();
+
+						if (!reLoginSuccessful && exitOnCancel)
+						{
+							log.info("User cancelled re-login, exiting application");
+							Platform.exit();
+							System.exit(0);
+						}
+
+						future.complete(reLoginSuccessful);
 					}
+					catch (Exception e)
+					{
+						log.error("Error showing session expired dialog", e);
+						future.completeExceptionally(e);
+					}
+				});
 
-					future.complete(reLoginSuccessful);
-				}
-				catch (Exception e)
-				{
-					log.error("Error showing session expired dialog", e);
-					future.completeExceptionally(e);
-				}
-			});
-
-			// Wait for dialog to complete
-			return future.get();
+				// Wait for dialog to complete
+				return future.get();
+			}
 		}
 		catch (Exception e)
 		{

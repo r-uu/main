@@ -245,13 +245,23 @@ public class AuthorizationHeaderFilter implements ClientRequestFilter
 			log.info("  Token present: {}", token != null);
 			if (token != null)
 			{
+				log.info("  Token length: {}", token.length());
 				log.info("  Token (first 50 chars): {}...", token.substring(0, Math.min(50, token.length())));
 			}
 			
 			// Add JWT bearer token to Authorization header
 			// Format: "Authorization: Bearer <jwt-token>"
-			requestContext.getHeaders().add("Authorization", "Bearer " + token);
-			log.info("  ✅ Authorization header added");
+			String authHeaderValue = "Bearer " + token;
+			log.info("  Authorization header value length: {}", authHeaderValue.length());
+			log.info("  Authorization header value (first 60 chars): {}",
+					authHeaderValue.substring(0, Math.min(60, authHeaderValue.length())));
+
+			requestContext.getHeaders().add("Authorization", authHeaderValue);
+
+			// Verify header was added
+			String verifyHeader = requestContext.getHeaderString("Authorization");
+			log.info("  ✅ Authorization header added. Verification: {}",
+					verifyHeader != null ? verifyHeader.substring(0, Math.min(60, verifyHeader.length())) : "NULL");
 		}
 		else
 		{

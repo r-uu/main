@@ -1,6 +1,5 @@
 package de.ruu.lib.postgres.util.ui;
 
-import de.ruu.lib.cdi.se.EventDispatcher;
 import de.ruu.lib.fx.comp.FXCAppStartedEvent;
 import de.ruu.lib.fx.comp.FXCController.DefaultFXCController;
 import de.ruu.lib.fx.control.dialog.AlertDialog;
@@ -77,7 +76,7 @@ class PostgresRestoreUIController extends DefaultFXCController<PostgresRestoreUI
 	@FXML private TextField tfUsername;
 
 	// cannot use @Observes(IF_EXISTS) directly because @Dependent beans don't support conditional observers
-	@Inject private EventDispatcher<FXCAppStartedEvent> appStartedEventDispatcher;
+	@Inject private FXCAppStartedEvent.FXCAppStartedEventDispatcher appStartedEventDispatcher;
 
 	// inject configuration values from file (initialized in AppRunner)
 	@Inject @ConfigProperty(name = POSTGRES_RESTORE_EXECUTABLE_KEY, defaultValue = POSTGRES_RESTORE_EXECUTABLE_VALUE)

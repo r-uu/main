@@ -1,0 +1,74 @@
+# ════════════════════════════════════════════════════════════════════════════
+# JasperReports Service - Multi-Stage Dockerfile
+# ════════════════════════════════════════════════════════════════════════════
+# Uses Java 17 (JasperReports compatibility) in an isolated Docker environment
+# while the main project uses Java 25.
+# ════════════════════════════════════════════════════════════════════════════
+
+# ────────────────────────────────────────────────────────────────────────────
+# Stage 1: Build Stage
+# ────────────────────────────────────────────────────────────────────────────
+FROM eclipse-temurin:17-jdk-alpine AS builder
+
+WORKDIR /build
+
+# Install Maven
+RUN apk add --no-cache maven
+
+# Copy BOM and parent POMs for dependency resolution
+COPY bom/pom.xml /build/bom/pom.xml
+COPY root/pom.xml /build/root/pom.xml
+COPY root/lib/pom.xml /build/root/lib/pom.xml
+COPY root/lib/office/pom.xml /build/root/lib/office/pom.xml
+COPY root/lib/office/word/pom.xml /build/root/lib/office/word/pom.xml
+COPY root/lib/office/word/jasperreports/pom.xml /build/root/lib/office/word/jasperreports/pom.xml
+
+# Copy sandbox model (dependency)
+COPY root/sandbox/pom.xml /build/root/sandbox/pom.xml
+COPY root/sandbox/office/pom.xml /build/root/sandbox/office/pom.xml
+COPY root/sandbox/office/microsoft/pom.xml /build/root/sandbox/office/microsoft/pom.xml
+COPY root/sandbox/office/microsoft/word/pom.xml /build/root/sandbox/office/microsoft/word/pom.xml
+COPY root/sandbox/office/microsoft/word/jasperreports/pom.xml /build/root/sandbox/office/microsoft/word/jasperreports/pom.xml
+COPY root/sandbox/office/microsoft/word/jasperreports/model /build/root/sandbox/office/microsoft/word/jasperreports/model
+
+# Build the model first (install to local Maven repo)
+# Force Java 17 compatibility even though parent uses Java 25
+WORKDIR /build/root/sandbox/office/microsoft/word/jasperreports/model
+RUN mvn clean install -DskipTests -q -Dmaven.compiler.release=17
+
+# Copy server module
+COPY root/lib/office/word/jasperreports/server /build/root/lib/office/word/jasperreports/server
+
+# Build the server (this will also build the model dependency)
+WORKDIR /build/root/lib/office/word/jasperreports/server
+RUN mvn clean package -DskipTests -q
+
+# ────────────────────────────────────────────────────────────────────────────
+# Stage 2: Runtime Stage
+# ────────────────────────────────────────────────────────────────────────────
+FROM eclipse-temurin:17-jre-alpine
+
+WORKDIR /app
+
+# Install wget for health checks
+RUN apk add --no-cache wget
+
+# Copy the fat JAR from build stage
+COPY --from=builder /build/root/lib/office/word/jasperreports/server/target/jasperreports-server.jar /app/jasperreports-server.jar
+
+# Copy templates directory
+COPY root/sandbox/office/microsoft/word/jasperreports/templates /app/templates
+
+# Create output directory
+RUN mkdir -p /app/output && chmod 777 /app/output
+
+# Expose port
+EXPOSE 8090
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=40s \
+    CMD wget --quiet --tries=1 --spider http://localhost:8090/health || exit 1
+
+# Run the server
+ENV PORT=8090
+ENTRYPOINT ["java", "-jar", "/app/jasperreports-server.jar"]

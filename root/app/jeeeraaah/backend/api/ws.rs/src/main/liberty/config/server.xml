@@ -86,6 +86,8 @@
 	     - jwksUri: Keycloak's public key endpoint for token signature verification
 	     - issuer: Expected token issuer (must match Keycloak realm URL)
 	     - audiences: Expected audience in the token (client ID)
+	                  ⚠️ DEACTIVATED for development - all audiences accepted
+	                  Re-enable for production security!
 	     - userNameAttribute: JWT claim to use as the authenticated user's name
 	     
 	     Environment-specific URLs:
@@ -98,8 +100,16 @@
 	<mpJwt id="jwtConsumer"
 		jwksUri="http://localhost:8080/realms/jeeeraaah-realm/protocol/openid-connect/certs"
 		issuer="http://localhost:8080/realms/jeeeraaah-realm"
-		audiences="jeeeraaah-backend"
-		userNameAttribute="preferred_username" />
+		userNameAttribute="preferred_username"
+		groupNameAttribute="groups">
+		<!-- audiences="jeeeraaah-backend" -->
+		<!-- ⚠️ Audience validation disabled for development -->
+		<!-- For production: uncomment audiences and configure Audience Mapper in Keycloak -->
+
+		<!-- groupNameAttribute: Tells Liberty where to find roles in the JWT token
+		     UPDATED: Token now has "groups" claim on top-level (via Groups Claim Mapper)
+		     Format: "groups" (top-level claim containing roles array) -->
+	</mpJwt>
 
 	<!-- ===================================================================
 	     DATABASE CONFIGURATION

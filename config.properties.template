@@ -14,35 +14,40 @@
 # ================================================================================
 # PostgreSQL Database Configuration (Required for JDBC/JPA Tests)
 # ================================================================================
-# WICHTIG: Passe diese Werte an deine lokale Umgebung an!
-# Diese Werte werden von Maven Resource Filtering verwendet.
+# WICHTIG: Diese Werte werden automatisch aus .env gelesen!
+# Die .env Datei liegt unter: config/shared/docker/.env
+#
+# Maven Resource Filtering ersetzt ${postgres_jeeeraaah_*} mit Werten aus .env
 #
 # Docker Setup (siehe config/shared/docker/docker-compose.yml):
-# - postgres-jeeeraaah: Port 5432, Datenbank: jeeeraaah
+# - postgres-jeeeraaah: Port 5432, Datenbanken: jeeeraaah, lib_test
 # - postgres-keycloak:  Port 5433, Datenbank: keycloak
+#
+# Single Point of Truth: config/shared/docker/.env
 # ================================================================================
-db.host=localhost
-db.port=5432
-db.database=jeeeraaah
-db.username=DEIN_USERNAME_HIER
-db.password=DEIN_PASSWORD_HIER
+postgres_jeeeraaah_host=localhost
+postgres_jeeeraaah_port=5432
+postgres_jeeeraaah_database_jeeeraaah=jeeeraaah
+postgres_jeeeraaah_database_lib_test=lib_test
+postgres_jeeeraaah_user=jeeeraaah_user
+postgres_jeeeraaah_password=jeeeraaah_password
 
 # ================================================================================
 # Backup/Restore Configuration (Optional)
 # ================================================================================
-db.backup.host=${db.host}
-db.backup.port=${db.port}
-db.backup.database=${db.database}
-db.backup.username=${db.username}
-db.backup.password=${db.password}
+db.backup.host=${postgres_jeeeraaah_host}
+db.backup.port=${postgres_jeeeraaah_port}
+db.backup.database=${postgres_jeeeraaah_database_jeeeraaah}
+db.backup.username=${postgres_jeeeraaah_user}
+db.backup.password=${postgres_jeeeraaah_password}
 db.backup.directory=/tmp/db-backup
 db.backup.executable=/usr/bin/pg_dump
 
-db.restore.host=${db.host}
-db.restore.port=${db.port}
-db.restore.database=${db.database}
-db.restore.username=${db.username}
-db.restore.password=${db.password}
+db.restore.host=${postgres_jeeeraaah_host}
+db.restore.port=${postgres_jeeeraaah_port}
+db.restore.database=${postgres_jeeeraaah_database_jeeeraaah}
+db.restore.username=${postgres_jeeeraaah_user}
+db.restore.password=${postgres_jeeeraaah_password}
 db.restore.executable=/usr/bin/pg_restore
 
 # ================================================================================
@@ -63,9 +68,9 @@ keycloak.client.secret=keycloak_client_secret
 # ================================================================================
 # Open Liberty Server Configuration (Optional)
 # ================================================================================
-liberty.datasource.server.host=${db.host}
-liberty.datasource.server.port=${db.port}
-liberty.datasource.database=${db.database}
-liberty.datasource.username=${db.username}
-liberty.datasource.password=${db.password}
+liberty.datasource.server.host=${postgres_jeeeraaah_host}
+liberty.datasource.server.port=${postgres_jeeeraaah_port}
+liberty.datasource.database=${postgres_jeeeraaah_database_jeeeraaah}
+liberty.datasource.username=${postgres_jeeeraaah_user}
+liberty.datasource.password=${postgres_jeeeraaah_password}
 

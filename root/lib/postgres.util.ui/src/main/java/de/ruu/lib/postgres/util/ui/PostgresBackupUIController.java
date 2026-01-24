@@ -13,7 +13,6 @@ import java.util.Optional;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import de.ruu.lib.cdi.se.EventDispatcher;
 import de.ruu.lib.fx.comp.FXCAppStartedEvent;
 import de.ruu.lib.fx.comp.FXCController.DefaultFXCController;
 import de.ruu.lib.fx.control.dialog.AlertDialog;
@@ -84,7 +83,7 @@ class PostgresBackupUIController extends DefaultFXCController<PostgresBackupUI, 
 	@FXML private TextField tfUsername;
 
 	// cannot use @Observes(IF_EXISTS) directly because @Dependent beans don't support conditional observers
-	@Inject private EventDispatcher<FXCAppStartedEvent> appStartedEventDispatcher;
+	@Inject private FXCAppStartedEvent.FXCAppStartedEventDispatcher appStartedEventDispatcher;
 
 	// inject configuration values from file (initialized in AppRunner)
 	@Inject @ConfigProperty(name = POSTGRES_BACKUP_EXECUTABLE_KEY, defaultValue = POSTGRES_BACKUP_EXECUTABLE_VALUE)

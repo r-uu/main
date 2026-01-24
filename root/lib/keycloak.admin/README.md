@@ -9,6 +9,29 @@ Dieses Modul enthält wiederverwendbare Komponenten zur Validierung der Konsiste
 - Backend REST APIs (@RolesAllowed Annotationen)
 - JWT-Token-Claims von Client-Anfragen
 
+---
+
+## ⏱️ Token-Lebensdauern (Keycloak Realm Setup)
+
+Das `KeycloakRealmSetup` konfiguriert automatisch optimale Token-Lebensdauern:
+
+| Token-Typ | Lebensdauer | Zweck |
+|-----------|-------------|-------|
+| **Access Token** | 30 Minuten | Verhindert häufige Re-Authentifizierung |
+| **Refresh Token** | 30 Minuten (Idle) | Automatische Verlängerung bei Aktivität |
+| **SSO Session Max** | 10 Stunden | Maximum Session-Lebensdauer |
+| **Offline Session** | 30 Tage | "Remember Me" Funktionalität |
+
+**Warum diese Werte?**
+- ✅ **30 Min Access Token:** Verhindert "Session Expired"-Fehler direkt nach Login
+- ✅ **30 Min Idle Timeout:** Token wird automatisch erneuert bei aktiver Nutzung  
+- ✅ **10 Std Maximum:** Zwingt zu Re-Login nach einem Arbeitstag
+- ✅ **Balance:** Sicherheit vs. Benutzerfreundlichkeit
+
+**Problem gelöst:** Früher bekamen User direkt nach Login "Session Expired"-Dialoge, weil Default-Token-Lebensdauer zu kurz war (oft nur 1-5 Minuten).
+
+---
+
 ## Komponenten
 
 ### KeycloakConfigValidator

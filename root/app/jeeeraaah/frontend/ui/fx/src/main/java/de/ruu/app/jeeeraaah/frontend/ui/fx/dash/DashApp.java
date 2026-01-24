@@ -88,13 +88,40 @@ public class DashApp extends FXCApp
 	{
 		log.info("Starting Jeeeraaah Dashboard application");
 
+		// ═══════════════════════════════════════════════════════════════════
+		// STEP 0: Docker Environment Health Check with Auto-Fix
+		// ═══════════════════════════════════════════════════════════════════
+		log.info("Performing Docker environment health check...");
+
+		// Use the new modular health check API
+		de.ruu.lib.docker.health.HealthCheckRunner healthCheckRunner =
+			de.ruu.lib.docker.health.HealthCheckProfiles.fullEnvironment();
+
+		// Run health checks with auto-fix
+		de.ruu.lib.docker.health.fix.AutoFixRunner autoFix = new de.ruu.lib.docker.health.fix.AutoFixRunner(healthCheckRunner);
+		autoFix.registerStrategy(new de.ruu.lib.docker.health.fix.DockerContainerStartStrategy());
+		autoFix.registerStrategy(new de.ruu.lib.docker.health.fix.KeycloakRealmSetupStrategy());
+
+		if (!autoFix.runWithAutoFix())
+		{
+			log.error("❌ Docker environment is not ready and auto-fix failed!");
+			log.error("Please fix the issues above before starting the application.");
+			showHealthCheckErrorDialog(healthCheckRunner);
+			Platform.exit();
+			return;
+		}
+		else
+		{
+			log.info("✅ Docker environment health check passed");
+		}
+
+		// ═══════════════════════════════════════════════════════════════════
+		// STEP 1: Authentication Setup
+		// ═══════════════════════════════════════════════════════════════════
+
 		// Obtain authService via CDI (cannot use @Inject in JavaFX Application)
 		authService = CDI.current().select(KeycloakAuthService.class).get();
 		log.info("KeycloakAuthService obtained - instance ID: {}", System.identityHashCode(authService));
-		
-		// Clear any potentially stale tokens from previous sessions
-		authService.logout();
-		log.info("Cleared any existing tokens to ensure fresh login");
 
 		// STEP 1: Check if testing mode is enabled and auto-login with test credentials
 		boolean testingMode = ConfigProvider.getConfig()
@@ -259,7 +286,35 @@ public class DashApp extends FXCApp
 	}
 
 	/**
-	 * Called when the application is being stopped.
+	 * Shows an error dialog with health check failures
+	 */
+	private void showHealthCheckErrorDialog(de.ruu.lib.docker.health.HealthCheckRunner healthCheckRunner)
+	{
+		javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+			javafx.scene.control.Alert.AlertType.ERROR
+		);
+		alert.setTitle("Docker Environment Not Ready");
+		alert.setHeaderText("Required services are not available");
+
+		StringBuilder content = new StringBuilder();
+		content.append("The following services are not ready:\n\n");
+
+		for (de.ruu.lib.docker.health.HealthCheckResult result : healthCheckRunner.getFailures())
+		{
+			content.append("• ").append(result.getService()).append("\n");
+			content.append("  Problem: ").append(result.getProblem()).append("\n");
+			content.append("  Fix: ").append(result.getAlias()).append("\n\n");
+		}
+
+		content.append("\nAuto-fix failed. Please fix manually and restart the application.");
+		content.append("\nCheck the console output for detailed commands.");
+
+		alert.setContentText(content.toString());
+		alert.showAndWait();
+	}
+
+	/**
+	 * Called when application stops.
 	 *
 	 * <p>Performs cleanup:</p>
 	 * <ul>
@@ -271,8 +326,8 @@ public class DashApp extends FXCApp
 	{
 		log.info("Stopping Jeeeraaah Dashboard application");
 
-		// Logout and clear tokens
-		if (authService.isLoggedIn())
+		// Logout and clear tokens (only if authService was initialized)
+		if (authService != null && authService.isLoggedIn())
 		{
 			log.info("Logging out user");
 			authService.logout();

@@ -1,65 +1,120 @@
-# JEEERAAAH - SETUP UND START ANLEITUNG
+# JEEERAAAH - Java Enterprise Task Management
 
-**Projekt:** JEEERAAAH Task Management  
-**Datum:** 2026-01-19  
-**Java Version:** GraalVM 25  
-**Build System:** Maven (JPMS-konform)
+**GraalVM 25 • JavaFX • Jakarta EE 10 • JPMS • Microservices-Ready**
 
 ---
 
-## 🚀 SCHNELLSTART
+## 🎯 START HERE
 
-### 1. Docker Container starten
+**👉 Für den schnellsten Einstieg: [STARTUP-QUICK-GUIDE.md](STARTUP-QUICK-GUIDE.md)**
 
-```bash
-cd /home/r-uu/develop/github/main/config/shared/docker
-docker compose up -d
-```
+**📚 Vollständiger Dokumentations-Index: [DOCUMENTATION-INDEX.md](DOCUMENTATION-INDEX.md)**
 
-**Warte bis alle Container healthy sind:**
-```bash
-docker ps
-```
+---
 
-Erwartete Container:
-- `keycloak-service` (Port 8080)
-- `postgres-keycloak` (Port 5433)
-- `postgres-jeeeraaah` (Port 5432)
-- `jasperreports-service` (Port 8090)
-
-### 2. Keycloak Realm initialisieren
+## ⚡ Ultra-Schnellstart
 
 ```bash
-cd /home/r-uu/develop/github/main/root/lib/keycloak.admin
-mvn exec:java -Dexec.mainClass="de.ruu.lib.keycloak.admin.setup.KeycloakRealmSetup"
+# 1. Container starten (alle Services)
+source ~/.bashrc
+ruu-startup
+
+# 2. Warte 2-3 Minuten
+
+# 3. Projekt bauen
+cd /home/r-uu/develop/github/main/root
+mvn clean install
 ```
 
-**Was wird erstellt:**
-- Realm: `jeeeraaah-realm`
-- Client: `jeeeraaah-frontend` (Direct Access Grants aktiviert)
-- User: `r_uu` / `r_uu_password`
+**Das war's!** ✅
 
-### 3. Backend starten
+---
 
+## 📚 Wichtigste Dokumentationen
+
+| Dokument | Beschreibung |
+|----------|--------------|
+| **[STARTUP-QUICK-GUIDE.md](STARTUP-QUICK-GUIDE.md)** | ⭐ **Schnellstart-Anleitung** |
+| [DOCUMENTATION-INDEX.md](DOCUMENTATION-INDEX.md) | 📚 Vollständiger Dokumentations-Index |
+| [config/shared/docker/LIB-TEST-FIX.md](config/shared/docker/LIB-TEST-FIX.md) | 🔧 Warum lib_test funktioniert |
+| [config/DOCKER-AUTO-FIX.md](config/DOCKER-AUTO-FIX.md) | 🏥 Health Check & Auto-Fix System |
+| [root/lib/keycloak.admin/README.md](root/lib/keycloak.admin/README.md) | 🔐 Keycloak Setup & Management |
+
+---
+
+## 🐳 Docker Container (Autostart: ✅)
+
+**Alle Container starten automatisch** mit `restart: always`:
+
+- `postgres-jeeeraaah` (Port 5432) - Datenbanken: **jeeeraaah** + **lib_test**
+- `postgres-keycloak` (Port 5433) - Keycloak-Datenbank
+- `keycloak` (Port 8080) - Identity & Access Management
+- `jasperreports` (Port 8090) - Report-Service
+
+**Status prüfen:**
+```bash
+ruu-docker-ps
+```
+
+---
+
+## 🔧 Wichtigste Befehle (Aliase)
+
+### Container
+```bash
+ruu-startup              # Kompletter Startup (empfohlen!)
+ruu-docker-ps            # Container-Status
+ruu-docker-logs          # Alle Logs anzeigen
+ruu-docker-restart       # Alle Container neu starten
+```
+
+### Build
+```bash
+ruu-build                # Projekt komplett bauen
+ruu-install              # cd root && mvn clean install
+ruu-install-fast         # mvn clean install -DskipTests
+```
+
+### PostgreSQL
+```bash
+ruu-postgres-shell              # SQL Shell öffnen
+ruu-postgres-ensure-lib-test    # lib_test Datenbank prüfen/erstellen
+```
+
+### Keycloak
+```bash
+ruu-keycloak-admin      # Admin-URL anzeigen
+ruu-keycloak-setup      # Realm einrichten
+```
+
+### Hilfe
+```bash
+ruu-help                # Alle Aliase anzeigen
+ruu-versions            # Tool-Versionen prüfen
+```
+
+**Mehr:** `config/shared/wsl/aliases.sh`
+
+---
+
+## 🏃 Anwendung starten
+
+### Backend (Liberty Server):
 ```bash
 cd /home/r-uu/develop/github/main/root/app/jeeeraaah/backend/api/ws.rs
 mvn liberty:dev
 ```
 
-**Warte auf:**
-```
-[INFO] CWWKF0011I: The defaultServer server is ready to run a smarter planet.
-```
+**Backend URLs:**
+- API: http://localhost:9080
+- OpenAPI: http://localhost:9080/openapi/ui/
+- Health: http://localhost:9080/health/
 
-**Backend läuft auf:** http://localhost:9080/jeeeraaah/
+### Frontend (JavaFX Desktop):
 
-### 4. Frontend (DashAppRunner) starten
+**IntelliJ:** Run Configuration `DashAppRunner`
 
-**In IntelliJ:**
-1. Run Configuration: `DashAppRunner`
-2. **Run** klicken
-
-**Oder Maven:**
+**Oder manuell:**
 ```bash
 cd /home/r-uu/develop/github/main/root/app/jeeeraaah/frontend/ui/fx
 mvn exec:java -Dexec.mainClass="de.ruu.app.jeeeraaah.frontend.ui.fx.dash.DashAppRunner"

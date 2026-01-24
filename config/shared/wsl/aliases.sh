@@ -76,6 +76,18 @@ alias ruu-docker-ps='docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports
 alias ruu-docker-cleanup='docker container prune -f && docker volume prune -f && echo "✅ Container und Volumes bereinigt"'
 alias ruu-docker-reset='bash $RUU_DOCKER/reset-all-containers.sh'
 
+# Docker - Starte alle Container und warte bis sie bereit sind
+alias ruu-docker-start-all='bash $RUU_DOCKER/start-all-and-wait.sh'
+
+# Docker - Automatischer Systemstart (startet alle Services)
+alias ruu-startup='bash $RUU_CONFIG/shared/scripts/startup-complete.sh'
+alias ruu-startup-fast='bash $RUU_CONFIG/shared/scripts/startup-docker-services.sh'
+
+# Docker - Test & Verifikation
+alias ruu-test='bash $RUU_CONFIG/shared/scripts/test-docker-autostart.sh'
+alias ruu-test-build='bash $RUU_CONFIG/shared/scripts/test-docker-autostart.sh --with-build'
+alias ruu-test-multidb='bash $RUU_CONFIG/shared/scripts/test-multi-db.sh'
+
 # ═══════════════════════════════════════════════════════════════════
 # Docker - PostgreSQL (JEEERAaH)
 # ═══════════════════════════════════════════════════════════════════
@@ -86,28 +98,42 @@ alias ruu-postgres-logs='docker logs -f postgres-jeeeraaah'
 alias ruu-postgres-shell='docker exec -it postgres-jeeeraaah psql -U r_uu -d jeeeraaah'
 alias ruu-postgres-shell-admin='docker exec -it postgres-jeeeraaah psql -U postgres'
 
+# PostgreSQL - Datenbank-Reparatur
+# Erstellt lib_test Datenbank falls sie nicht existiert (für Library-Tests)
+alias ruu-postgres-ensure-lib-test='docker exec -i postgres-jeeeraaah psql -U postgres_jeeeraaah_username -d postgres -c "CREATE DATABASE lib_test OWNER postgres_jeeeraaah_username;" 2>/dev/null && echo "✅ lib_test erstellt" || echo "✅ lib_test existiert bereits"'
+alias ruu-postgres-reset-lib-test='docker exec -i postgres-jeeeraaah psql -U postgres_jeeeraaah_username -d postgres -c "DROP DATABASE IF EXISTS lib_test;" && docker exec -i postgres-jeeeraaah psql -U postgres_jeeeraaah_username -d postgres -c "CREATE DATABASE lib_test OWNER postgres_jeeeraaah_username;" && echo "✅ lib_test neu erstellt"'
+
 # ═══════════════════════════════════════════════════════════════════
 # Docker - Keycloak
 # ═══════════════════════════════════════════════════════════════════
 alias ruu-keycloak-start='cd $RUU_DOCKER && docker compose up -d keycloak'
-alias ruu-keycloak-stop='docker container stop keycloak-service'
+alias ruu-keycloak-stop='docker container stop keycloak'
 alias ruu-keycloak-restart='ruu-keycloak-stop && ruu-keycloak-start'
-alias ruu-keycloak-logs='docker logs -f keycloak-service'
-alias ruu-keycloak-admin='echo "Keycloak Admin: http://localhost:8080/admin (siehe config.properties)"'
-alias ruu-keycloak-setup='cd $RUU_ROOT/lib/keycloak.admin && mvn exec:java -Dexec.mainClass="de.ruu.lib.keycloak.admin.setup.KeycloakRealmSetup"'
-alias ruu-keycloak-setup-bash='bash $RUU_DOCKER/setup-keycloak-realm.sh'
+alias ruu-keycloak-logs='docker logs -f keycloak'
+alias ruu-keycloak-admin='echo "Keycloak Admin: http://localhost:8080/admin (User: keycloak_admin_username / keycloak_admin_password)"'
+
+# Keycloak Realm Setup (lädt .env vor Ausführung)
+alias ruu-keycloak-setup='cd $RUU_ROOT/lib/keycloak.admin && mvn exec:java -Dexec.mainClass="de.ruu.lib.keycloak.admin.setup.KeycloakRealmSetup" -Dkeycloak.admin.user=admin -Dkeycloak.admin.password=admin'
+
+# Keycloak - Komplett-Reset (Realm neu erstellen)
+ruu-keycloak-reset() {
+    echo "🔄 Keycloak Realm neu erstellen..."
+    cd "$RUU_ROOT/lib/keycloak.admin" || return 1
+    source "$RUU_DOCKER/.env"
+    mvn exec:java -Dexec.mainClass="de.ruu.lib.keycloak.admin.setup.KeycloakRealmSetup" -q
+    echo "✅ Keycloak Realm neu erstellt!"
+}
 
 # ═══════════════════════════════════════════════════════════════════
 # Docker - JasperReports
 # ═══════════════════════════════════════════════════════════════════
 alias ruu-jasper-start='cd $RUU_DOCKER && docker compose up -d jasperreports'
-alias ruu-jasper-stop='docker container stop jasperreports-service'
+alias ruu-jasper-stop='docker container stop jasperreports'
 alias ruu-jasper-restart='ruu-jasper-stop && ruu-jasper-start'
-alias ruu-jasper-logs='docker logs -f jasperreports-service'
-alias ruu-jasper-shell='docker exec -it jasperreports-service sh'
+alias ruu-jasper-logs='docker logs -f jasperreports'
+alias ruu-jasper-shell='docker exec -it jasperreports sh'
 alias ruu-jasper-rebuild='cd $RUU_DOCKER && docker compose build jasperreports && docker compose up -d jasperreports'
 alias ruu-jasper-test='curl http://localhost:8090/health'
-alias ruu-jasper-cleanup='bash $RUU_CONFIG/shared/scripts/cleanup-jasperreports.sh'
 
 # ═══════════════════════════════════════════════════════════════════
 # Git
@@ -138,6 +164,11 @@ alias ruu-graalvm-version='echo "GraalVM: $(java --version | head -n1)" && echo 
 alias ruu-versions='echo "=== Tool Versionen ===" && ruu-java-version && echo "" && ruu-maven-version && echo "" && ruu-docker-version'
 
 # ═══════════════════════════════════════════════════════════════════
+# IntelliJ IDEA
+# ═══════════════════════════════════════════════════════════════════
+alias ruu-intellij-fix='bash $RUU_CONFIG/shared/scripts/fix-intellij-indexing.sh'
+
+# ═══════════════════════════════════════════════════════════════════
 # Shell & Aliase
 # ═══════════════════════════════════════════════════════════════════
 alias ruu-shell-reset='clear && exec $SHELL'
@@ -147,13 +178,8 @@ alias ruu-aliases-edit='${EDITOR:-nano} $RUU_HOME/config/shared/wsl/aliases.sh'
 # ═══════════════════════════════════════════════════════════════════
 # Hilfe & Dokumentation
 # ═══════════════════════════════════════════════════════════════════
-alias ruu-help='echo "=== r-uu Projekt Aliase ===" && echo "" && cat $RUU_HOME/config/shared/wsl/aliases.sh | grep "^alias ruu-" | sed "s/alias /  /" | sed "s/=/ → /" | sort'
-alias ruu-help-docker='echo "=== Docker Aliase ===" && ruu-help | grep docker'
-alias ruu-help-maven='echo "=== Maven Aliase ===" && ruu-help | grep -E "(build|install|clean|test|verify)"'
-alias ruu-help-nav='echo "=== Navigation Aliase ===" && ruu-help | grep -E "(home|bom|root|lib|app|config|docker|jasper)\s"'
-alias ruu-help-git='echo "=== Git Aliase ===" && ruu-help | grep git'
-alias ruu-docs='cd $RUU_HOME/config && cat INDEX.md 2>/dev/null || ls -la *.md'
-alias ruu-quickstart='cd $RUU_HOME/config && cat QUICKSTART.md 2>/dev/null || cat START-HERE.md 2>/dev/null || echo "Siehe config/*.md Dateien"'
+alias ruu-help='cat $RUU_HOME/config/shared/wsl/aliases.sh | grep "^alias ruu-" | sed "s/alias //" | sed "s/=/\t→ /" | sort | column -t -s "→"'
+alias ruu-docs='ls -1 $RUU_HOME/config/*.md && echo "" && cat $RUU_HOME/START-HERE.md'
 
 # ═══════════════════════════════════════════════════════════════════
 # Initialisierung & Git-Kompatibilität
@@ -163,4 +189,7 @@ export GIT_ASKPASS=""
 export SSH_ASKPASS=""
 
 echo "✓ r-uu Projekt-Aliase geladen"
-echo "  Hilfe: ruu-help | Build: ruu-build | Docker: ruu-docker-ps"
+echo "  📚 Hilfe: ruu-help | ruu-docs"
+echo "  🚀 Start: ruu-startup"
+echo "  🔨 Build: ruu-build"
+echo "  🐳 Docker: ruu-docker-ps"

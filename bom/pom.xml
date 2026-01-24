@@ -33,6 +33,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+		<!-- Project root directory (BOM is in /bom, root is one level up) -->
+		<project.root.dir>${basedir}/..</project.root.dir>
+
 		<!-- Plugin versions -->
 		<version.maven-compiler-plugin>3.14.1</version.maven-compiler-plugin>
 		<version.lombok>1.18.42</version.lombok>
@@ -40,53 +43,40 @@
 		<version.mapstruct>1.6.3</version.mapstruct>
 		<version.hibernate-jpamodelgen>6.6.5.Final</version.hibernate-jpamodelgen>
 
-<!--		&lt;!&ndash; ================================================================================== &ndash;&gt;-->
-<!--		&lt;!&ndash; database configuration properties                                                  &ndash;&gt;-->
-<!--		&lt;!&ndash; ================================================================================== &ndash;&gt;-->
-<!--		&lt;!&ndash; these properties are loaded from runtime environment specifig config.properties () &ndash;&gt;-->
-<!--		&lt;!&ndash; they are used for maven resource filtering in microprofile-config.properties       &ndash;&gt;-->
-<!--		&lt;!&ndash; ================================================================================== &ndash;&gt;-->
+		<!-- ================================================================================== -->
+		<!-- Configuration properties loaded from .env file                                     -->
+		<!-- ================================================================================== -->
+		<!-- Default values (will be overridden by .env file if it exists)                     -->
+		<!-- The .env file is loaded via properties-maven-plugin in the load-env profile       -->
+		<!-- ================================================================================== -->
 
-<!--		&lt;!&ndash; default values (will be overridden by config.properties if it exists) &ndash;&gt;-->
-<!--		<db.host>localhost</db.host>-->
-<!--		<db.port>5432</db.port>-->
-<!--		<db.database>db_database_default</db.database>-->
-<!--		<db.username>db_username_default</db.username>-->
-<!--		<db.password>db_password_default</db.password>-->
+		<!-- PostgreSQL Admin -->
+		<postgres_admin_username>postgres_admin_default</postgres_admin_username>
+		<postgres_admin_password>postgres_admin_default</postgres_admin_password>
+		<postgres_admin_database>postgres</postgres_admin_database>
 
-<!--		&lt;!&ndash; Backup/Restore Configuration &ndash;&gt;-->
-<!--		<db.backup.host>${db.host}</db.backup.host>-->
-<!--		<db.backup.port>${db.port}</db.backup.port>-->
-<!--		<db.backup.database>${db.database}</db.backup.database>-->
-<!--		<db.backup.username>${db.username}</db.backup.username>-->
-<!--		<db.backup.password>${db.password}</db.backup.password>-->
-<!--		<db.backup.directory>/db/backup/directory/default</db.backup.directory>-->
-<!--		<db.backup.executable>/usr/bin/pg_dump</db.backup.executable>-->
+		<!-- PostgreSQL Jeeeraaah Database -->
+		<postgres_jeeeraaah_username>postgres_jeeeraaah_default</postgres_jeeeraaah_username>
+		<postgres_jeeeraaah_password>postgres_jeeeraaah_default</postgres_jeeeraaah_password>
+		<postgres_jeeeraaah_database>jeeeraaah</postgres_jeeeraaah_database>
 
-<!--		<db.restore.host>${db.host}</db.restore.host>-->
-<!--		<db.restore.port>${db.port}</db.restore.port>-->
-<!--		<db.restore.database>${db.database}</db.restore.database>-->
-<!--		<db.restore.username>${db.username}</db.restore.username>-->
-<!--		<db.restore.password>${db.password}</db.restore.password>-->
-<!--		<db.restore.executable>/usr/bin/pg_restore</db.restore.executable>-->
+		<!-- PostgreSQL Lib Test Database -->
+		<postgres_libtest_username>lib_test_default</postgres_libtest_username>
+		<postgres_libtest_password>lib_test_default</postgres_libtest_password>
+		<postgres_libtest_database>lib_test</postgres_libtest_database>
 
-<!--		&lt;!&ndash; REST API Configuration &ndash;&gt;-->
-<!--		<rest.api.host>localhost</rest.api.host>-->
-<!--		<rest.api.port>9080</rest.api.port>-->
+		<!-- PostgreSQL Keycloak Database -->
+		<postgres_keycloak_username>postgres_keycloak_default</postgres_keycloak_username>
+		<postgres_keycloak_password>postgres_keycloak_default</postgres_keycloak_password>
+		<postgres_keycloak_database>keycloak</postgres_keycloak_database>
 
-<!--		&lt;!&ndash; Keycloak Configuration &ndash;&gt;-->
-<!--		<keycloak.host>localhost</keycloak.host>-->
-<!--		<keycloak.port>8080</keycloak.port>-->
-<!--		<keycloak.realm>realm_default</keycloak.realm>-->
-<!--		<keycloak.client.id>keycloak_client_id_default</keycloak.client.id>-->
-<!--		<keycloak.client.secret>keycloak_client_secret_default</keycloak.client.secret>-->
+		<!-- Keycloak Admin -->
+		<keycloak_admin_username>admin_default</keycloak_admin_username>
+		<keycloak_admin_password>admin_default</keycloak_admin_password>
 
-<!--		&lt;!&ndash; Open Liberty Server Configuration &ndash;&gt;-->
-<!--		<liberty.datasource.server.host>${db.host}</liberty.datasource.server.host>-->
-<!--		<liberty.datasource.server.port>${db.port}</liberty.datasource.server.port>-->
-<!--		<liberty.datasource.database>${db.database}</liberty.datasource.database>-->
-<!--		<liberty.datasource.username>${db.username}</liberty.datasource.username>-->
-<!--		<liberty.datasource.password>${db.password}</liberty.datasource.password>-->
+		<!-- Test Credentials -->
+		<test_username>test_default</test_username>
+		<test_password>test_default</test_password>
 	</properties>
 
 	<dependencyManagement>
@@ -842,7 +832,7 @@
 		</pluginManagement>
 
 		<plugins>
-			<!-- Load machine-specific properties from config.properties -->
+			<!-- Load machine-specific properties from config.properties AND .env -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>properties-maven-plugin</artifactId>
@@ -856,9 +846,24 @@
 						<configuration>
 							<files>
 								<!-- Use root project's config.properties -->
-								<file>${maven.multiModuleProjectDirectory}/config.properties</file>
+								<file>${project.root.dir}/config.properties</file>
 							</files>
 							<!-- Don't fail if config.properties doesn't exist, use defaults -->
+							<quiet>true</quiet>
+						</configuration>
+					</execution>
+					<execution>
+						<id>load-docker-env</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<!-- Load Docker environment from .env -->
+								<file>${project.root.dir}/config/shared/docker/.env</file>
+							</files>
+							<!-- Don't fail if .env doesn't exist -->
 							<quiet>true</quiet>
 						</configuration>
 					</execution>
@@ -920,4 +925,41 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<!-- ======================================== -->
+	<!-- Maven Profiles for Environment Loading  -->
+	<!-- ======================================== -->
+	<profiles>
+		<!-- Load environment from .env file (Docker environment) -->
+		<profile>
+			<id>load-env</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>properties-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>load-docker-env</id>
+								<phase>initialize</phase>
+								<goals>
+									<goal>read-project-properties</goal>
+								</goals>
+								<configuration>
+									<files>
+										<file>${project.root.dir}/config/shared/docker/.env</file>
+									</files>
+									<quiet>true</quiet>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 </project>

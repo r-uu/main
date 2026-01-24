@@ -113,10 +113,7 @@ echo ""
 # ═══════════════════════════════════════════════════════════════════
 log_step "5. Warte auf Keycloak-Initialisierung..."
 
-log_info "Warte 30 Sekunden auf Container-Start..."
-sleep 30
-
-# Prüfe Keycloak Health
+# Prüfe Keycloak Health (ohne pauschale Wartezeit)
 MAX_RETRIES=30
 RETRY=0
 while [ $RETRY -lt $MAX_RETRIES ]; do

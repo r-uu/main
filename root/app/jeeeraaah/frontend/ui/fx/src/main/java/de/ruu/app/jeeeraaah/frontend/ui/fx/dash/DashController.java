@@ -22,7 +22,7 @@ import de.ruu.app.jeeeraaah.common.api.bean.TaskBean;
 import de.ruu.app.jeeeraaah.common.api.bean.TaskGroupBean;
 import de.ruu.app.jeeeraaah.common.api.domain.TaskGroupFlat;
 import de.ruu.app.jeeeraaah.frontend.api.client.ws.rs.TaskGroupServiceClient;
-import de.ruu.app.jeeeraaah.frontend.ui.fx.auth.AuthenticationHelper;
+import de.ruu.app.jeeeraaah.frontend.ui.fx.util.ServiceOperationExecutor;
 import de.ruu.app.jeeeraaah.frontend.ui.fx.model.TaskGroupFXBean;
 import de.ruu.app.jeeeraaah.frontend.ui.fx.task.view.hierarchy.predecessor.TaskHierarchyPredecessors;
 import de.ruu.app.jeeeraaah.frontend.ui.fx.task.view.hierarchy.successor.TaskHierarchySuccessors;
@@ -39,7 +39,6 @@ import de.ruu.lib.fx.control.dialog.ExceptionDialog;
 import de.ruu.lib.mapstruct.ReferenceCycleTracking;
 import de.ruu.lib.postgres.util.ui.PostgresBackupUI;
 import de.ruu.lib.ws.rs.NonTechnicalException;
-import de.ruu.lib.ws.rs.SessionExpiredException;
 import de.ruu.lib.ws.rs.TechnicalException;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
@@ -97,14 +96,11 @@ class DashController extends DefaultFXCController<Dash, DashService> implements 
 	@Inject private TaskHierarchySuperSubTasks taskHierarchySuperSubTasks;
 	@Inject private TaskHierarchySuccessors    taskHierarchySuccessors;
 
-	// inject service clients that are used to fetchException in thread "main" org.jboss.weld.exceptions.DeploymentException: WELD-001408: Unsatisfied dependencies for type EventDispatcher<DashComponentReadyEvent> with qualifiers @Default
-	//  at injection point [BackedAnnotatedField] @Inject private de.ruu.app.jeeeraaah.frontend.ui.fx.dash.DashController.dashComponentReadyEventDispatcher
-	//  at de.ruu.app.jeeeraaah.frontend.ui.fx.dash.DashController.dashComponentReadyEventDispatcher(DashController.java:0) data from the server
+	// inject service clients that are used to fetch data from the server
 	@Inject private TaskGroupServiceClient taskGroupServiceClient;
-	// @Inject private TaskServiceClient taskServiceClient;
-	
-	// inject authentication helper for session expiry handling
-	@Inject private AuthenticationHelper authHelper;
+
+	// inject the centralized executor for service operations with session retry handling
+	@Inject private ServiceOperationExecutor executor;
 
 	@Inject private TaskGroupEditor  taskGroupEditor;
 	@Inject private PostgresBackupUI postgresBackupUI;
@@ -181,46 +177,17 @@ class DashController extends DefaultFXCController<Dash, DashService> implements 
 
 	private void fetchTaskGroupsFromBackendAndPopulateTaskGroupSelector()
 	{
-		// create and populate groups
 		try
 		{
-			Set<TaskGroupFlat> groups = taskGroupServiceClient.findAllFlat();
+			Set<TaskGroupFlat> groups = executor.execute(
+				() -> taskGroupServiceClient.findAllFlat(),
+				"fetching task groups",
+				"Failed to load task groups",
+				"Load failed after re-login"
+			);
 
 			// now we are ready to hand over the groups to groupSelector
 			taskGroupSelector.service().items(groups);
-		}
-		catch (SessionExpiredException e)
-		{
-			log.warn("Session expired while fetching task groups", e);
-			
-			// Handle session expiration with re-login dialog
-			boolean reLoginSuccessful = authHelper.handleSessionExpired(false);
-			
-			if (reLoginSuccessful)
-			{
-				// Retry the operation after successful re-login
-				try
-				{
-					Set<TaskGroupFlat> groups = taskGroupServiceClient.findAllFlat();
-					taskGroupSelector.service().items(groups);
-					log.info("Successfully fetched task groups after re-authentication");
-				}
-				catch (Exception retryException)
-				{
-					log.error("Failed to fetch task groups even after re-authentication", retryException);
-					ExceptionDialog.showAndWait("Failed to load task groups after re-login", retryException);
-				}
-			}
-			else
-			{
-				// User cancelled re-login
-				log.info("User cancelled re-login, application functionality may be limited");
-				AlertDialog.showAndWait(
-					"Authentication Required",
-					"You need to be logged in to access task groups.\n" +
-					"Please restart the application to continue working."
-				);
-			}
 		}
 		catch (TechnicalException | NonTechnicalException e)
 		{
@@ -257,8 +224,12 @@ class DashController extends DefaultFXCController<Dash, DashService> implements 
 		// fetch the task group with its tasks and their neighbour tasks from the server
 		try
 		{
-			Optional<TaskGroupBean> optional =
-					taskGroupServiceClient .findWithTasksAndDirectNeighbours(requireNonNull(actSelection.id()));
+			Optional<TaskGroupBean> optional = executor.execute(
+				() -> taskGroupServiceClient.findWithTasksAndDirectNeighbours(requireNonNull(actSelection.id())),
+				"fetching task group details for id: " + actSelection.id(),
+				"Failed to load task group details",
+				"Load failed after re-login"
+			);
 
 			if (optional.isPresent())
 			{
@@ -325,23 +296,28 @@ class DashController extends DefaultFXCController<Dash, DashService> implements 
 		if (optional.isPresent())
 		{
 			taskGroupFXBean = optional.get();
-			taskGroupBean   = toBean(taskGroupFXBean, new ReferenceCycleTracking());
+			final TaskGroupBean beanToCreate = toBean(taskGroupFXBean, new ReferenceCycleTracking());
 
 			// let task group service client create a new item in the backend
 			try
 			{
-				taskGroupBean = taskGroupServiceClient.create(taskGroupBean);
+				executor.execute(
+					() -> taskGroupServiceClient.create(beanToCreate),
+					"creating task group",
+					"Failed to create task group",
+					"Creation failed after re-login"
+				);
 
 				// repopulate and then focus task group selector
 				fetchTaskGroupsFromBackendAndPopulateTaskGroupSelector();
 			}
 			catch (TechnicalException | NonTechnicalException e)
 			{
-				ExceptionDialog.showAndWait
-				(
-						"failure creating task group",
-						"task\n\n" + taskGroupBean + "\n\ncould not be created", e.getMessage(),
-						e
+				ExceptionDialog.showAndWait(
+					"failure creating task group",
+					"task\n\n" + beanToCreate + "\n\ncould not be created",
+					e.getMessage(),
+					e
 				);
 			}
 		}
@@ -354,12 +330,17 @@ class DashController extends DefaultFXCController<Dash, DashService> implements 
 				        // not be called
 
 		// try to fetch the persisted task group from backend
-		Long                    id = selectedTaskGroupDTOFlat.get().id();
+		final Long id = selectedTaskGroupDTOFlat.get().id();
 		Optional<TaskGroupBean> optionalPersisted;
 
 		try
 		{
-			optionalPersisted = taskGroupServiceClient.read(id);
+			optionalPersisted = executor.execute(
+				() -> taskGroupServiceClient.read(id),
+				"reading task group for id: " + id,
+				"Failed to read task group",
+				"Read failed after re-login"
+			);
 		}
 		catch (TechnicalException | NonTechnicalException e)
 		{
@@ -393,14 +374,23 @@ class DashController extends DefaultFXCController<Dash, DashService> implements 
 
 		if (optional.isPresent())
 		{
-			taskGroupBean = toBean(optional.get(), new ReferenceCycleTracking());
+			final TaskGroupBean beanToUpdate = toBean(optional.get(), new ReferenceCycleTracking());
 
 			// let client update the item in backend
 			try
 			{
-				taskGroupServiceClient.update(taskGroupBean);
+				executor.execute(
+					() -> {
+						taskGroupServiceClient.update(beanToUpdate);
+						return null; // Void operation
+					},
+					"updating task group",
+					"Failed to update task group",
+					"Update failed after re-login"
+				);
+
 				// update task group selector
-				taskGroupSelector.service().updateItem(toFlatBean(taskGroupBean, new ReferenceCycleTracking()));
+				taskGroupSelector.service().updateItem(toFlatBean(beanToUpdate, new ReferenceCycleTracking()));
 			}
 			catch (TechnicalException | NonTechnicalException e)
 			{

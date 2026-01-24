@@ -33,8 +33,19 @@ if ! docker ps | grep -q "keycloak-service.*healthy"; then
     echo "   Starte Container..."
     cd /home/r-uu/develop/github/main/config/shared/docker
     docker compose up -d
-    echo "   Warte 20 Sekunden auf Keycloak..."
-    sleep 20
+
+    # Warte auf Keycloak Health (max 60 Sekunden)
+    echo "   Warte auf Keycloak..."
+    RETRY=0
+    MAX_RETRIES=30
+    while [ $RETRY -lt $MAX_RETRIES ]; do
+        if docker ps | grep -q "keycloak.*healthy"; then
+            echo "   ✅ Keycloak ist healthy!"
+            break
+        fi
+        sleep 2
+        RETRY=$((RETRY + 1))
+    done
 fi
 echo "   ✅ Keycloak Container läuft"
 echo ""
