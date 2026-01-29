@@ -29,9 +29,9 @@ public class PostgresDatabaseHealthCheck implements HealthCheck
 
 	/**
 	 * Convenience constructor with default credentials from .env:
-	 * - For jeeeraaah DB: postgres_jeeeraaah_username / postgres_jeeeraaah_password
-	 * - For keycloak DB: postgres_keycloak_username / postgres_keycloak_password
-	 * - For lib_test DB: postgres_jeeeraaah_username / postgres_jeeeraaah_password (same as jeeeraaah)
+	 * - For jeeeraaah DB: jeeeraaah / jeeeraaah
+	 * - For keycloak DB: keycloak / keycloak
+	 * - For lib_test DB: lib_test / lib_test
 	 */
 	public PostgresDatabaseHealthCheck(String containerName, String databaseName, int port)
 	{
@@ -39,14 +39,19 @@ public class PostgresDatabaseHealthCheck implements HealthCheck
 		String user, pass;
 		if ("keycloak".equals(databaseName))
 		{
-			user = "postgres_keycloak_username";
-			pass = "postgres_keycloak_password";
+			user = "keycloak";
+			pass = "keycloak";
+		}
+		else if ("lib_test".equals(databaseName))
+		{
+			user = "lib_test";
+			pass = "lib_test";
 		}
 		else
 		{
-			// jeeeraaah and lib_test both use jeeeraaah credentials
-			user = "postgres_jeeeraaah_username";
-			pass = "postgres_jeeeraaah_password";
+			// jeeeraaah
+			user = "jeeeraaah";
+			pass = "jeeeraaah";
 		}
 		this.containerName = containerName;
 		this.databaseName = databaseName;

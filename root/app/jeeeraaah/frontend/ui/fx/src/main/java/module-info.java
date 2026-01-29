@@ -24,7 +24,7 @@ module de.ruu.app.jeeeraaah.frontend.ui.fx
 	requires de.ruu.app.jeeeraaah.frontend.common.mapping;
 
 	requires static lombok;
-	requires org.slf4j;
+	requires org.slf4j;  // Automatic module - needs --add-modules in .mvn/jvm.config for IntelliJ
 	requires de.ruu.lib.util.config.mp;
 	requires de.ruu.lib.postgres.util.ui;
 

@@ -50,7 +50,7 @@ sleep 5
 # Warte bis postgres-jeeeraaah healthy ist
 echo "   Warte auf postgres-jeeeraaah..."
 for i in {1..30}; do
-    if docker exec postgres-jeeeraaah pg_isready -U postgres_jeeeraaah_username -d postgres_jeeeraaah_database 2>/dev/null; then
+    if docker exec postgres-jeeeraaah pg_isready -U POSTGRES_JEEERAAAH_USERname -d POSTGRES_JEEERAAAH_DATABASE 2>/dev/null; then
         echo "   ✅ postgres-jeeeraaah ist bereit"
         break
     fi
@@ -64,7 +64,7 @@ done
 # Warte bis postgres-keycloak healthy ist
 echo "   Warte auf postgres-keycloak..."
 for i in {1..30}; do
-    if docker exec postgres-keycloak pg_isready -U postgres_keycloak_username -d postgres_keycloak_database 2>/dev/null; then
+    if docker exec postgres-keycloak pg_isready -U POSTGRES_KEYCLOAK_USERname -d POSTGRES_KEYCLOAK_DATABASE 2>/dev/null; then
         echo "   ✅ postgres-keycloak ist bereit"
         break
     fi
@@ -97,14 +97,14 @@ cd ../../../root/lib/keycloak.admin
 source ../../../config/shared/docker/.env
 
 # Debug: Zeige ob Variablen gesetzt sind
-echo "   Debug: keycloak_admin_username=${keycloak_admin_username}"
+echo "   Debug: KEYCLOAK_ADMIN_USERname=${KEYCLOAK_ADMIN_USERname}"
 echo "   Debug: test_username=${test_username}"
 
 # Übergebe Credentials als System Properties
 mvn exec:java \
   -Dexec.mainClass="de.ruu.lib.keycloak.admin.setup.KeycloakRealmSetup" \
-  -Dkeycloak.admin.user="${keycloak_admin_username}" \
-  -Dkeycloak.admin.password="${keycloak_admin_password}" \
+  -Dkeycloak.admin.user="${KEYCLOAK_ADMIN_USERname}" \
+  -Dkeycloak.admin.password="${KEYCLOAK_ADMIN_PASSWORD}" \
   -Dkeycloak.test.user="${test_username}" \
   -Dkeycloak.test.password="${test_password}" \
   -q
@@ -122,18 +122,18 @@ docker volume ls | grep postgres
 echo ""
 echo "🔐 Credentials (aus .env):"
 echo "   PostgreSQL Jeeeraaah:"
-echo "     - User: \$postgres_jeeeraaah_username"
-echo "     - Password: \$postgres_jeeeraaah_password"
-echo "     - Database: \$postgres_jeeeraaah_database"
+echo "     - User: \$POSTGRES_JEEERAAAH_USERname"
+echo "     - Password: \$POSTGRES_JEEERAAAH_PASSWORD"
+echo "     - Database: \$POSTGRES_JEEERAAAH_DATABASE"
 echo ""
 echo "   PostgreSQL Keycloak:"
-echo "     - User: \$postgres_keycloak_username"
-echo "     - Password: \$postgres_keycloak_password"
-echo "     - Database: \$postgres_keycloak_database"
+echo "     - User: \$POSTGRES_KEYCLOAK_USERname"
+echo "     - Password: \$POSTGRES_KEYCLOAK_PASSWORD"
+echo "     - Database: \$POSTGRES_KEYCLOAK_DATABASE"
 echo ""
 echo "   Keycloak Admin:"
-echo "     - User: \$keycloak_admin_username"
-echo "     - Password: \$keycloak_admin_password"
+echo "     - User: \$KEYCLOAK_ADMIN_USERname"
+echo "     - Password: \$KEYCLOAK_ADMIN_PASSWORD"
 echo ""
 echo "   Test User:"
 echo "     - User: \$test_username"

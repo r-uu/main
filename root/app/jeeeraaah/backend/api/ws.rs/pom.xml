@@ -14,29 +14,26 @@
 
 	<dependencies>
 
-		<!-- internal modules -->
-		<dependency>
-			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.ws.rs</artifactId>
-		            <version>${project.version}</version>
-        </dependency>
-		<dependency>
-			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.keycloak.admin</artifactId>
-			<exclusions>
-				<!-- exclude resteasy - provided by Liberty -->
-				<exclusion>
-					<groupId>org.jboss.resteasy</groupId>
-					<artifactId>*</artifactId>
-				</exclusion>
-			</exclusions>
-		            <version>${project.version}</version>
-        </dependency>
-		<dependency>
-			<groupId>r-uu</groupId>
-			<artifactId>r-uu.app.jeeeraaah.backend.common.mapping</artifactId>
-		            <version>${project.version}</version>
-        </dependency>
+	<!-- internal modules -->
+	<dependency>
+		<groupId>r-uu</groupId>
+		<artifactId>r-uu.lib.ws.rs</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>r-uu</groupId>
+		<artifactId>r-uu.lib.keycloak.admin</artifactId>
+		<exclusions>
+			<!-- exclude resteasy - provided by Liberty -->
+			<exclusion>
+				<groupId>org.jboss.resteasy</groupId>
+				<artifactId>*</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+	<dependency>
+		<groupId>r-uu</groupId>
+		<artifactId>r-uu.app.jeeeraaah.backend.common.mapping</artifactId>
+	</dependency>
 		<!--
 		r-uu.app.jeeeraaah.backend.api.open-liberty.shared copies all necessary dependencies to
 		src/main/liberty/config/lib/global in this war module
@@ -50,38 +47,37 @@
 		<!--			<scope>provided</scope>-->
 		<!--		            <version>${project.version}</version>
         </dependency>-->
-		<dependency>
-			<groupId>r-uu</groupId>
-			<artifactId>r-uu.app.jeeeraaah.backend.persistence.jpa</artifactId>
-			<exclusions>
-				<!-- exclude because they are provided by open liberty shared module -->
-				<exclusion>
-					<groupId>org.hibernate.orm</groupId>
-					<artifactId>*</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.logging</groupId>
-					<artifactId>*</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>net.bytebuddy</groupId>
-					<artifactId>*</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.fasterxml</groupId>
-					<artifactId>*</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.antlr</groupId>
-					<artifactId>*</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.postgresql</groupId>
-					<artifactId>postgresql</artifactId>
-				</exclusion>
-			</exclusions>
-		            <version>${project.version}</version>
-        </dependency>
+	<dependency>
+		<groupId>r-uu</groupId>
+		<artifactId>r-uu.app.jeeeraaah.backend.persistence.jpa</artifactId>
+		<exclusions>
+			<!-- exclude because they are provided by open liberty shared module -->
+			<exclusion>
+				<groupId>org.hibernate.orm</groupId>
+				<artifactId>*</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>org.jboss.logging</groupId>
+				<artifactId>*</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>net.bytebuddy</groupId>
+				<artifactId>*</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>com.fasterxml</groupId>
+				<artifactId>*</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>org.antlr</groupId>
+				<artifactId>*</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>org.postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
 
 		<!-- Jakarta EE APIs (provided) -->
 		<dependency>

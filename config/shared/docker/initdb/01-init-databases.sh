@@ -2,42 +2,74 @@
 set -e
 
 echo "════════════════════════════════════════════════════════════════════"
-echo "PostgreSQL Initialisierung für JEEERAAAH"
+echo "PostgreSQL Initialization for JEEERAAAH"
+echo "════════════════════════════════════════════════════════════════════"
+echo "Main DB:      $POSTGRES_DB (created automatically by Docker)"
+echo "Main User:    $POSTGRES_USER"
+echo "Test DB:      ${LIB_TEST_DB:-lib_test}"
+echo "Test User:    ${LIB_TEST_USER:-lib_test}"
 echo "════════════════════════════════════════════════════════════════════"
 
-# Create databases (as the postgres superuser which is $POSTGRES_USER)
+# ============================================================================
+# Create lib_test database with dedicated user
+# Uses environment variables from docker-compose.yml:
+#   LIB_TEST_DB, LIB_TEST_USER, LIB_TEST_PASSWORD
+# ============================================================================
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-    -- Test-Datenbank für Library-Tests
-    CREATE DATABASE lib_test OWNER $POSTGRES_USER;
-    GRANT ALL PRIVILEGES ON DATABASE lib_test TO $POSTGRES_USER;
+    -- Create dedicated user for lib_test database
+    -- Uses credentials from .env (postgres_lib_test_*)
+    CREATE USER ${LIB_TEST_USER} WITH PASSWORD '${LIB_TEST_PASSWORD}';
 
-    \echo '✓ Datenbank erstellt: lib_test'
+    -- Create lib_test database owned by lib_test user
+    CREATE DATABASE ${LIB_TEST_DB} OWNER ${LIB_TEST_USER};
+
+    -- Grant all privileges to lib_test user
+    GRANT ALL PRIVILEGES ON DATABASE ${LIB_TEST_DB} TO ${LIB_TEST_USER};
+
+    \echo '✓ Database created: ${LIB_TEST_DB}'
+    \echo '✓ User created: ${LIB_TEST_USER}'
 EOSQL
 
-# Grant schema permissions for jeeeraaah (main DB created by env var)
+# ============================================================================
+# Configure main jeeeraaah database
+# Enable required extensions and grant schema permissions
+# ============================================================================
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+    -- Grant permissions on public schema
     GRANT ALL ON SCHEMA public TO $POSTGRES_USER;
 
+    -- Enable UUID generation extension
     CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+    -- Enable fuzzy text search extension
     CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
-    \echo '✓ Schema-Rechte und Extensions für jeeeraaah aktiviert'
+    \echo '✓ Schema permissions and extensions enabled for: $POSTGRES_DB'
 EOSQL
 
-# Grant schema permissions for lib_test
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "lib_test" <<-EOSQL
-    GRANT ALL ON SCHEMA public TO $POSTGRES_USER;
+# ============================================================================
+# Configure lib_test database
+# Enable required extensions and grant schema permissions
+# ============================================================================
+psql -v ON_ERROR_STOP=1 --username "${LIB_TEST_USER}" --dbname "${LIB_TEST_DB}" <<-EOSQL
+    -- Grant permissions on public schema to lib_test user
+    GRANT ALL ON SCHEMA public TO ${LIB_TEST_USER};
 
+    -- Enable UUID generation extension
     CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+    -- Enable fuzzy text search extension
     CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
-    \echo '✓ Schema-Rechte und Extensions für lib_test aktiviert'
+    \echo '✓ Schema permissions and extensions enabled for: ${LIB_TEST_DB}'
 EOSQL
 
 echo "════════════════════════════════════════════════════════════════════"
-echo "✅ PostgreSQL Initialisierung abgeschlossen"
+echo "✅ PostgreSQL Initialization Complete"
 echo "════════════════════════════════════════════════════════════════════"
-echo "Verfügbare Datenbanken:"
-echo "  - $POSTGRES_DB (Haupt-Anwendung, erstellt via POSTGRES_DB)"
-echo "  - lib_test (Library-Tests)"
+echo "Available databases:"
+echo "  - $POSTGRES_DB (Main application, user: $POSTGRES_USER)"
+echo "  - ${LIB_TEST_DB} (Library tests, user: ${LIB_TEST_USER})"
 echo "════════════════════════════════════════════════════════════════════"
+
+

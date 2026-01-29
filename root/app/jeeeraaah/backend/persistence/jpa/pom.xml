@@ -17,32 +17,27 @@
 
 		<!-- alphabetically by artifactId -->
 		<dependency>
-			<groupId>r-uu</groupId>
-			<artifactId>r-uu.app.jeeeraaah.common.api.domain</artifactId>
-			<scope>compile</scope>
-		            <version>${project.version}</version>
-        </dependency>
-		<dependency>
-			<groupId>r-uu</groupId>
-			<artifactId>r-uu.app.jeeeraaah.common.api.ws.rs</artifactId>
-		            <version>${project.version}</version>
-        </dependency>
-		<dependency>
-			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.jpa.core</artifactId>
-		            <version>${project.version}</version>
-        </dependency>
-		<dependency>
-			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.mapstruct</artifactId>
-		            <version>${project.version}</version>
-        </dependency>
-		<dependency>
-			<groupId>r-uu</groupId>
-			<artifactId>r-uu.lib.mapstruct.spi</artifactId>
-			<scope>provided</scope>
-		            <version>${project.version}</version>
-        </dependency>
+		<groupId>r-uu</groupId>
+		<artifactId>r-uu.app.jeeeraaah.common.api.domain</artifactId>
+		<scope>compile</scope>
+	</dependency>
+	<dependency>
+		<groupId>r-uu</groupId>
+		<artifactId>r-uu.app.jeeeraaah.common.api.ws.rs</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>r-uu</groupId>
+		<artifactId>r-uu.lib.jpa.core</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>r-uu</groupId>
+		<artifactId>r-uu.lib.mapstruct</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>r-uu</groupId>
+		<artifactId>r-uu.lib.mapstruct.spi</artifactId>
+		<scope>provided</scope>
+	</dependency>
 
 		<!-- Jakarta APIs provided by the application server (do not bundle) -->
 		<dependency>
@@ -90,11 +85,10 @@
 			<artifactId>hibernate-jpamodelgen</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>r-uu</groupId>
-			<artifactId>r-uu.app.jeeeraaah.common.api.mapping</artifactId>
-		            <version>${project.version}</version>
-        </dependency>
+	<dependency>
+		<groupId>r-uu</groupId>
+		<artifactId>r-uu.app.jeeeraaah.common.api.mapping</artifactId>
+	</dependency>
 
 	</dependencies>
 

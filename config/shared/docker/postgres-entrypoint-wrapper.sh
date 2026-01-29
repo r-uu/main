@@ -20,6 +20,7 @@ echo "   POSTGRES_DB: ${POSTGRES_DB}"
 ADDITIONAL_DATABASES=()
 
 if [ "$POSTGRES_DB" = "jeeeraaah" ]; then
+    # Verwende POSTGRES_USER als Owner (jeeeraaah), da dieser garantiert existiert
     ADDITIONAL_DATABASES=("lib_test:${POSTGRES_USER}:Library test database")
 fi
 
@@ -35,7 +36,17 @@ ensure_databases() {
         sleep 1
     done
 
+    # Zusätzliche Wartezeit für vollständige Initialisierung
+    sleep 3
+
     echo "✅ PostgreSQL ist bereit"
+
+    # Prüfe ob POSTGRES_USER existiert
+    USER_EXISTS=$(psql -U postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='$POSTGRES_USER'" 2>/dev/null || echo "0")
+    if [ "$USER_EXISTS" != "1" ]; then
+        echo "  ⚠️  User $POSTGRES_USER existiert noch nicht, warte..."
+        sleep 2
+    fi
 
     # Hauptdatenbank (POSTGRES_DB) wird automatisch vom Docker-Entrypoint erstellt
     echo "  ✅ Hauptdatenbank: $POSTGRES_DB (wird automatisch erstellt)"
@@ -77,8 +88,8 @@ EOSQL
 # Starte Datenbank-Setup im Hintergrund (nach PostgreSQL-Start)
 # ═══════════════════════════════════════════════════════════════════
 (
-    # Warte 5 Sekunden bis PostgreSQL vollständig gestartet ist
-    sleep 5
+    # Warte 10 Sekunden bis PostgreSQL vollständig gestartet und initialisiert ist
+    sleep 10
     ensure_databases
 ) &
 

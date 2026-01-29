@@ -555,17 +555,102 @@
 				<version>3.0.4</version>
 			</dependency>
 
-			<!-- Internal modules grouped by applications and libraries, sorted alphabetically by artifactId inside groups -->
+		<!-- Internal modules grouped by applications and libraries, sorted alphabetically by artifactId inside groups -->
 
-			<!-- ############ -->
-			<!-- applications -->
-			<!-- ############ -->
+		<!-- ############ -->
+		<!-- applications -->
+		<!-- ############ -->
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.app.jeeeraaah.backend.common.mapping</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.app.jeeeraaah.backend.persistence.jpa</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.app.jeeeraaah.common.api.bean</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.app.jeeeraaah.common.api.domain</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.app.jeeeraaah.common.api.mapping</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.app.jeeeraaah.common.api.ws.rs</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.app.jeeeraaah.frontend.ui.fx.model</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
-			<!-- ######### -->
-			<!-- libraries -->
-			<!-- ######### -->
+		<!-- ######### -->
+		<!-- libraries -->
+		<!-- ######### -->
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.cdi.common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.cdi.se</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.docker.health</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.jpa.core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.keycloak.admin</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.mapstruct</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.mapstruct.spi</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.mp.config</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.util</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.ws.rs</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
-		</dependencies>
+	</dependencies>
 	</dependencyManagement>
 
 	<repositories>
@@ -608,41 +693,21 @@
 
 	<build>
 		<!-- ============================================================================ -->
-		<!-- global resource configuration with filtering                               -->
+		<!-- Global resource configuration WITHOUT filtering                            -->
 		<!-- ============================================================================ -->
-		<!-- enable maven resource filtering to replace ${property} placeholders        -->
-		<!-- in microprofile-config.properties files with values from config.properties -->
+		<!-- MicroProfile Config reads environment variables directly at runtime         -->
+		<!-- No Maven property replacement needed - simpler and more flexible            -->
 		<!-- ============================================================================ -->
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-				<includes>
-					<include>**/*.properties</include>
-				</includes>
-			</resource>
-			<resource>
-				<directory>src/main/resources</directory>
 				<filtering>false</filtering>
-				<excludes>
-					<exclude>**/*.properties</exclude>
-				</excludes>
 			</resource>
 		</resources>
 		<testResources>
 			<testResource>
 				<directory>src/test/resources</directory>
-				<filtering>true</filtering>
-				<includes>
-					<include>**/*.properties</include>
-				</includes>
-			</testResource>
-			<testResource>
-				<directory>src/test/resources</directory>
 				<filtering>false</filtering>
-				<excludes>
-					<exclude>**/*.properties</exclude>
-				</excludes>
 			</testResource>
 		</testResources>
 

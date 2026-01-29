@@ -1,15 +1,21 @@
-
 services:
-  # ═══════════════════════════════════════════════════════════════════
-  # PostgreSQL für JEEERAaH Application
-  # ═══════════════════════════════════════════════════════════════════
+  # ============================================================================
+  # PostgreSQL Database for JEEERAaH Application
+  # Main application database - hosts both 'jeeeraaah' and 'lib_test' databases
+  # Uses credentials from .env: postgres_jeeeraaah_* and postgres_lib_test_*
+  # ============================================================================
   postgres-jeeeraaah:
     image: postgres:16-alpine
     container_name: postgres-jeeeraaah
     environment:
-      POSTGRES_DB: ${postgres_jeeeraaah_database_jeeeraaah}
-      POSTGRES_USER: ${postgres_jeeeraaah_user}
-      POSTGRES_PASSWORD: ${postgres_jeeeraaah_password}
+      # Primary database configuration from .env (POSTGRES_JEEERAAAH_*)
+      POSTGRES_DB: ${POSTGRES_JEEERAAAH_DATABASE}
+      POSTGRES_USER: ${POSTGRES_JEEERAAAH_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_JEEERAAAH_PASSWORD}
+      # Additional database credentials passed to init scripts (POSTGRES_LIB_TEST_*)
+      LIB_TEST_DB: ${POSTGRES_LIB_TEST_DATABASE}
+      LIB_TEST_USER: ${POSTGRES_LIB_TEST_USER}
+      LIB_TEST_PASSWORD: ${POSTGRES_LIB_TEST_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -30,18 +36,22 @@ services:
       start_period: 30s
     restart: always
 
-  # ═══════════════════════════════════════════════════════════════════
-  # PostgreSQL für Keycloak
-  # ═══════════════════════════════════════════════════════════════════
+  # ============================================================================
+  # PostgreSQL Database for Keycloak
+  # Dedicated database instance for Keycloak identity management
+  # Uses credentials from .env: postgres_keycloak_*
+  # Exposed on host port 5433 to avoid conflict with postgres-jeeeraaah
+  # ============================================================================
   postgres-keycloak:
     image: postgres:16-alpine
     container_name: postgres-keycloak
     environment:
-      POSTGRES_DB: ${postgres_keycloak_database}
-      POSTGRES_USER: ${postgres_keycloak_user}
-      POSTGRES_PASSWORD: ${postgres_keycloak_password}
+      # Database configuration from .env (POSTGRES_KEYCLOAK_*)
+      POSTGRES_DB: ${POSTGRES_KEYCLOAK_DATABASE}
+      POSTGRES_USER: ${POSTGRES_KEYCLOAK_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_KEYCLOAK_PASSWORD}
     ports:
-      - "5433:5432"  # Anderer externer Port, intern weiterhin 5432
+      - "5433:5432"  # External port 5433, internal PostgreSQL default 5432
     volumes:
       - postgres-keycloak-data:/var/lib/postgresql/data
       - postgres-keycloak-backups:/backups
@@ -49,35 +59,40 @@ services:
     networks:
       - ruu-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${postgres_keycloak_user} -d ${postgres_keycloak_database}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_KEYCLOAK_USER} -d ${POSTGRES_KEYCLOAK_DATABASE}"]
       interval: 10s
       timeout: 5s
       retries: 5
     restart: always
 
-  # ═══════════════════════════════════════════════════════════════════
+  # ============================================================================
   # Keycloak - Identity and Access Management
-  # ═══════════════════════════════════════════════════════════════════
+  # Provides authentication and authorization services
+  # Uses credentials from .env: keycloak_admin_* and postgres_keycloak_*
+  # Admin console: http://localhost:8080/admin
+  # ============================================================================
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     container_name: keycloak
     environment:
-      # Admin Credentials (neue Variablennamen seit Keycloak 23+)
-      KC_BOOTSTRAP_ADMIN_USERNAME: ${keycloak_admin_user}
-      KC_BOOTSTRAP_ADMIN_PASSWORD: ${keycloak_admin_password}
+      # Admin credentials from .env (KEYCLOAK_ADMIN_*)
+      # Used to access Keycloak Admin Console
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USER}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
 
-      # Database Configuration - Eigene PostgreSQL-Instanz
+      # Database configuration - connects to postgres-keycloak container
+      # Uses POSTGRES_KEYCLOAK_* credentials from .env
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/${postgres_keycloak_database}
-      KC_DB_USERNAME: ${postgres_keycloak_user}
-      KC_DB_PASSWORD: ${postgres_keycloak_password}
+      KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/${POSTGRES_KEYCLOAK_DATABASE}
+      KC_DB_USERNAME: ${POSTGRES_KEYCLOAK_USER}
+      KC_DB_PASSWORD: ${POSTGRES_KEYCLOAK_PASSWORD}
 
-      # Server Configuration
-      KC_HOSTNAME_STRICT: "false"
-      KC_HTTP_ENABLED: "true"
-      KC_PROXY: edge
-      KC_HEALTH_ENABLED: "true"
-      KC_METRICS_ENABLED: "true"
+      # Server configuration for development mode
+      KC_HOSTNAME_STRICT: "false"           # Allow non-strict hostname checking
+      KC_HTTP_ENABLED: "true"               # Enable HTTP (not just HTTPS)
+      KC_PROXY: edge                        # Trust proxy headers
+      KC_HEALTH_ENABLED: "true"             # Enable health endpoints
+      KC_METRICS_ENABLED: "true"            # Enable metrics endpoints
     ports:
       - "8080:8080"
     volumes:
@@ -99,9 +114,13 @@ services:
       start_period: 60s
     restart: always
 
-  # ═══════════════════════════════════════════════════════════════════
+  # ============================================================================
   # JasperReports Service - Report Generation
-  # ═══════════════════════════════════════════════════════════════════
+  # Provides REST API for generating reports from JRXML templates
+  # Templates are mounted from host filesystem (read-only)
+  # Generated reports are stored in Docker volume
+  # API: http://localhost:8090
+  # ============================================================================
   jasperreports:
     build:
       context: ../../..
@@ -110,13 +129,13 @@ services:
     ports:
       - "8090:8090"
     volumes:
-      # Templates directory (read-only)
+      # Templates directory (read-only) - contains JRXML report templates
       - ../../../root/sandbox/office/microsoft/word/jasperreports/templates:/app/templates:ro
-      # Output directory for generated reports
+      # Output directory for generated reports (DOCX, PDF, etc.)
       - jasperreports-output:/app/output
     environment:
-      - PORT=8090
-      - JAVA_OPTS=-Xmx512m
+      - PORT=8090                           # HTTP server port
+      - JAVA_OPTS=-Xmx512m                  # JVM memory limit
     networks:
       - ruu-network
     healthcheck:
@@ -133,25 +152,29 @@ networks:
     name: ruu-network
 
 volumes:
-  # Volumes für JEEERAaH PostgreSQL
+  # ============================================================================
+  # Persistent Volumes for PostgreSQL Databases
+  # ============================================================================
+
+  # JEEERAaH Application Database Volumes
   postgres-jeeeraaah-data:
-    name: postgres-jeeeraaah-data
+    name: postgres-jeeeraaah-data          # Database files for jeeeraaah and lib_test
   postgres-jeeeraaah-backups:
-    name: postgres-jeeeraaah-backups
+    name: postgres-jeeeraaah-backups       # Backup storage for jeeeraaah databases
 
-  # Volumes für Keycloak PostgreSQL
+  # Keycloak Database Volumes
   postgres-keycloak-data:
-    name: postgres-keycloak-data
+    name: postgres-keycloak-data           # Database files for keycloak
   postgres-keycloak-backups:
-    name: postgres-keycloak-backups
+    name: postgres-keycloak-backups        # Backup storage for keycloak database
 
-  # Keycloak data directory
+  # Keycloak Application Data
   keycloak-data:
-    name: keycloak-data
+    name: keycloak-data                    # Keycloak themes, realms, and configuration
 
-  # Volumes für JasperReports
+  # JasperReports Generated Output
   jasperreports-output:
-    name: jasperreports-output
+    name: jasperreports-output             # Generated DOCX, PDF reports
 
 # ═══════════════════════════════════════════════════════════════════
 # Hinweise

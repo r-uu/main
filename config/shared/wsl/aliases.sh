@@ -74,12 +74,17 @@ alias ruu-docker-restart='ruu-docker-down && ruu-docker-up'
 alias ruu-docker-logs='cd $RUU_DOCKER && docker compose logs -f'
 alias ruu-docker-ps='docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"'
 alias ruu-docker-cleanup='docker container prune -f && docker volume prune -f && echo "✅ Container und Volumes bereinigt"'
-alias ruu-docker-reset='bash $RUU_DOCKER/reset-all-containers.sh'
+alias ruu-docker-reset='bash $RUU_DOCKER/complete-reset.sh'
+alias ruu-docker-setup='bash $RUU_DOCKER/complete-setup.sh'
 
 # Docker - Starte alle Container und warte bis sie bereit sind
 alias ruu-docker-start-all='bash $RUU_DOCKER/start-all-and-wait.sh'
 
-# Docker - Automatischer Systemstart (startet alle Services)
+# Docker - Automatischer Systemstart (startet alle Services und wartet bis ready)
+alias ruu-docker-startup='bash $RUU_DOCKER/startup-and-setup.sh'
+alias ruu-docker-status='bash $RUU_DOCKER/check-status.sh'
+
+# Docker - Alte Startup-Skripte (deprecated, bitte ruu-docker-startup verwenden)
 alias ruu-startup='bash $RUU_CONFIG/shared/scripts/startup-complete.sh'
 alias ruu-startup-fast='bash $RUU_CONFIG/shared/scripts/startup-docker-services.sh'
 
@@ -115,8 +120,14 @@ alias ruu-keycloak-admin='echo "Keycloak Admin: http://localhost:8080/admin (Use
 # Keycloak Realm Setup (lädt .env vor Ausführung)
 alias ruu-keycloak-setup='cd $RUU_ROOT/lib/keycloak.admin && mvn exec:java -Dexec.mainClass="de.ruu.lib.keycloak.admin.setup.KeycloakRealmSetup" -Dkeycloak.admin.user=admin -Dkeycloak.admin.password=admin'
 
-# Keycloak - Komplett-Reset (Realm neu erstellen)
+# Keycloak - Komplett-Reset (Container + Volume neu erstellen, dann Realm)
 ruu-keycloak-reset() {
+    echo "��� Keycloak Komplett-Reset..."
+    bash "$RUU_DOCKER/reset-keycloak.sh"
+}
+
+# Keycloak - Nur Realm neu erstellen (ohne Container-Reset)
+ruu-keycloak-realm-reset() {
     echo "🔄 Keycloak Realm neu erstellen..."
     cd "$RUU_ROOT/lib/keycloak.admin" || return 1
     source "$RUU_DOCKER/.env"
@@ -180,6 +191,11 @@ alias ruu-aliases-edit='${EDITOR:-nano} $RUU_HOME/config/shared/wsl/aliases.sh'
 # ═══════════════════════════════════════════════════════════════════
 alias ruu-help='cat $RUU_HOME/config/shared/wsl/aliases.sh | grep "^alias ruu-" | sed "s/alias //" | sed "s/=/\t→ /" | sort | column -t -s "→"'
 alias ruu-docs='ls -1 $RUU_HOME/config/*.md && echo "" && cat $RUU_HOME/START-HERE.md'
+
+# ═══════════════════════════════════════════════════════════════════
+# Application Runner (uses Maven exec:java for correct JPMS module path)
+# ═══════════════════════════════════════════════════════════════════
+alias ruu-dash='cd $RUU_ROOT/app/jeeeraaah/frontend/ui/fx && mvn exec:java'
 
 # ═══════════════════════════════════════════════════════════════════
 # Initialisierung & Git-Kompatibilität

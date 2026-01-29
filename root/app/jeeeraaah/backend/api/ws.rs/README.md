@@ -1,4 +1,4 @@
-# JEEERAaH Backend API (OpenLiberty + JTA/JPA)
+# JEEERAAAH Backend API (OpenLiberty + JTA/JPA)
 
 Dieses Modul stellt die JEEERAaH Backend API bereit, deployt als WAR auf OpenLiberty. Die App nutzt JTA/JPA mit einer PostgreSQL-Datenquelle.
 

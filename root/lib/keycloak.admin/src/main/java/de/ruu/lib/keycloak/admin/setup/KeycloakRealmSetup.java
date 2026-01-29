@@ -23,7 +23,7 @@ import java.util.Map;
  * Keycloak Realm Setup Utility
  *
  * <p>Erstellt automatisch den benötigten Keycloak Realm mit Client und Testuser
- * für die JEEERAaH Anwendung.</p>
+ * für die JEEERAAAH Anwendung.</p>
  *
  * <h2>Erstellt folgende Ressourcen:</h2>
  * <ul>
@@ -46,15 +46,15 @@ public class KeycloakRealmSetup
 {
 	private static final String KEYCLOAK_URL = System.getProperty("keycloak.url", "http://localhost:8080");
 	private static final String ADMIN_USER = System.getProperty("keycloak.admin.user",
-			System.getenv().getOrDefault("keycloak_admin_username", "keycloak_admin_username"));
+			System.getenv().getOrDefault("keycloak_admin_user", "admin"));
 	private static final String ADMIN_PASSWORD = System.getProperty("keycloak.admin.password",
-			System.getenv().getOrDefault("keycloak_admin_password", "keycloak_admin_password"));
+			System.getenv().getOrDefault("keycloak_admin_password", "admin"));
 	private static final String REALM_NAME = System.getProperty("keycloak.realm", "jeeeraaah-realm");
 	private static final String CLIENT_ID = System.getProperty("keycloak.client.id", "jeeeraaah-frontend");
-	private static final String TEST_USER = System.getProperty("keycloak.test.user",
-			System.getenv().getOrDefault("test_username", "test_username"));
-	private static final String TEST_PASSWORD = System.getProperty("keycloak.test.password",
-			System.getenv().getOrDefault("test_password", "test_password"));
+	private static final String TEST_USER = System.getProperty("app.test.user",
+			System.getenv().getOrDefault("app_test_user_username", "test"));
+	private static final String TEST_PASSWORD = System.getProperty("app.test.password",
+			System.getenv().getOrDefault("app_test_user_password", "test"));
 
 	public static void main(String[] args)
 	{
@@ -131,7 +131,7 @@ public class KeycloakRealmSetup
 			RealmRepresentation realm = new RealmRepresentation();
 			realm.setRealm(REALM_NAME);
 			realm.setEnabled(true);
-			realm.setDisplayName("JEEERAaH Default Realm");
+			realm.setDisplayName("JEEERAAAH Default Realm");
 			realm.setRegistrationAllowed(false);
 			realm.setResetPasswordAllowed(true);
 

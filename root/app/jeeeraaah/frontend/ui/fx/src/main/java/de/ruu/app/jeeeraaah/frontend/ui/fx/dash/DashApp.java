@@ -89,7 +89,27 @@ public class DashApp extends FXCApp
 		log.info("Starting Jeeeraaah Dashboard application");
 
 		// ═══════════════════════════════════════════════════════════════════
-		// STEP 0: Docker Environment Health Check with Auto-Fix
+		// STEP 0: Configuration Health Check
+		// ═══════════════════════════════════════════════════════════════════
+		log.info("Validating configuration properties...");
+
+		de.ruu.lib.util.config.mp.ConfigHealthCheck configCheck = new de.ruu.lib.util.config.mp.ConfigHealthCheck();
+		de.ruu.lib.util.config.mp.ConfigHealthCheck.Result configResult = configCheck.validate();
+
+		if (!configResult.isHealthy())
+		{
+			log.error("❌ Configuration validation failed!");
+			configResult.getErrors().forEach(error -> log.error("  {}", error));
+			Platform.exit();
+			return;
+		}
+		else
+		{
+			log.info("✅ Configuration properties validated successfully");
+		}
+
+		// ═══════════════════════════════════════════════════════════════════
+		// STEP 1: Docker Environment Health Check with Auto-Fix
 		// ═══════════════════════════════════════════════════════════════════
 		log.info("Performing Docker environment health check...");
 

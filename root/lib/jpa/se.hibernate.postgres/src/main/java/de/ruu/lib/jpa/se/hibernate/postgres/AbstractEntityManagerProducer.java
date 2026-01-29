@@ -30,27 +30,27 @@ public abstract class AbstractEntityManagerProducer
 	private EntityManager entityManager;
 
 	@Inject
-	@ConfigProperty(name = "de.ruu.lib.jpa.se.hibernate.postgres.AbstractEntityManagerProducer.dbhost", defaultValue = "localhost")
+	@ConfigProperty(name = "db.lib_test.host", defaultValue = "localhost")
 	private String host;
 
 	@Inject
-	@ConfigProperty(name = "de.ruu.lib.jpa.se.hibernate.postgres.AbstractEntityManagerProducer.dbport", defaultValue = "5432")
+	@ConfigProperty(name = "db.lib_test.port", defaultValue = "5432")
 	private Integer port;
 
 	@Inject
-	@ConfigProperty(name = "de.ruu.lib.jpa.se.hibernate.postgres.AbstractEntityManagerProducer.dbname", defaultValue = "lib")
+	@ConfigProperty(name = "db.lib_test.database", defaultValue = "lib_test")
 	private String dbName;
 
 	@Inject
-	@ConfigProperty(name = "de.ruu.lib.jpa.se.hibernate.postgres.AbstractEntityManagerProducer.dbuser", defaultValue = "lib_test")
+	@ConfigProperty(name = "db.lib_test.username", defaultValue = "lib_test")
 	private String username;
 
 	@Inject
-	@ConfigProperty(name = "de.ruu.lib.jpa.se.hibernate.postgres.AbstractEntityManagerProducer.dbpass", defaultValue = "lib_test")
+	@ConfigProperty(name = "db.lib_test.password", defaultValue = "lib_test")
 	private String password;
 
 	@Inject
-	@ConfigProperty(name = "de.ruu.lib.jpa.se.hibernate.postgres.AbstractEntityManagerProducer.puname", defaultValue = "lib_test")
+	@ConfigProperty(name = "db.lib_test.persistence.unit.name", defaultValue = "lib_test")
 	private String puname;
 
 	/**

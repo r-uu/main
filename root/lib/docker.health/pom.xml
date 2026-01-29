@@ -34,6 +34,18 @@
 			<artifactId>postgresql</artifactId>
 		</dependency>
 
+		<!-- MicroProfile Config utilities -->
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.mp.config</artifactId>
+		</dependency>
+
+		<!-- Utility library (required by mp.config) -->
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.util</artifactId>
+		</dependency>
+
 		<!-- JUnit for testing -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>

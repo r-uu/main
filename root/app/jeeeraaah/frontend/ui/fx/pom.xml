@@ -16,6 +16,14 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>jakarta.annotation</groupId>
+			<artifactId>jakarta.annotation-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.inject</groupId>
+			<artifactId>jakarta.inject-api</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-base</artifactId>
 		</dependency>
@@ -121,7 +129,7 @@
 		<dependency>
 			<groupId>r-uu</groupId>
 			<artifactId>r-uu.lib.postgres.util.ui</artifactId>
-			<version>0.0.1</version>
+			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -134,21 +142,10 @@
 
 	<build>
 		<resources>
-			<!-- Enable Maven resource filtering for microprofile-config.properties -->
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-				<includes>
-					<include>META-INF/microprofile-config.properties</include>
-				</includes>
-			</resource>
-			<!-- Copy all other resources without filtering -->
+			<!-- No Maven resource filtering - MicroProfile Config reads environment variables at runtime -->
 			<resource>
 				<directory>src/main/resources</directory>
 				<filtering>false</filtering>
-				<excludes>
-					<exclude>META-INF/microprofile-config.properties</exclude>
-				</excludes>
 			</resource>
 		</resources>
 
@@ -171,6 +168,9 @@
 									<value>1.5</value>
 								</systemProperty>
 							</systemProperties>
+							<additionalClasspathElements>
+								<additionalClasspathElement>${project.build.outputDirectory}</additionalClasspathElement>
+							</additionalClasspathElements>
 						</configuration>
 					</execution>
 					<execution>

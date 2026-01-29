@@ -79,3 +79,7 @@ Thumbs.db
 **/jasperreports/output/
 **/jasperreports/server/output/
 
+
+# Local configuration overrides (not in VCS)
+local.properties
+**/local.properties

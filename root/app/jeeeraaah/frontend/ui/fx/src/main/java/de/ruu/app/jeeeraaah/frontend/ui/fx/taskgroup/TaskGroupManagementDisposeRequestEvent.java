@@ -11,7 +11,7 @@ public class TaskGroupManagementDisposeRequestEvent extends AbstractEvent<TaskGr
 		super(source);
 	}
 
-	/** programmatically specify command line vm option {@code --add-reads de.ruu.app.jeeeraah.client.fx=ALL-UNNAMED} */
+	/** programmatically specify command line vm option {@code --add-reads de.ruu.app.jeeeraaah.client.fx=ALL-UNNAMED} */
 	public static void addReadsUnnamedModule()
 	{
 		TaskGroupManagementDisposeRequestEvent.class.getModule()

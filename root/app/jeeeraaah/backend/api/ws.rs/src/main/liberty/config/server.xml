@@ -92,7 +92,7 @@
 	     
 	     Environment-specific URLs:
 	     - Development (Keycloak in Docker, Liberty on host): localhost:8080
-	     - Both in Docker: Use container name keycloak-jeeeraaah:8080
+	     - Both in Docker: Use container name keycloak:8080
 	     - Production: Replace with actual domain name
 	     
 	     The jwksUri endpoint provides public keys used to verify token signatures.
