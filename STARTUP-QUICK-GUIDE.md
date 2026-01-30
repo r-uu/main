@@ -9,11 +9,15 @@
 ### 1. Docker Services starten
 
 ```bash
-source ~/.bashrc
-ruu-startup
+ruu-docker-startup   # Startet alle Container + Keycloak Realm Setup
 ```
 
 **Wartezeit:** ~2-3 Minuten bis alle Container `healthy` sind.
+
+**Hinweis:** Beim ersten Mal nach WSL-Start muss Docker Daemon gestartet werden:
+```bash
+source ~/.bashrc        # Lädt Aliase (automatisch bei jedem Terminal-Start)
+```
 
 ### 2. Backend starten (OpenLiberty)
 

@@ -34,7 +34,7 @@ initdb/
 ├── jeeeraaah/
 │   └── 01-init.sql          → Initialisierung für jeeeraaah DB
 ├── lib_test/
-│   └── 01-init-database.sql → Initialisierung für lib_test DB
+│   └── 01-init.sql          → Initialisierung für lib_test DB
 ├── keycloak/
 │   └── 01-init.sql          → Initialisierung für keycloak DB
 └── README.md                → Diese Datei
@@ -86,7 +86,7 @@ Wird ausgeführt im `postgres-jeeeraaah` Container und:
 - Setzt Schema-Berechtigungen
 - Aktiviert Extensions: `uuid-ossp`, `pg_trgm`
 
-### lib_test/01-init-database.sql (postgres-lib-test)
+### lib_test/01-init.sql (postgres-lib-test)
 
 Wird ausgeführt im `postgres-lib-test` Container und:
 - Konfiguriert die `lib_test` Datenbank (bereits von Docker über `POSTGRES_DB` erstellt)

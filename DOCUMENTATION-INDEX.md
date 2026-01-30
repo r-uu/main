@@ -10,6 +10,7 @@
 |----------|--------------|
 | [README.md](README.md) | Hauptdokumentation mit Schnellstart |
 | [STARTUP-QUICK-GUIDE.md](STARTUP-QUICK-GUIDE.md) | Kurzanleitung für täglichen Start |
+| [SCRIPTS-OVERVIEW.md](SCRIPTS-OVERVIEW.md) | ⭐ Übersicht aller Skripte & Aliase |
 
 ---
 
