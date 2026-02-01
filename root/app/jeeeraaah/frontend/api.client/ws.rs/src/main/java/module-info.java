@@ -36,7 +36,7 @@ module de.ruu.app.jeeeraaah.frontend.api.client.ws.rs
 	requires com.fasterxml.jackson.jakarta.rs.json;
 
 	// external libraries jakarta
-	// jakarta.annotation wird über --add-modules beim Start hinzugefügt
+	requires jakarta.annotation;
 	requires jakarta.inject;
 	requires jakarta.cdi;
 	requires jakarta.ws.rs;

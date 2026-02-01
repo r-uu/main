@@ -237,20 +237,20 @@ class PostgresUtilUIController extends DefaultFXCController<PostgresUtilUI, Post
 			PostgresUtil
 					.restore
 					(
-							Path.of(postgresExeRestore),
-							postgresHostRestore,
-							Integer.parseInt(postgresPortRestore),
-							postgresDatabaseRestore,
-							postgresUsernameRestore,
-							postgresPasswordRestore,
-							Path.of(postgresFileRestore)
+							Path.of(tfExecutableRestore.getText()),
+							tfHostRestore.getText(),
+							Integer.parseInt(tfPortRestore.getText()),
+							tfDatabaseRestore.getText(),
+							tfUsernameRestore.getText(),
+							tfPasswordRestore.getText(),
+							Path.of(tfSourceFile.getText())
 					);
 			AlertDialog
 					.showAndWait
 						(
 							"success",
 							"restore complete",
-							"database: " + postgresDatabaseRestore,
+							"database: " + tfDatabaseRestore.getText(),
 							Alert.AlertType.INFORMATION
 						);
 		}
@@ -264,13 +264,13 @@ class PostgresUtilUIController extends DefaultFXCController<PostgresUtilUI, Post
 	private void populateFields()
 	{
 		// Populate backup fields
-		tfExecutableBackup.setText(postgresExeBackup       );
-		tfSourceFile      .setText(postgresFileBackup      );
-		tfHostBackup      .setText(postgresHostBackup      );
-		tfPortBackup      .setText(postgresPortBackup      );
-		tfDatabaseBackup  .setText(postgresDatabaseBackup  );
-		tfUsernameBackup  .setText(postgresUsernameBackup  );
-		tfPasswordBackup  .setText(postgresPasswordBackup  );
+		tfExecutableBackup .setText(postgresExeBackup      );
+		tfSourceFile       .setText(postgresFileBackup     );
+		tfHostBackup       .setText(postgresHostBackup     );
+		tfPortBackup       .setText(postgresPortBackup     );
+		tfDatabaseBackup   .setText(postgresDatabaseBackup );
+		tfUsernameBackup   .setText(postgresUsernameBackup );
+		tfPasswordBackup   .setText(postgresPasswordBackup );
 
 		// Populate restore fields (same values initially)
 		tfExecutableRestore.setText(postgresExeRestore     );
@@ -293,8 +293,10 @@ class PostgresUtilUIController extends DefaultFXCController<PostgresUtilUI, Post
 			String targetFileDirectory = tfTargetFile.getText().substring(0, tfTargetFile.getText().lastIndexOf(File.separator));
 			String sourceFileDirectory = tfSourceFile.getText().substring(0, tfSourceFile.getText().lastIndexOf(File.separator));
 
-			configSource.setProperty(POSTGRES_BACKUP_EXE_KEY      , tfExecutableBackup .getText());
 			configSource.setProperty(POSTGRES_BACKUP_FILE_KEY     , targetFileDirectory          );
+			configSource.setProperty(POSTGRES_RESTORE_FILE_KEY    , sourceFileDirectory          );
+
+			configSource.setProperty(POSTGRES_BACKUP_EXE_KEY      , tfExecutableBackup .getText());
 			configSource.setProperty(POSTGRES_BACKUP_HOST_KEY     , tfHostBackup       .getText());
 			configSource.setProperty(POSTGRES_BACKUP_PORT_KEY     , tfPortBackup       .getText());
 			configSource.setProperty(POSTGRES_BACKUP_DATABASE_KEY , tfDatabaseBackup   .getText());
@@ -302,7 +304,6 @@ class PostgresUtilUIController extends DefaultFXCController<PostgresUtilUI, Post
 			configSource.setProperty(POSTGRES_BACKUP_PASSWORD_KEY , tfPasswordBackup   .getText());
 
 			configSource.setProperty(POSTGRES_RESTORE_EXE_KEY     , tfExecutableRestore.getText());
-			configSource.setProperty(POSTGRES_RESTORE_FILE_KEY    , sourceFileDirectory          );
 			configSource.setProperty(POSTGRES_RESTORE_HOST_KEY    , tfHostRestore      .getText());
 			configSource.setProperty(POSTGRES_RESTORE_PORT_KEY    , tfPortRestore      .getText());
 			configSource.setProperty(POSTGRES_RESTORE_DATABASE_KEY, tfDatabaseRestore  .getText());

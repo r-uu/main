@@ -37,7 +37,6 @@
 		<dependency>
 			<groupId>jakarta.annotation</groupId>
 			<artifactId>jakarta.annotation-api</artifactId>
-			<scope>provided</scope>
 		</dependency>
 		<!-- Lombok is used at compile-time for other classes in this module -->
 		<dependency>

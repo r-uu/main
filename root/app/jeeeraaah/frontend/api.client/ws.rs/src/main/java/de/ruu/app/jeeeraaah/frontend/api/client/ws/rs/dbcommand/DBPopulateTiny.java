@@ -4,11 +4,14 @@ import de.ruu.app.jeeeraaah.common.api.bean.TaskBean;
 import de.ruu.app.jeeeraaah.common.api.bean.TaskGroupBean;
 import de.ruu.app.jeeeraaah.frontend.api.client.ws.rs.TaskGroupServiceClient;
 import de.ruu.app.jeeeraaah.frontend.api.client.ws.rs.TaskServiceClient;
+import de.ruu.app.jeeeraaah.frontend.api.client.ws.rs.auth.KeycloakAuthService;
 import de.ruu.lib.cdi.se.CDIContainer;
+import de.ruu.lib.ws.rs.TechnicalException;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.ConfigProvider;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -20,13 +23,74 @@ public class DBPopulateTiny
 {
 	@Inject private TaskGroupServiceClient taskGroupService;
 	@Inject private TaskServiceClient      taskService;
+	@Inject private KeycloakAuthService    authService;
 
 	@PostConstruct private void postConstruct()
 	{
 		log.debug("initialised ws.rs-clients successfully: {}", not(isNull(taskGroupService)) && not(isNull(taskService)));
+		log.debug("authService available: {}", not(isNull(authService)));
 	}
 
-	public void run() throws Exception { populate(); }
+	public void run() throws Exception
+	{
+		// Check if testing mode is enabled and perform auto-login if needed
+		boolean testingMode =
+				ConfigProvider
+						.getConfig()
+						.getOptionalValue("testing", Boolean.class)
+						.orElse(false);
+
+		log.info("=== DBPopulateTiny Testing Mode Status ===");
+		log.info("  testing property: {}", testingMode);
+		log.info("  isLoggedIn: {}", authService.isLoggedIn());
+
+		if (testingMode && !authService.isLoggedIn())
+		{
+			log.info("=== Testing mode enabled - performing automatic login ===");
+
+			String testUsername = ConfigProvider.getConfig()
+					.getOptionalValue("testing.username", String.class)
+					.orElse(null);
+			String testPassword = ConfigProvider.getConfig()
+					.getOptionalValue("testing.password", String.class)
+					.orElse(null);
+
+			if (testUsername != null && testPassword != null)
+			{
+				log.info("  Test credentials found: username={}", testUsername);
+				try
+				{
+					authService.login(testUsername, testPassword);
+					log.info("  ✅ Automatic login successful");
+					log.info("  Access token (first 50 chars): {}...",
+							authService.getAccessToken().substring(0, Math.min(50, authService.getAccessToken().length())));
+				}
+				catch (Exception e)
+				{
+					log.error("  ❌ Automatic login failed: {}", e.getMessage(), e);
+					log.error("  Please ensure:");
+					log.error("    - Keycloak server is running (docker ps | grep keycloak)");
+					log.error("    - Credentials in testing.properties are correct");
+					log.error("    - Direct Access Grants are enabled for the client");
+					throw new TechnicalException("Automatic login in testing mode failed", e);
+				}
+			}
+			else
+			{
+				String msg = "Testing mode enabled but credentials missing in testing.properties (expected: testing.username, testing.password)";
+				log.error(msg);
+				throw new TechnicalException(msg);
+			}
+		}
+		else if (!authService.isLoggedIn())
+		{
+			String msg = "Not logged in and testing mode is disabled. Manual login required.";
+			log.error(msg);
+			throw new TechnicalException(msg);
+		}
+
+		populate();
+	}
 
 	private void populate() throws Exception
 	{

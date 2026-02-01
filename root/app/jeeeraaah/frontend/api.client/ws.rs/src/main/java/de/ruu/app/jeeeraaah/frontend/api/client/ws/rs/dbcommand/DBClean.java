@@ -6,6 +6,7 @@ import de.ruu.app.jeeeraaah.common.api.domain.RemoveNeighboursFromTaskConfig;
 import de.ruu.app.jeeeraaah.common.api.domain.TaskGroupFlat;
 import de.ruu.app.jeeeraaah.frontend.api.client.ws.rs.TaskGroupServiceClient;
 import de.ruu.app.jeeeraaah.frontend.api.client.ws.rs.TaskServiceClient;
+import de.ruu.app.jeeeraaah.frontend.api.client.ws.rs.auth.KeycloakAuthService;
 import de.ruu.lib.cdi.se.CDIContainer;
 import de.ruu.lib.jpa.core.Entity;
 import de.ruu.lib.ws.rs.NonTechnicalException;
@@ -15,6 +16,7 @@ import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.ConfigProvider;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -30,14 +32,75 @@ public class DBClean
 {
 	@Inject private TaskGroupServiceClient taskGroupServiceClient;
 	@Inject private TaskServiceClient      taskServiceClient;
+	@Inject private KeycloakAuthService    authService;
 
 	@PostConstruct private void postConstruct()
 	{
 		log.debug("taskGroupServiceClient available: {}", nonNull(taskGroupServiceClient));
 		log.debug("taskServiceClient      available: {}", nonNull(taskServiceClient));
+		log.debug("authService            available: {}", nonNull(authService));
 	}
 
-	public void run() throws NonTechnicalException, TechnicalException { cleanTaskGroups(); }
+	public void run() throws NonTechnicalException, TechnicalException
+	{
+		// Check if testing mode is enabled and perform auto-login if needed
+		boolean testingMode =
+				ConfigProvider
+						.getConfig()
+						.getOptionalValue("testing", Boolean.class)
+						.orElse(false);
+
+		log.info("=== DBClean Testing Mode Status ===");
+		log.info("  testing property: {}", testingMode);
+		log.info("  isLoggedIn: {}", authService.isLoggedIn());
+
+		if (testingMode && !authService.isLoggedIn())
+		{
+		log.info("=== Testing mode enabled - performing automatic login ===");
+
+		String testUsername = ConfigProvider.getConfig()
+				.getOptionalValue("keycloak.test.user", String.class)
+				.orElse(null);
+		String testPassword = ConfigProvider.getConfig()
+				.getOptionalValue("keycloak.test.password", String.class)
+				.orElse(null);
+
+		if (testUsername != null && testPassword != null)
+		{
+			log.info("  Test credentials found: username={}", testUsername);
+			try
+			{
+				authService.login(testUsername, testPassword);
+				log.info("  ✅ Automatic login successful");
+				log.info("  Access token (first 50 chars): {}...",
+						authService.getAccessToken().substring(0, Math.min(50, authService.getAccessToken().length())));
+			}
+			catch (Exception e)
+			{
+				log.error("  ❌ Automatic login failed: {}", e.getMessage(), e);
+				log.error("  Please ensure:");
+				log.error("    - Keycloak server is running (docker ps | grep keycloak)");
+				log.error("    - Credentials in microprofile-config.properties are correct (keycloak.test.user, keycloak.test.password)");
+				log.error("    - Direct Access Grants are enabled for the client");
+				throw new TechnicalException("Automatic login in testing mode failed", e);
+			}
+		}
+		else
+		{
+			String msg = "Testing mode enabled but credentials missing (expected: keycloak.test.user, keycloak.test.password)";
+			log.error(msg);
+			throw new TechnicalException(msg);
+		}
+	}
+	else if (!authService.isLoggedIn())
+		{
+			String msg = "Not logged in and testing mode is disabled. Manual login required.";
+			log.error(msg);
+			throw new TechnicalException(msg);
+		}
+
+		cleanTaskGroups();
+	}
 
 	private void cleanTaskGroups() throws NonTechnicalException, TechnicalException
 	{
@@ -122,7 +185,7 @@ public class DBClean
 		);
 	}
 
-	public static void main(String[] args) throws NonTechnicalException, TechnicalException
+	static void main(String[] args) throws NonTechnicalException, TechnicalException
 	{
 		CDIContainer.bootstrap(DBClean.class.getClassLoader());
 		DBClean command = CDI.current().select(DBClean.class).get();

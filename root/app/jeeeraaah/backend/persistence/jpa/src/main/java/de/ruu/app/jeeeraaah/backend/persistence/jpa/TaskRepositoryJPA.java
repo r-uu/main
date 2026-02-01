@@ -21,6 +21,8 @@ public abstract class TaskRepositoryJPA extends AbstractRepository<TaskJPA, Long
 	{
 		EntityGraph<TaskJPA> entityGraph = entityManager().createEntityGraph(TaskJPA.class);
 
+		// Load all related entities to prevent LazyInitializationException
+		entityGraph.addSubgraph(TaskJPA_.TASK_GROUP);  // Fix: Load taskGroup to avoid LazyInitializationException
 		entityGraph.addSubgraph(TaskJPA_.SUB_TASKS);
 		entityGraph.addSubgraph(TaskJPA_.PREDECESSORS);
 		entityGraph.addSubgraph(TaskJPA_.SUCCESSORS);
