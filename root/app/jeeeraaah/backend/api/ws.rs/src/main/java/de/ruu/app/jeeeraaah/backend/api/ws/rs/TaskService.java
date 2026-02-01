@@ -39,6 +39,7 @@ import de.ruu.lib.mapstruct.ReferenceCycleTracking;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -77,8 +78,13 @@ public class TaskService
 
 	@POST
 	@RolesAllowed("task-create")
-	public Response create(TaskCreationData data)
+	public Response create(@Valid TaskCreationData data)
 	{
+		log.debug("Received TaskCreationData:");
+		log.debug("  data: {}", data);
+		log.debug("  taskGroupId: {}", data != null ? data.getTaskGroupId() : "data is null");
+		log.debug("  task: {}", data != null ? data.getTask() : "data is null");
+
 		// delegate to service which handles mapping and creation within transaction to
 		// avoid lazy initialization issues
 		TaskJPA taskJPAPersistent = taskService.createFromData(data);
@@ -146,7 +152,7 @@ public class TaskService
 	}
 
 	@GET
-	@Path(TOKEN_BY_ID_WITH_RELATED)
+	@Path(TOKEN_BY_ID_WITH_RELATED + TOKEN_BY_ID)
 	@Produces(APPLICATION_JSON)
 	@RolesAllowed("task-read")
 	public Response findByIdWithRelated(@PathParam("id") Long id)

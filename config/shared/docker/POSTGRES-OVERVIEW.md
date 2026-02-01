@@ -129,23 +129,25 @@ docker logs postgres-keycloak | grep -E "(✅|ERROR)"
 Die Java-Application nutzt diese Properties (werden automatisch aus `.env` generiert):
 
 ```properties
-# Main Application DB (postgres-jeeeraaah:5432/jeeeraaah)
+# Main Application DB (postgres:5432/jeeeraaah)
 db.jeeeraaah.host=localhost
 db.jeeeraaah.port=5432
 db.jeeeraaah.name=jeeeraaah
-db.jeeeraaah.username=jeeeraaah
-db.jeeeraaah.password=jeeeraaah
+db.jeeeraaah.username=<siehe testing.properties>
+db.jeeeraaah.password=<siehe testing.properties>
 
-# Test DB (postgres-jeeeraaah:5432/lib_test)
+# Test DB (postgres:5432/lib_test)
 db.lib_test.host=localhost
 db.lib_test.port=5432
 db.lib_test.name=lib_test
-db.lib_test.username=lib_test
-db.lib_test.password=lib_test
+db.lib_test.username=<siehe testing.properties>
+db.lib_test.password=<siehe testing.properties>
 
-# Keycloak DB (postgres-keycloak:5433/keycloak)
+# Keycloak DB (postgres:5432/keycloak)
 # Nur für Keycloak selbst, nicht für Java App
 ```
+
+**Hinweis:** Tatsächliche Credentials befinden sich in `testing.properties` (nicht in Git versioniert).
 
 ## DBeaver Konfiguration
 

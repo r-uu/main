@@ -91,21 +91,9 @@ public class PostgresDatabaseHealthCheck implements HealthCheck
 		{
 			log.error("  ❌ Cannot connect to database '{}': {}", databaseName, e.getMessage());
 
-		String fixCommand;
-		String alias;
-
-		if (databaseName.equals("lib_test"))
-		{
-			// lib_test created by initdb script on container restart
-			fixCommand = "cd ~/develop/github/main/config/shared/docker && docker compose restart postgres-jeeeraaah";
-			alias = "ruu-docker-restart-postgres";
-		}
-		else
-		{
-			// General: restart container
-			fixCommand = "cd ~/develop/github/main/config/shared/docker && docker compose restart " + containerName;
-			alias = "ruu-docker-restart";
-		}
+			// All databases are in the same container now (postgres)
+			String fixCommand = "cd ~/develop/github/main/config/shared/docker && docker compose restart postgres";
+			String alias = "ruu-docker-restart-postgres";
 
 			return HealthCheckResult.failure(
 				"Database: " + databaseName,

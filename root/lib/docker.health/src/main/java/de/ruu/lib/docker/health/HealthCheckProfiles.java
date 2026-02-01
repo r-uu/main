@@ -27,7 +27,7 @@ public class HealthCheckProfiles
 	 * <p>This profile checks:
 	 * <ul>
 	 *   <li>Docker daemon is running</li>
-	 *   <li>PostgreSQL databases: jeeeraaah, lib_test, keycloak</li>
+	 *   <li>PostgreSQL databases: jeeeraaah, lib_test, keycloak (all in one container)</li>
 	 *   <li>Keycloak server is accessible</li>
 	 *   <li>Keycloak realm 'jeeeraaah-realm' exists</li>
 	 *   <li>JasperReports service is accessible</li>
@@ -37,9 +37,9 @@ public class HealthCheckProfiles
 	{
 		return HealthCheckRunner.builder()
 			.addCheck(new DockerDaemonHealthCheck())
-			.addCheck(new PostgresDatabaseHealthCheck("postgres-jeeeraaah", "jeeeraaah", 5432))
-			.addCheck(new PostgresDatabaseHealthCheck("postgres-jeeeraaah", "lib_test", 5432))
-			.addCheck(new PostgresDatabaseHealthCheck("postgres-keycloak", "keycloak", 5433))
+			.addCheck(new PostgresDatabaseHealthCheck("postgres", "jeeeraaah", 5432))
+			.addCheck(new PostgresDatabaseHealthCheck("postgres", "lib_test", 5432))
+			.addCheck(new PostgresDatabaseHealthCheck("postgres", "keycloak", 5432))
 			.addCheck(new KeycloakServerHealthCheck())
 			.addCheck(new KeycloakRealmHealthCheck("jeeeraaah-realm"))
 			.addCheck(new JasperReportsHealthCheck())
@@ -52,16 +52,16 @@ public class HealthCheckProfiles
 	 * <p>This profile checks:
 	 * <ul>
 	 *   <li>Docker daemon is running</li>
-	 *   <li>PostgreSQL databases: jeeeraaah, lib_test, keycloak</li>
+	 *   <li>PostgreSQL databases: jeeeraaah, lib_test, keycloak (all in one container)</li>
 	 * </ul>
 	 */
 	public static HealthCheckRunner databaseOnly()
 	{
 		return HealthCheckRunner.builder()
 			.addCheck(new DockerDaemonHealthCheck())
-			.addCheck(new PostgresDatabaseHealthCheck("postgres-jeeeraaah", "jeeeraaah", 5432))
-			.addCheck(new PostgresDatabaseHealthCheck("postgres-jeeeraaah", "lib_test", 5432))
-			.addCheck(new PostgresDatabaseHealthCheck("postgres-keycloak", "keycloak", 5433))
+			.addCheck(new PostgresDatabaseHealthCheck("postgres", "jeeeraaah", 5432))
+			.addCheck(new PostgresDatabaseHealthCheck("postgres", "lib_test", 5432))
+			.addCheck(new PostgresDatabaseHealthCheck("postgres", "keycloak", 5432))
 			.build();
 	}
 
@@ -105,7 +105,7 @@ public class HealthCheckProfiles
 	 * <p>This profile checks:
 	 * <ul>
 	 *   <li>Docker daemon is running</li>
-	 *   <li>PostgreSQL databases: jeeeraaah, keycloak</li>
+	 *   <li>PostgreSQL databases: jeeeraaah, keycloak (all in one container)</li>
 	 *   <li>Keycloak server is accessible</li>
 	 *   <li>Keycloak realm 'jeeeraaah-realm' exists</li>
 	 * </ul>
@@ -114,8 +114,8 @@ public class HealthCheckProfiles
 	{
 		return HealthCheckRunner.builder()
 			.addCheck(new DockerDaemonHealthCheck())
-			.addCheck(new PostgresDatabaseHealthCheck("postgres-jeeeraaah", "jeeeraaah", 5432))
-			.addCheck(new PostgresDatabaseHealthCheck("postgres-keycloak", "keycloak", 5433))
+			.addCheck(new PostgresDatabaseHealthCheck("postgres", "jeeeraaah", 5432))
+			.addCheck(new PostgresDatabaseHealthCheck("postgres", "keycloak", 5432))
 			.addCheck(new KeycloakServerHealthCheck())
 			.addCheck(new KeycloakRealmHealthCheck("jeeeraaah-realm"))
 			.build();

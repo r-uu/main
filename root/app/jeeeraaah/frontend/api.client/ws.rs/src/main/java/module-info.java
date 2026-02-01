@@ -32,11 +32,14 @@ module de.ruu.app.jeeeraaah.frontend.api.client.ws.rs
 	requires com.fasterxml.jackson.core;
 	requires com.fasterxml.jackson.databind;
 	requires com.fasterxml.jackson.datatype.jsr310;
+	requires com.fasterxml.jackson.datatype.jdk8;
 	requires com.fasterxml.jackson.jakarta.rs.json;
 
 	// external libraries jakarta
+	// jakarta.annotation wird über --add-modules beim Start hinzugefügt
 	requires jakarta.inject;
 	requires jakarta.cdi;
+	requires jakarta.ws.rs;
 
 	// external libraries jersey
 	requires jersey.client;
@@ -46,8 +49,6 @@ module de.ruu.app.jeeeraaah.frontend.api.client.ws.rs
 
 	// other external libraries
 	requires org.slf4j;
-	requires jakarta.ws.rs;
-	requires com.fasterxml.jackson.datatype.jdk8;
 
 	requires static lombok;
 }

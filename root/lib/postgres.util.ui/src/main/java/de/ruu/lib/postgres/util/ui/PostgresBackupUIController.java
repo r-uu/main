@@ -50,8 +50,8 @@ class PostgresBackupUIController extends DefaultFXCController<PostgresBackupUI, 
 	public static final String POSTGRES_BACKUP_EXECUTABLE_VALUE = ".";
 	public static final String POSTGRES_BACKUP_DIRECTORY_KEY    = "postgres.backup.directory";
 	public static final String POSTGRES_BACKUP_DIRECTORY_VALUE  = ".";
-	public static final String POSTGRES_BACKUP_FILENAME_KEY = "postgres.backup.file";
-	public static final String POSTGRES_BACKUP_FILENAME_VALUE = ".";
+	public static final String POSTGRES_BACKUP_FILENAME_KEY     = "postgres.backup.file";
+	public static final String POSTGRES_BACKUP_FILENAME_VALUE   = ".";
 	public static final String POSTGRES_BACKUP_HOST_KEY         = "postgres.backup.host";
 	// public static final String POSTGRES_BACKUP_HOST_VALU E      = "localhost";
 	public static final String POSTGRES_BACKUP_HOST_VALUE       = "172.26.187.214";

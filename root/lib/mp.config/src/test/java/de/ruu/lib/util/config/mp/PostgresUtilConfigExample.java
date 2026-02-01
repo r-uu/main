@@ -53,18 +53,18 @@ class PostgresUtilConfigExample
 
 			// Step 4: Set default values
 			// These calls will automatically create the file and save the properties
-			config.setProperty("postgres.host", "localhost");
-			config.setProperty("postgres.port", "5432");
-			config.setProperty("postgres.database", "mydb");
-			config.setProperty("postgres.username", "admin");
-			config.setProperty("postgres.password", "changeme");
-			config.setProperty("postgres.schema", "public");
-			config.setProperty("postgres.ssl.enabled", "false");
+			config.setProperty("postgres.host"              , "localhost");
+			config.setProperty("postgres.port"              , "5432");
+			config.setProperty("postgres.database"          , "jeeeraaah");
+			config.setProperty("postgres.username"          , "jeeeraaah");
+			config.setProperty("postgres.password"          , "change_me");
+			config.setProperty("postgres.schema"            , "public");
+			config.setProperty("postgres.ssl.enabled"       , "false");
 			config.setProperty("postgres.connection.timeout", "30000");
-			config.setProperty("postgres.max.pool.size", "10");
+			config.setProperty("postgres.max.pool.size"     , "10");
 
-			log.info("Config file created at: {}", new File(configFilePath).getAbsolutePath());
-			log.info("Properties written: {}", config.getPropertyNames().size());
+			log.info("config file created at: {}", new File(configFilePath).getAbsolutePath());
+			log.info("properties written: {}", config.getPropertyNames().size());
 
 			// Verify the file was created and properties were saved
 			File configFile = new File(configFilePath);
@@ -103,15 +103,15 @@ class PostgresUtilConfigExample
 			WritableFileConfigSource config = new WritableFileConfigSource();
 
 			// Helper method to set a property only if it doesn't exist
-			setDefaultIfNotExists(config, "postgres.host", "localhost");
-			setDefaultIfNotExists(config, "postgres.port", "5432");
-			setDefaultIfNotExists(config, "postgres.database", "mydb");
-			setDefaultIfNotExists(config, "postgres.username", "admin");
-			setDefaultIfNotExists(config, "postgres.password", "changeme");
-			setDefaultIfNotExists(config, "postgres.schema", "public");
-			setDefaultIfNotExists(config, "postgres.ssl.enabled", "false");
+			setDefaultIfNotExists(config, "postgres.host"              , "localhost");
+			setDefaultIfNotExists(config, "postgres.port"              , "5432");
+			setDefaultIfNotExists(config, "postgres.database"          , "jeeeraaah");
+			setDefaultIfNotExists(config, "postgres.username"          , "jeeeraaah");
+			setDefaultIfNotExists(config, "postgres.password"          , "change_me");
+			setDefaultIfNotExists(config, "postgres.schema"            , "public");
+			setDefaultIfNotExists(config, "postgres.ssl.enabled"       , "false");
 			setDefaultIfNotExists(config, "postgres.connection.timeout", "30000");
-			setDefaultIfNotExists(config, "postgres.max.pool.size", "10");
+			setDefaultIfNotExists(config, "postgres.max.pool.size"     , "10");
 
 			log.info("Default properties initialized (existing values preserved)");
 
@@ -172,15 +172,15 @@ class PostgresUtilConfigExample
 		WritableFileConfigSource config = new WritableFileConfigSource();
 
 		// Initialize with default values (only if not already set)
-		setDefaultIfNotExists(config, "postgres.host", "localhost");
-		setDefaultIfNotExists(config, "postgres.port", "5432");
-		setDefaultIfNotExists(config, "postgres.database", "mydb");
-		setDefaultIfNotExists(config, "postgres.username", "admin");
-		setDefaultIfNotExists(config, "postgres.password", "changeme");
-		setDefaultIfNotExists(config, "postgres.schema", "public");
-		setDefaultIfNotExists(config, "postgres.ssl.enabled", "false");
+		setDefaultIfNotExists(config, "postgres.host"              , "localhost");
+		setDefaultIfNotExists(config, "postgres.port"              , "5432");
+		setDefaultIfNotExists(config, "postgres.database"          , "jeeeraaah");
+		setDefaultIfNotExists(config, "postgres.username"          , "jeeeraaah");
+		setDefaultIfNotExists(config, "postgres.password"          , "change_me");
+		setDefaultIfNotExists(config, "postgres.schema"            , "public");
+		setDefaultIfNotExists(config, "postgres.ssl.enabled"       , "false");
 		setDefaultIfNotExists(config, "postgres.connection.timeout", "30000");
-		setDefaultIfNotExists(config, "postgres.max.pool.size", "10");
+		setDefaultIfNotExists(config, "postgres.max.pool.size"     , "10");
 
 		log.info("Postgres utility config initialized at: {}", new File(configFilePath).getAbsolutePath());
 

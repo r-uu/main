@@ -18,7 +18,7 @@ import java.util.List;
  * <pre>
  * HealthCheckRunner runner = HealthCheckRunner.builder()
  *     .addCheck(new DockerDaemonHealthCheck())
- *     .addCheck(new PostgresDatabaseHealthCheck("postgres-jeeeraaah", "jeeeraaah", 5432))
+ *     .addCheck(new PostgresDatabaseHealthCheck("postgres", "jeeeraaah", 5432))
  *     .addCheck(new KeycloakServerHealthCheck())
  *     .build();
  *

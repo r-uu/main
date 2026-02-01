@@ -24,7 +24,7 @@ Alle Credentials werden in **einer zentralen Datei** verwaltet:
 
 ## 📋 Credential-Übersicht
 
-### PostgreSQL - JEEERAaH Application
+### PostgreSQL - JEEERAAAH Application
 
 ```bash
 # Container: postgres-jeeeraaah (Port 5432)

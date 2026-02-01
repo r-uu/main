@@ -38,7 +38,7 @@ class PostgresUtilUIController extends DefaultFXCController<PostgresUtilUI, Post
 	public static final String POSTGRES_BACKUP_FILE_KEY        = "postgres.backup.file";
 	public static final String POSTGRES_BACKUP_FILE_VALUE      = ".";
 	public static final String POSTGRES_BACKUP_HOST_KEY        = "postgres.backup.host";
-// public static final String POSTGRES_BACKUP_HOST_VALUE      = "localhost";
+// public static final String POSTGRES_BACKUP_HOST_VALUE       = "localhost";
 	public static final String POSTGRES_BACKUP_HOST_VALUE      = "172.26.187.214";
 	public static final String POSTGRES_BACKUP_PORT_KEY        = "postgres.backup.port";
 	public static final String POSTGRES_BACKUP_PORT_VALUE      = "5432";
@@ -54,7 +54,7 @@ class PostgresUtilUIController extends DefaultFXCController<PostgresUtilUI, Post
 	public static final String POSTGRES_RESTORE_FILE_KEY       = "postgres.restore.file";
 	public static final String POSTGRES_RESTORE_FILE_VALUE     = POSTGRES_BACKUP_FILE_VALUE;
 	public static final String POSTGRES_RESTORE_HOST_KEY       = "postgres.restore.host";
-	// public static final String POSTGRES_RESTORE_HOST_VALUE     = "localhost";
+// public static final String POSTGRES_RESTORE_HOST_VALUE      = "localhost";
 	public static final String POSTGRES_RESTORE_HOST_VALUE     = POSTGRES_BACKUP_HOST_VALUE;
 	public static final String POSTGRES_RESTORE_PORT_KEY       = "postgres.restore.port";
 	public static final String POSTGRES_RESTORE_PORT_VALUE     = POSTGRES_BACKUP_PORT_VALUE;
@@ -290,8 +290,11 @@ class PostgresUtilUIController extends DefaultFXCController<PostgresUtilUI, Post
 		{
 			log.debug("saving configuration to file {}", configSource.getName());
 
+			String targetFileDirectory = tfTargetFile.getText().substring(0, tfTargetFile.getText().lastIndexOf(File.separator));
+			String sourceFileDirectory = tfSourceFile.getText().substring(0, tfSourceFile.getText().lastIndexOf(File.separator));
+
 			configSource.setProperty(POSTGRES_BACKUP_EXE_KEY      , tfExecutableBackup .getText());
-			configSource.setProperty(POSTGRES_BACKUP_FILE_KEY     , tfTargetFile       .getText());
+			configSource.setProperty(POSTGRES_BACKUP_FILE_KEY     , targetFileDirectory          );
 			configSource.setProperty(POSTGRES_BACKUP_HOST_KEY     , tfHostBackup       .getText());
 			configSource.setProperty(POSTGRES_BACKUP_PORT_KEY     , tfPortBackup       .getText());
 			configSource.setProperty(POSTGRES_BACKUP_DATABASE_KEY , tfDatabaseBackup   .getText());
@@ -299,7 +302,7 @@ class PostgresUtilUIController extends DefaultFXCController<PostgresUtilUI, Post
 			configSource.setProperty(POSTGRES_BACKUP_PASSWORD_KEY , tfPasswordBackup   .getText());
 
 			configSource.setProperty(POSTGRES_RESTORE_EXE_KEY     , tfExecutableRestore.getText());
-			configSource.setProperty(POSTGRES_RESTORE_FILE_KEY    , tfSourceFile       .getText());
+			configSource.setProperty(POSTGRES_RESTORE_FILE_KEY    , sourceFileDirectory          );
 			configSource.setProperty(POSTGRES_RESTORE_HOST_KEY    , tfHostRestore      .getText());
 			configSource.setProperty(POSTGRES_RESTORE_PORT_KEY    , tfPortRestore      .getText());
 			configSource.setProperty(POSTGRES_RESTORE_DATABASE_KEY, tfDatabaseRestore  .getText());

@@ -38,9 +38,9 @@ public class ActionAdd
 	@Getter @Accessors(fluent = true)
 	public static class Context
 	{
-		private TreeItem<TaskBean> treeItemSelectedSuperSubTask;
-		private TreeItem<TaskBean> treeItemSelectedPredecessorTask;
-		private TaskServiceClient  taskServiceClient;
+		private final TreeItem<TaskBean> treeItemSelectedSuperSubTask;
+		private final TreeItem<TaskBean> treeItemSelectedPredecessorTask;
+		private final TaskServiceClient  taskServiceClient;
 
 		public Context
 		(

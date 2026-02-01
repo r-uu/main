@@ -1,96 +1,56 @@
 services:
   # ============================================================================
-  # PostgreSQL Database for JEEERAaH Application
-  # Main application database for production data
-  # Uses credentials from .env: POSTGRES_JEEERAAAH_*
+  # PostgreSQL Database - Single Instance for All Databases
+  # Contains three schemas: jeeeraaah, lib_test, keycloak
+  # Postgres superuser manages all schemas via init scripts
+  # Uses credentials from .env: POSTGRES_*
   # ============================================================================
-  postgres-jeeeraaah:
+  postgres:
     image: postgres:16-alpine
-    container_name: postgres-jeeeraaah
+    container_name: postgres
     environment:
-      # Database configuration from .env (POSTGRES_JEEERAAAH_*)
-      POSTGRES_DB: ${POSTGRES_JEEERAAAH_DATABASE}
-      POSTGRES_USER: ${POSTGRES_JEEERAAAH_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_JEEERAAAH_PASSWORD}
+      # PostgreSQL superuser (manages all databases/schemas)
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      # Default database (used for initial connection)
+      POSTGRES_DB: postgres
+
+      # Environment variables for init scripts
+      # Schema: jeeeraaah
+      POSTGRES_JEEERAAAH_DB: ${POSTGRES_JEEERAAAH_DB}
+      POSTGRES_JEEERAAAH_USER: ${POSTGRES_JEEERAAAH_USER}
+      POSTGRES_JEEERAAAH_PASSWORD: ${POSTGRES_JEEERAAAH_PASSWORD}
+
+      # Schema: lib_test
+      POSTGRES_LIB_TEST_DB: ${POSTGRES_LIB_TEST_DB}
+      POSTGRES_LIB_TEST_USER: ${POSTGRES_LIB_TEST_USER}
+      POSTGRES_LIB_TEST_PASSWORD: ${POSTGRES_LIB_TEST_PASSWORD}
+
+      # Schema: keycloak
+      POSTGRES_KEYCLOAK_DB: ${POSTGRES_KEYCLOAK_DB}
+      POSTGRES_KEYCLOAK_USER: ${POSTGRES_KEYCLOAK_USER}
+      POSTGRES_KEYCLOAK_PASSWORD: ${POSTGRES_KEYCLOAK_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
-      - postgres-jeeeraaah-data:/var/lib/postgresql/data
-      - postgres-jeeeraaah-backups:/backups
-      - ./initdb/jeeeraaah:/docker-entrypoint-initdb.d:ro
+      - postgres-data:/var/lib/postgresql/data
+      - postgres-backups:/backups
+      # Init scripts create all databases/users in alphabetical order
+      - ./initdb:/docker-entrypoint-initdb.d:ro
     networks:
       - ruu-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_JEEERAAAH_USER} -d ${POSTGRES_JEEERAAAH_DATABASE}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
-    restart: always
-
-  # ============================================================================
-  # PostgreSQL Database for lib_test (Integration Tests)
-  # Dedicated database instance for running integration tests
-  # Uses credentials from .env: POSTGRES_LIB_TEST_*
-  # Exposed on host port 5434 to avoid conflicts
-  # ============================================================================
-  postgres-lib-test:
-    image: postgres:16-alpine
-    container_name: postgres-lib-test
-    environment:
-      # Database configuration from .env (POSTGRES_LIB_TEST_*)
-      POSTGRES_DB: ${POSTGRES_LIB_TEST_DATABASE}
-      POSTGRES_USER: ${POSTGRES_LIB_TEST_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_LIB_TEST_PASSWORD}
-    ports:
-      - "5434:5432"  # External port 5434, internal PostgreSQL default 5432
-    volumes:
-      - postgres-lib-test-data:/var/lib/postgresql/data
-      - postgres-lib-test-backups:/backups
-      - ./initdb/lib_test:/docker-entrypoint-initdb.d:ro
-    networks:
-      - ruu-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_LIB_TEST_USER} -d ${POSTGRES_LIB_TEST_DATABASE}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-    restart: always
-
-  # ============================================================================
-  # PostgreSQL Database for Keycloak
-  # Dedicated database instance for Keycloak identity management
-  # Uses credentials from .env: postgres_keycloak_*
-  # Exposed on host port 5433 to avoid conflict with postgres-jeeeraaah
-  # ============================================================================
-  postgres-keycloak:
-    image: postgres:16-alpine
-    container_name: postgres-keycloak
-    environment:
-      # Database configuration from .env (POSTGRES_KEYCLOAK_*)
-      POSTGRES_DB: ${POSTGRES_KEYCLOAK_DATABASE}
-      POSTGRES_USER: ${POSTGRES_KEYCLOAK_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_KEYCLOAK_PASSWORD}
-    ports:
-      - "5433:5432"  # External port 5433, internal PostgreSQL default 5432
-    volumes:
-      - postgres-keycloak-data:/var/lib/postgresql/data
-      - postgres-keycloak-backups:/backups
-      - ./initdb/keycloak:/docker-entrypoint-initdb.d:ro
-    networks:
-      - ruu-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_KEYCLOAK_USER} -d ${POSTGRES_KEYCLOAK_DATABASE}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     restart: always
 
   # ============================================================================
   # Keycloak - Identity and Access Management
   # Provides authentication and authorization services
-  # Uses credentials from .env: keycloak_admin_* and postgres_keycloak_*
+  # Uses credentials from .env: KEYCLOAK_ADMIN_* and POSTGRES_KEYCLOAK_*
   # Admin console: http://localhost:8080/admin
   # ============================================================================
   keycloak:
@@ -102,10 +62,10 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USER}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
 
-      # Database configuration - connects to postgres-keycloak container
+      # Database configuration - connects to postgres container (keycloak schema)
       # Uses POSTGRES_KEYCLOAK_* credentials from .env
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/${POSTGRES_KEYCLOAK_DATABASE}
+      KC_DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_KEYCLOAK_DB}
       KC_DB_USERNAME: ${POSTGRES_KEYCLOAK_USER}
       KC_DB_PASSWORD: ${POSTGRES_KEYCLOAK_PASSWORD}
 
@@ -124,7 +84,7 @@ services:
       - ./healthcheck/keycloak-healthcheck.sh:/usr/local/bin/healthcheck.sh:ro
     command: start-dev
     depends_on:
-      postgres-keycloak:
+      postgres:
         condition: service_healthy
     networks:
       - ruu-network
@@ -175,19 +135,14 @@ networks:
 
 volumes:
   # ============================================================================
-  # Persistent Volumes for PostgreSQL Databases
+  # Persistent Volumes
   # ============================================================================
 
-  # JEEERAAAH-data:
-    name: postgres-lib-test-data           # Database files for lib_test
-  postgres-lib-test-backups:
-    name: postgres-lib-test-backups        # Backup storage for lib_test database
-
-  # Keycloak Database Volumes
-  postgres-keycloak-data:
-    name: postgres-keycloak-data           # Database files for keycloak
-  postgres-keycloak-backups:
-    name: postgres-keycloak-backups        # Backup storage for keycloak database
+  # PostgreSQL Database Volumes (single instance with multiple schemas)
+  postgres-data:
+    name: postgres-data                    # All database files (jeeeraaah, lib_test, keycloak)
+  postgres-backups:
+    name: postgres-backups                 # Backup storage for all databases
 
   # Keycloak Application Data
   keycloak-data:
@@ -205,34 +160,35 @@ volumes:
 # Alle Credentials werden aus der .env Datei geladen!
 # Siehe: .env.template für die Struktur
 #
-# PostgreSQL JEEERAaH (Port 5432):
-#   Database: ${POSTGRES_JEEERAAAH_DATABASE}
-#   User:     ${POSTGRES_JEEERAAAH_USER}
-#   Password: ${POSTGRES_JEEERAAAH_PASSWORD}
+# PostgreSQL (Port 5432):
+#   Superuser: ${POSTGRES_USER}:${POSTGRES_PASSWORD}
 #
-# PostgreSQL lib_test (Port 5434):
-#   Database: ${POSTGRES_LIB_TEST_DATABASE}
-#   User:     ${POSTGRES_LIB_TEST_USER}
-#   Password: ${POSTGRES_LIB_TEST_PASSWORD}
+#   Schema jeeeraaah:
+#     Database: ${POSTGRES_JEEERAAAH_DB}
+#     User:     ${POSTGRES_JEEERAAAH_USER}
+#     Password: ${POSTGRES_JEEERAAAH_PASSWORD}
 #
-# PostgreSQL Keycloak (Port 5433):
-#   Database: ${POSTGRES_KEYCLOAK_DATABASE}
-#   User:     ${POSTGRES_KEYCLOAK_USER}
-#   Password: ${POSTGRES_KEYCLOAK_PASSWORD}
+#   Schema lib_test:
+#     Database: ${POSTGRES_LIB_TEST_DB}
+#     User:     ${POSTGRES_LIB_TEST_USER}
+#     Password: ${POSTGRES_LIB_TEST_PASSWORD}
+#
+#   Schema keycloak:
+#     Database: ${POSTGRES_KEYCLOAK_DB}
+#     User:     ${POSTGRES_KEYCLOAK_USER}
+#     Password: ${POSTGRES_KEYCLOAK_PASSWORD}
 #
 # Keycloak Admin Console (http://localhost:8080/admin):
 #   Username: ${KEYCLOAK_ADMIN_USER}
 #   Password: ${KEYCLOAK_ADMIN_PASSWORD}
 #
 # Init-Skripte:
-#   JEEERAaH:  Lege SQL in ./initdb/jeeeraaah/ ab
-#   lib_test:  Lege SQL in ./initdb/lib_test/ ab
-#   Keycloak:  Lege SQL in ./initdb/keycloak/ ab
-#   Ausführung beim ersten Start automatisch (alphabetisch sortiert)
+#   Alle SQL-Dateien in ./initdb/ werden automatisch ausgeführt
+#   Ausführung beim ersten Start (alphabetisch sortiert)
 #
 # Rebuild (Daten löschen):
 #   docker compose down -v
-#   docker volume rm postgres-jeeeraaah-data postgres-lib-test-data postgres-keycloak-data keycloak-data
+#   docker volume rm postgres-data keycloak-data
 #   docker compose up -d
 #
 # Einzelnen Container neu starten:

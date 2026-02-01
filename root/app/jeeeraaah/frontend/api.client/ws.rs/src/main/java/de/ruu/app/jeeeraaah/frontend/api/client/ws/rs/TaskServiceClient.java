@@ -174,9 +174,23 @@ public class TaskServiceClient implements TaskService<TaskBean>
 	{
 		WebTarget webTarget = client.target(baseURL).path(TOKEN_DOMAIN);
 		log.debug("webTarget: {}", webTarget);
+
+		TaskCreationData creationData = newTaskCreationData(task);
+
+		// Try to serialize to JSON for debugging
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.registerModule(new Jdk8Module());
+			mapper.registerModule(new JavaTimeModule());
+			String json = mapper.writeValueAsString(creationData);
+			log.debug("JSON to be sent: {}", json);
+		} catch (JsonProcessingException e) {
+			log.warn("Failed to serialize TaskCreationData to JSON for debugging", e);
+		}
+
 		// Execute POST request with automatic Keycloak token handling (injection + refresh on 401)
 		try (Response response = executeWithAuth(webTarget,
-				requestBuilder -> requestBuilder.post(entity(newTaskCreationData(task), APPLICATION_JSON))))
+				requestBuilder -> requestBuilder.post(entity(creationData, APPLICATION_JSON))))
 		{
 			if (response.getStatusInfo().getFamily() == SUCCESSFUL)
 			{
@@ -777,8 +791,30 @@ public class TaskServiceClient implements TaskService<TaskBean>
 
 	private TaskCreationData newTaskCreationData(TaskBean task)
 	{
-		return new TaskCreationData(requireNonNull(task.taskGroup().id()),
-				(TaskDTOLazy) toLazy(task, new ReferenceCycleTracking()));
+		// Validate that task has a task group
+		if (task.taskGroup() == null)
+		{
+			throw new IllegalArgumentException("Task must belong to a task group (task.taskGroup() is null)");
+		}
+
+		// Validate that task group has an ID (i.e., is persisted)
+		Long taskGroupId = task.taskGroup().id();
+		if (taskGroupId == null)
+		{
+			throw new IllegalArgumentException("Task group must be persisted before creating tasks (taskGroup.id() is null)");
+		}
+
+		TaskDTOLazy taskLazy = (TaskDTOLazy) toLazy(task, new ReferenceCycleTracking());
+		TaskCreationData data = new TaskCreationData(taskGroupId, taskLazy);
+
+		// Debug logging
+		log.debug("Creating TaskCreationData:");
+		log.debug("  taskGroupId: {}", taskGroupId);
+		log.debug("  taskLazy.taskGroupId(): {}", taskLazy.taskGroupId());
+		log.debug("  data.getTaskGroupId(): {}", data.getTaskGroupId());
+		log.debug("  data: {}", data);
+
+		return data;
 	}
 
 	private InterTaskRelationData newInterTaskRelationData(TaskBean task, TaskBean relatedTask)

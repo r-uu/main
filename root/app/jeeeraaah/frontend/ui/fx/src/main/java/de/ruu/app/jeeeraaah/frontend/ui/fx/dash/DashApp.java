@@ -39,7 +39,7 @@ import lombok.extern.slf4j.Slf4j;
  * </ul>
  *
  * <h2>Configuration:</h2>
- * <p>Authentication settings are read from microprofile-config.properties:</p>
+ * <p>Authentication settings are read from microprofile-config.properties_:</p>
  * <ul>
  *   <li>keycloak.auth.server.url - Keycloak server base URL</li>
  *   <li>keycloak.realm - Realm name</li>

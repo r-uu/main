@@ -367,7 +367,7 @@ public class LoginDialog
 			String errorMessage = "Connection error: " + e.getMessage() +
 					"\n\nPlease check:\n" +
 					"- Is Keycloak running? (docker ps | grep keycloak)\n" +
-					"- Is the Keycloak URL correct? (check microprofile-config.properties)";
+					"- Is the Keycloak URL correct? (check microprofile-config.properties_)";
 			showError(errorMessage);
 		}
 		catch (InterruptedException e)

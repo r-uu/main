@@ -64,15 +64,15 @@ public abstract class TaskServiceJPA implements TaskService<TaskJPA>
 	public @NonNull TaskJPA createFromData(@NonNull TaskCreationData data) {
 		// find persistent task group - within transaction, so lazy collections can be
 		// accessed
-		Optional<? extends TaskGroupJPA> optional = taskGroupRepository().find(data.taskGroupId());
+		Optional<? extends TaskGroupJPA> optional = taskGroupRepository().find(data.getTaskGroupId());
 		if (optional.isEmpty()) {
-			throw new EntityNotFoundException("task group with id " + data.taskGroupId() + " not found");
+			throw new EntityNotFoundException("task group with id " + data.getTaskGroupId() + " not found");
 		}
 		TaskGroupJPA taskGroup = optional.get();
 
 		// map lazy dto to jpa entity - within transaction, taskGroup.addTask() can
 		// access tasks collection
-		TaskJPA taskJPA = taskLazyMapper().map(taskGroup, data.task());
+		TaskJPA taskJPA = taskLazyMapper().map(taskGroup, data.getTask());
 
 		// persist and return
 		return repository().create(taskJPA);

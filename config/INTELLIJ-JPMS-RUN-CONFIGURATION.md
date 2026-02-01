@@ -1,7 +1,42 @@
 # JPMS Run Configuration für IntelliJ IDEA
 
+## Häufige Frage: Ist `-cp` bei JPMS normal?
+
+**JA, das ist völlig normal!**
+
+IntelliJ aktiviert automatisch "Use classpath of module" und fügt `-cp` Parameter hinzu. Dies ist **korrekt** für moderne Java-Projekte, die:
+- Eigene JPMS-Module verwenden (module-info.java)
+- Externe Libraries nutzen, die noch nicht vollständig modularisiert sind
+
+### Warum IntelliJ `-cp` automatisch hinzufügt
+
+Die Kombination von `-cp` (Classpath) und `--module-path` ist der **Standard-Hybrid-Modus**:
+- **Module Path**: Enthält modularisierte JARs
+- **Classpath**: Enthält nicht-modularisierte JARs (Automatic Modules)
+
+IntelliJ verwendet **beides** gleichzeitig - das ist **korrekt**.
+
+### Wie prüfe ich, ob JPMS aktiv ist?
+
+Prüfen Sie die Startzeile in der Console:
+```bash
+java --module-path <path> --add-modules ... -cp <classpath> -m <module>/<mainclass>
+```
+
+✅ **JPMS ist aktiv**, wenn Sie sehen:
+- `--module-path` oder `-p`
+- `--add-modules`
+- `-m` oder `--module`
+
+❌ **Nur Classpath** (falsch):
+```bash
+java -cp <classpath> <mainclass>
+```
+
+**Fazit:** Die Configuration läuft konsequent unter JPMS. Die automatische `-cp` Aktivierung ist normal und kein Grund zur Sorge.
+
 ## Problem
-IntelliJ IDEA erstellt automatisch Classpath-basierte Run Configurations, selbst wenn das Projekt JPMS (Java Platform Module System) verwendet. Dies führt zu `--add-modules` Parametern in Kombination mit `-cp`, was nicht optimal ist.
+IntelliJ IDEA erstellt automatisch Classpath-basierte Run Configurations, selbst wenn das Projekt JPMS (Java Platform Module System) verwendet. Dies führt zu `--add-modules` Parametern in Kombination mit `-cp`, was aber wie oben erklärt **korrekt** ist.
 
 ## Lösung
 

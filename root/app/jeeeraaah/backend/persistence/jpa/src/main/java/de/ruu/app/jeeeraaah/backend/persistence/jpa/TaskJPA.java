@@ -37,7 +37,9 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @ToString
 @Getter // generate getter methods for all fields using lombok unless configured
 				// otherwise ({@code
@@ -52,40 +54,24 @@ import lombok.experimental.Accessors;
 // no args constructor for jsonb, jaxb, jpa, mapstruct, ...
 @Entity
 @Table(name = "task")
-public class TaskJPA implements TaskEntity<TaskGroupJPA, TaskJPA> {
+public class TaskJPA implements TaskEntity<TaskGroupJPA, TaskJPA>
+{
 	/**
-	 * may be
-	 * 
-	 * <pre>
-	 * null
-	 * </pre>
-	 * 
-	 * if instance was not (yet) persisted.
+	 * may be <pre>null</pre> if instance was not (yet) persisted.
 	 * <p>
-	 * may not be modified from outside type hierarchy (from
-	 * non-{@link AbstractEntity}-subclasses)
+	 * may not be modified from outside type hierarchy (from non-{@link AbstractEntity}-subclasses)
 	 * <p>
-	 * not {@code final} or {@code @NonNull} because otherwise there has to be a
-	 * constructor with {@code id}-parameter
+	 * not {@code final} or {@code @NonNull} because otherwise there has to be a constructor with {@code id}-parameter
 	 */
-	@EqualsAndHashCode.Include // documents intent of including id for equals() and hashCode() but both methods
-															// are
-	// manually created
+	@EqualsAndHashCode.Include // documents intent of including id for equals() and hashCode() but both methods are
+	                           // manually created
 	@Nullable
 	@Setter(AccessLevel.NONE)
 	@Id
 	@GeneratedValue
 	private Long id;
 
-	/**
-	 * may be
-	 * 
-	 * <pre>
-	 * null
-	 * </pre>
-	 * 
-	 * if {@link AbstractEntity} was not (yet) persisted.
-	 */
+	/** may be <pre>null</pre> if {@link AbstractEntity} was not (yet) persisted. */
 	@Nullable
 	@Setter(AccessLevel.NONE)
 	@Version
@@ -143,11 +129,14 @@ public class TaskJPA implements TaskEntity<TaskGroupJPA, TaskJPA> {
 	@ToString.Exclude
 	@Getter(AccessLevel.NONE) // provide handmade getter that returns unmodifiable
 	@Setter(AccessLevel.NONE) // no setter at all, use add method instead
-	@OneToMany(mappedBy = "superTask",
+	@OneToMany
+	(
+			mappedBy = "superTask",
 			// do not use cascade REMOVE in to-many relations as this may result in
 			// cascading deletes that wipe out both sides
 			// of the relation entirely
-			cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+			cascade = { CascadeType.PERSIST, CascadeType.MERGE }
+	)
 	private Set<TaskJPA> subTasks;
 
 	/**
@@ -164,14 +153,20 @@ public class TaskJPA implements TaskEntity<TaskGroupJPA, TaskJPA> {
 	@ToString.Exclude
 	@Getter(AccessLevel.NONE) // provide handmade getter that returns unmodifiable
 	@Setter(AccessLevel.NONE) // no setter at all
-	@ManyToMany(
+	@ManyToMany
+	(
 			// mappedBy = TaskEntityJPA_.SUCCESSORS,
 			// do not use cascade REMOVE in to-many relations as this may result in
 			// cascading deletes that wipe out both sides
 			// of the relation entirely
-			cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "PREDECESSOR_SUCCESSOR", joinColumns = {
-			@JoinColumn(name = "idPredecessor") }, inverseJoinColumns = { @JoinColumn(name = "idSuccessor") })
+			cascade = { CascadeType.PERSIST, CascadeType.MERGE }
+	)
+	@JoinTable
+	(
+			name               = "PREDECESSOR_SUCCESSOR",
+			joinColumns        = { @JoinColumn(name = "idPredecessor") },
+			inverseJoinColumns = { @JoinColumn(name = "idSuccessor"  ) }
+	)
 	private Set<TaskJPA> predecessors;
 
 	/**
@@ -188,11 +183,14 @@ public class TaskJPA implements TaskEntity<TaskGroupJPA, TaskJPA> {
 	@ToString.Exclude
 	@Getter(AccessLevel.NONE) // provide handmade getter that returns unmodifiable
 	@Setter(AccessLevel.NONE) // no setter at all, use add method instead
-	@ManyToMany(mappedBy = "predecessors",
+	@ManyToMany
+	(
+			mappedBy = "predecessors",
 			// do not use cascade REMOVE in to-many relations as this may result in
 			// cascading deletes that wipe out both sides
 			// of the relation entirely
-			cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+			cascade = { CascadeType.PERSIST, CascadeType.MERGE }
+	)
 	private Set<TaskJPA> successors;
 
 	///////////////
@@ -206,7 +204,8 @@ public class TaskJPA implements TaskEntity<TaskGroupJPA, TaskJPA> {
 	/**
 	 * provide handmade required args constructor to properly handle relationships
 	 */
-	public TaskJPA(@NonNull TaskGroupJPA taskGroup, @NonNull String name) {
+	public TaskJPA(@NonNull TaskGroupJPA taskGroup, @NonNull String name)
+	{
 		this();
 		this.taskGroup = taskGroup;
 		this.taskGroup.addTask(this);
@@ -222,7 +221,8 @@ public class TaskJPA implements TaskEntity<TaskGroupJPA, TaskJPA> {
 	 * @param taskGroup the task group this task belongs to
 	 * @param in the existing entity, must not be {@code null}
 	 */
-	public TaskJPA(@NonNull TaskGroupJPA taskGroup, @NonNull TaskEntity<?, ?> in) {
+	public TaskJPA(@NonNull TaskGroupJPA taskGroup, @NonNull TaskEntity<?, ?> in)
+	{
 		this(taskGroup, in.name());
 		this.id      = in.id();
 		this.version = in.version();
@@ -230,13 +230,11 @@ public class TaskJPA implements TaskEntity<TaskGroupJPA, TaskJPA> {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof TaskJPA other))
-			return false;
-		if (id != null && other.id != null)
-			return id.equals(other.id);
+	public boolean equals(Object o)
+	{
+		if (this == o)                      return true;
+		if (!(o instanceof TaskJPA other))  return false;
+		if (id != null && other.id != null) return id.equals(other.id);
 		return false;
 	}
 
@@ -245,40 +243,33 @@ public class TaskJPA implements TaskEntity<TaskGroupJPA, TaskJPA> {
 		return (id != null) ? id.hashCode() : identityHashCode(this);
 	}
 
-	public boolean equalsWithFieldsIgnoreId(TaskJPA other) {
-		if (equalsIdentity(other))
-			return true;
+	public boolean equalsWithFieldsIgnoreId(TaskJPA other)
+	{
+		if (equalsIdentity(other)) return true;
 
 		// compare fields one by one but skip id
-		if (!Objects.equals(name, other.name))
-			return false;
-		if (!Objects.equals(description, other.description))
-			return false;
-		if (!Objects.equals(start, other.start))
-			return false;
-		if (!Objects.equals(end, other.end))
-			return false;
-		if (!Objects.equals(closed, other.closed))
-			return false;
+		if (!Objects.equals(name       , other.name       )) return false;
+		if (!Objects.equals(description, other.description)) return false;
+		if (!Objects.equals(start      , other.start      )) return false;
+		if (!Objects.equals(end        , other.end        )) return false;
+		if (!Objects.equals(closed     , other.closed     )) return false;
 
 		return true;
 	}
 
-	public boolean equalsWithFields(TaskJPA other) {
+	public boolean equalsWithFields(TaskJPA other)
+	{
 		// equalsIdentity(other) is called inside equalsWithFieldsIgnoreId(other)
-		if (!equalsWithFieldsIgnoreId(other))
-			return false;
-
+		if (!equalsWithFieldsIgnoreId(other)) return false;
 		// compare id fields
-		if (!Objects.equals(id, other.id))
-			return false;
+		if (!Objects.equals(id, other.id))    return false;
 
 		return true;
 	}
 
-	public boolean equalsIdentity(TaskJPA other) {
-		if (this == other)
-			return true;
+	public boolean equalsIdentity(TaskJPA other)
+	{
+		if (this == other) return true;
 		return false;
 	}
 
@@ -296,42 +287,21 @@ public class TaskJPA implements TaskEntity<TaskGroupJPA, TaskJPA> {
 	 * @throws NullPointerException     if {@code name} parameter is {@code null}
 	 */
 	@NonNull
-	public TaskJPA name(@NonNull String name) {
-		if (Strings.isEmptyOrBlank(name))
-			throw new IllegalArgumentException("name must not be empty nor blank");
+	public TaskJPA name(@NonNull String name)
+	{
+		if (Strings.isEmptyOrBlank(name)) throw new IllegalArgumentException("name must not be empty nor blank");
 		this.name = name;
 		return this;
 	}
 
-	@Override
-	public @NonNull TaskGroupJPA taskGroup() {
-		return taskGroup;
-	}
-
-	@Override
-	public @NonNull String name() {
-		return name;
-	}
-
-	@Override
-	public Optional<String> description() {
+	@Override public @NonNull TaskGroupJPA taskGroup()   { return taskGroup; }
+	@Override public @NonNull String       name()        { return name; }
+	@Override public Optional<String>      description() {
 		return Optional.ofNullable(description);
 	}
-
-	@Override
-	public Optional<LocalDate> start() {
-		return Optional.ofNullable(start);
-	}
-
-	@Override
-	public Optional<LocalDate> end() {
-		return Optional.ofNullable(end);
-	}
-
-	@Override
-	public Optional<TaskJPA> superTask() {
-		return Optional.ofNullable(superTask);
-	}
+	@Override public Optional<LocalDate>   start()       { return Optional.ofNullable(start); }
+	@Override public Optional<LocalDate>   end()         { return Optional.ofNullable(end); }
+	@Override public Optional<TaskJPA>     superTask()   { return Optional.ofNullable(superTask); }
 
 	/** @return {@link #subTasks wrapped in unmodifiable */
 	@Override
@@ -440,16 +410,17 @@ public class TaskJPA implements TaskEntity<TaskGroupJPA, TaskJPA> {
 	 *                               established
 	 */
 	@Override
-	public boolean addPredecessor(@NonNull TaskJPA task) throws TaskRelationException {
-		if (task.equals(this))
-			throw new TaskRelationException("task can not be predecessor of itself");
-		if (successorsContain(task))
-			throw new TaskRelationException("predecessor can not be successor of the same task");
-		if (subTasksContain(task))
-			throw new TaskRelationException("predecessor can not be sub task of the same task");
+	public boolean addPredecessor(@NonNull TaskJPA task) throws TaskRelationException
+	{
+		if (task.equals(this))       throw new TaskRelationException("task can not be predecessor of itself");
+		if (successorsContain(task)) throw new TaskRelationException("predecessor can not be successor of the same task");
+		if (subTasksContain(task))   throw new TaskRelationException("predecessor can not be sub task of the same task");
 
 		if (predecessorsContains(task))
+		{
+			log.warn("predecessors already contain task");
 			return false; // no-op
+		}
 
 		// update bidirectional relation
 		if (task.nonNullSuccessors().add(this)) {

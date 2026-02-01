@@ -1,48 +1,40 @@
 # JEEERAAAH Backend API (OpenLiberty + JTA/JPA)
 
-Dieses Modul stellt die JEEERAaH Backend API bereit, deployt als WAR auf OpenLiberty. Die App nutzt JTA/JPA mit einer PostgreSQL-Datenquelle.
+Dieses Modul stellt die JEEERAAAH Backend API bereit, deployt als WAR auf OpenLiberty. Die App nutzt JTA/JPA mit einer PostgreSQL-Datenquelle.
 
-- Artifact/Name: `r-uu.space-02.app.jeeeraaah.backend.api.ws.rs`
-- Context-Root: `/jeee-raaah` (siehe `server.xml`)
+- Artifact/Name: `r-uu.app.jeeeraaah.backend.api.ws.rs`
+- Context-Root: `/jeeeraaah` (siehe `server.xml`)
 - JNDI DataSource: `jdbc/datasource_postgresql`
-- Persistence Provider: EclipseLink (via Liberty `persistenceContainer-3.1`)
+- Persistence Provider: Hibernate (via Liberty `persistenceContainer-3.1`)
 
 ## Voraussetzungen
 - Docker Desktop (lokale PostgreSQL-Instanz im Container)
-- Java 21
+- Java 25 (GraalVM)
 - Maven
-- Optional: Git Bash (für `docker-*`/`lib-*` Aliases)
+- WSL2 mit konfigurierten Aliases
 
 ## Datenbank (lokal via Docker)
-Standardwerte (aus `config/wsl/docker/.env`):
+Standardwerte (aus `config/shared/docker/.env`):
 - Host: `localhost`
 - Port: `5432`
 - DB: `jeeeraaah`
-- Benutzer: `r_uu`
-- Passwort: aus `.env`/`.env.local` (`APP_ROLE_PASSWORD`)
-- Schema: `test`
+- Benutzer: `jeeeraaah`
+- Passwort: `jeeeraaah`
 
-DB starten (Windows CMD):
-```cmd
-cd /d C:\Users\r-uu\develop\github\space-02\config\wsl\docker
-docker compose up -d
-```
-
-Alternativ (Git Bash):
+DB starten:
 ```bash
-docker-up-wait
+ruu-docker-up
 ```
 
 ## Starten im Dev-Mode (Liberty)
-Windows CMD:
-```cmd
-cd /d C:\Users\r-uu\develop\github\space-02\r-uu\app\jeeeraaah\backend\api\ws.rs
+```bash
+cd ~/develop/github/main/root/app/jeeeraaah/backend/api/ws.rs
 mvn liberty:dev
 ```
 
-Git Bash (Aliases):
+Oder mit Alias:
 ```bash
-lib-dev-jeee
+ruu-liberty-dev
 ```
 
 Beenden: `Strg+C` im Dev-Mode-Terminal oder (Git Bash) `lib-stop-jeee`.
