@@ -237,17 +237,19 @@ Mit JPMS können Entwickler Module definieren, die ausschließlich über eine se
 <details><summary>Ein Modul definiert seine Schnittstelle in `module-info.java`:</summary>
 
 ```java
-module de.ruu.lib.jpa.core
+module de.ruu.app.jeeeraaah.backend.persistence.jpa
 {
-    // Was exportiert das Modul?
-    exports de.ruu.lib.jpa.core;
+    // what this module exports
+    exports de.ruu.app.jeeeraaah.backend.persistence.jpa;
     
-    // Was braucht das Modul?
+    // what is required by this module
     requires jakarta.persistence;
     requires transitive de.ruu.lib.util;
     
-    // Was bleibt verborgen?
-    // → Alle anderen packages!
+    // what remains hidden
+    // → all other packages!
+    // e.g. de.ruu.app.jeeeraaah.backend.persistence.jpa.ee, an internal implementation of the module
+    // so "import de.ruu.app.jeeeraaah.backend.persistence.jpa.ee;" from outside the module will fail
 }
 ```
 </details>
@@ -272,7 +274,11 @@ Durch die Modulgrenzen kann der (willkürliche, ungewollte, unerwünschte) Zugri
 
 > Innerhalb eines Moduls müssen oft viele Typen ```public``` sein, wenn es in dem Modul mehrere ```packages``` gibt.
 
-# Fazit: Modulithen plus Microservices
+# Fazit: JPMS und Modulithen plus Microservices
+
+Auch achteinhalb Jahre nach der Veröffentlichung von JPMS ist dessen Einsatz in der Praxis noch nicht sehr weit verbreitet. Dies mag daran liegen, dass viele bestehende Systeme noch auf Java 8 oder älter basieren. Es mag aber auch daran liegen, dass die Vorteile von JPMS und Modulithen noch nicht allgemein bekannt sind.
+
+Im POC-Projekt [jeeeraaah](https://github.com/r-uu/main/tree/main/root/app/jeeeraaah) wurde JPMS von Anfang an eingesetzt, um die Modularisierung des Systems sicherzustellen. Dadurch konnte eine saubere interne Struktur des Systems erreicht werden, die das System auch bei wachsender Komplexität beherrschbar macht.
 
 Selbstverständlich ist es möglich und häufig auch sinnvoll, Modulithen mit Microservices zu kombinieren. Dies kommt immer dann in Betracht, wenn für bestimmte Systemteile Kriterien wie Skalierbarkeit wichtig sind. Microservices skalieren besser als Modulithen. Außerdem erweisen sie sich als vorteilhaft, wenn Teilsysteme häufig und schnell geändert werden müssen. Modulithen sind vergleichsweise große Deploymenteinheiten, die oft längere Releasezyklen haben, als die kleineren Microservices. Insofern ist eine Koexistenz von Modulithen und Microservices keineswegs unüblich.
 
