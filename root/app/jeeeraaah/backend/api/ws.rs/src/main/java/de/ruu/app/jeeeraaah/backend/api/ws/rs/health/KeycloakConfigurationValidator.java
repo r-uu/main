@@ -167,49 +167,56 @@ public class KeycloakConfigurationValidator
 	 */
 	private void logSetupInstructions(Set<String> requiredRoles)
 	{
-		log.info("Keycloak Setup Instructions:");
-		log.info("----------------------------");
-		log.info("");
-		log.info("1. Create required roles in Keycloak (if not already present):");
-		log.info("");
-		
+		log.info("""
+				Keycloak Setup Instructions:
+				----------------------------
+				
+				1. Create required roles in Keycloak (if not already present):
+				""");
+
 		List<String> sortedRoles = requiredRoles.stream().sorted().collect(Collectors.toList());
 		for (String role : sortedRoles)
 		{
-			log.info("   docker exec keycloak /opt/keycloak/bin/kcadm.sh create roles \\");
-			log.info("     -r jeeeraaah-realm -s name={}", role);
+			log.info("""
+					   docker exec keycloak /opt/keycloak/bin/kcadm.sh create roles \\
+					     -r jeeeraaah-realm -s name={}""", role);
 		}
 		
-		log.info("");
-		log.info("2. Assign roles to users (example for user 'r-uu'):");
-		log.info("");
-		
+		log.info("""
+				
+				2. Assign roles to users (example for user 'r-uu'):
+				""");
+
 		for (String role : sortedRoles)
 		{
-			log.info("   docker exec keycloak /opt/keycloak/bin/kcadm.sh add-roles \\");
-			log.info("     -r jeeeraaah-realm --uusername r-uu --rolename {}", role);
+			log.info("""
+					   docker exec keycloak /opt/keycloak/bin/kcadm.sh add-roles \\
+					     -r jeeeraaah-realm --uusername r-uu --rolename {}""", role);
 		}
 		
-		log.info("");
-		log.info("3. Configure audience mapper for client 'jeeeraaah-frontend':");
-		log.info("");
-		log.info("   Navigate in Keycloak Admin Console:");
-		log.info("   Clients → jeeeraaah-frontend → Client scopes");
-		log.info("   → jeeeraaah-frontend-dedicated → Add mapper");
-		log.info("   → By configuration → Audience");
-		log.info("   Set: Included Custom Audience = {}", expectedAudience);
-		log.info("");
-		log.info("4. Verify token claims after obtaining a token:");
-		log.info("");
-		log.info("   curl -s -X POST http://localhost:8080/realms/jeeeraaah-realm/protocol/openid-connect/token \\");
-		log.info("     -H 'Content-Type: application/x-www-form-urlencoded' \\");
-		log.info("     -d 'grant_type=password&client_id=jeeeraaah-frontend&username=r-uu&password=r-uu-password' \\");
-		log.info("     | jq -r '.access_token' | cut -d. -f2 | base64 -d | jq .");
-		log.info("");
-		log.info("   Verify:");
-		log.info("   - 'aud' claim contains: \"{}\"", expectedAudience);
-		log.info("   - 'realm_access.roles' contains all required roles listed above");
-		log.info("");
+		log.info("""
+				
+				3. Configure audience mapper for client 'jeeeraaah-frontend':
+				
+				   Navigate in Keycloak Admin Console:
+				   Clients → jeeeraaah-frontend → Client scopes
+				   → jeeeraaah-frontend-dedicated → Add mapper
+				   → By configuration → Audience
+				   Set: Included Custom Audience = {}
+				""", expectedAudience);
+
+		log.info("""
+				4. Verify token claims after obtaining a token:
+				
+				   curl -s -X POST http://localhost:8080/realms/jeeeraaah-realm/protocol/openid-connect/token \\
+				     -H 'Content-Type: application/x-www-form-urlencoded' \\
+				     -d 'grant_type=password&client_id=jeeeraaah-frontend&username=r-uu&password=r-uu-password' \\
+				     | jq -r '.access_token' | cut -d. -f2 | base64 -d | jq .
+				
+				   Verify:
+				   - 'aud' claim contains: "{}"
+				   - 'realm_access.roles' contains all required roles listed above
+				""", expectedAudience);
 	}
 	
 	/**

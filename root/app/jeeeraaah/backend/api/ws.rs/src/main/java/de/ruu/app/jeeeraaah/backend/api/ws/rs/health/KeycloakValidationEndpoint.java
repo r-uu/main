@@ -131,16 +131,25 @@ public class KeycloakValidationEndpoint
 			// Parse token to show basic info
 			JwtTokenParser.TokenInfo tokenInfo = JwtTokenParser.parseToken(request.getToken());
 			
-			log.info("Token info:");
-			log.info("  Issuer: {}", tokenInfo.getIssuer());
-			log.info("  Subject: {}", tokenInfo.getSubject());
-			log.info("  Preferred Username: {}", tokenInfo.getPreferredUsername());
-			log.info("  Audiences: {}", tokenInfo.getAudiences());
-			log.info("  Roles: {}", tokenInfo.getRoles());
-			log.info("  Lifetime: {}s", tokenInfo.getLifetimeSeconds());
-			log.info("  Remaining: {}s", tokenInfo.getRemainingLifetimeSeconds());
-			log.info("  Expired: {}", tokenInfo.isExpired());
-			
+			log.info("""
+					Token info:
+					  Issuer: {}
+					  Subject: {}
+					  Preferred Username: {}
+					  Audiences: {}
+					  Roles: {}
+					  Lifetime: {}s
+					  Remaining: {}s
+					  Expired: {}""",
+					tokenInfo.getIssuer(),
+					tokenInfo.getSubject(),
+					tokenInfo.getPreferredUsername(),
+					tokenInfo.getAudiences(),
+					tokenInfo.getRoles(),
+					tokenInfo.getLifetimeSeconds(),
+					tokenInfo.getRemainingLifetimeSeconds(),
+					tokenInfo.isExpired());
+
 			// Perform comprehensive validation
 			ValidationReport report = validator.validateToken(request.getToken());
 			

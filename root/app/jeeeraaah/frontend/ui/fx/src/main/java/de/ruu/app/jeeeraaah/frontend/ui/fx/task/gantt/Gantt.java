@@ -9,4 +9,11 @@ import de.ruu.lib.fx.comp.DefaultFXCView;
  */
 public class Gantt extends DefaultFXCView<Gantt, GanttService, GanttController> implements GanttService
 {
+	/**
+	 * Provides public access to the controller.
+	 * This is needed to call controller methods after the view has been initialized.
+	 *
+	 * @return the controller instance
+	 */
+	public GanttController getController() { return controller(); }
 }

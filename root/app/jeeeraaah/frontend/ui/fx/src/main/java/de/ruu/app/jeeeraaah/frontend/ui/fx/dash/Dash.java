@@ -15,8 +15,5 @@ public class Dash extends DefaultFXCView<Dash, DashService, DashController>
 	 *
 	 * @return the controller instance
 	 */
-	public DashController getController()
-	{
-		return controller();
-	}
+	public DashController getController() { return controller(); }
 }

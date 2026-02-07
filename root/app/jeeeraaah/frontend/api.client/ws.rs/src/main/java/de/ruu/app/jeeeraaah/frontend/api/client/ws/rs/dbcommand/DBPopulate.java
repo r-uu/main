@@ -71,13 +71,15 @@ public class DBPopulate
 					log.info("  Access token (first 50 chars): {}...",
 							authService.getAccessToken().substring(0, Math.min(50, authService.getAccessToken().length())));
 				}
-				catch (Exception e)
-				{
-					log.error("  ❌ Automatic login failed: {}", e.getMessage(), e);
-					log.error("  Please ensure:");
-					log.error("    - Keycloak server is running (docker ps | grep keycloak)");
-					log.error("    - Credentials in microprofile-config.properties are correct");
-					log.error("    - Direct Access Grants are enabled for the client");
+			catch (Exception e)
+			{
+				log.error("""
+						❌ Automatic login failed: {}
+						  Please ensure:
+						    - Keycloak server is running (docker ps | grep keycloak)
+						    - Credentials in microprofile-config.properties are correct
+						    - Direct Access Grants are enabled for the client""",
+						e.getMessage(), e);
 					throw new TechnicalException("Automatic login in testing mode failed", e);
 				}
 			}

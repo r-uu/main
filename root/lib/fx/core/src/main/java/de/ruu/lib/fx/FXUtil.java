@@ -184,7 +184,7 @@ public abstract class FXUtil
 		return wrapper;
 	}
 
-	public static void createTitledBorderAndReplace(String title, @NonNull Region content)
+	public static void wrapInTitledBorder(String title, @NonNull Region content)
 	{
 		// remember parent and index
 		Parent parent = content.getParent();

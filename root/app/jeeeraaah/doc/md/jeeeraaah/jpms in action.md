@@ -22,7 +22,7 @@ Die Idee ist, Aufgaben in Teilaufgaben zu gliedern (Tasks und SubTasks) und für
   <em>Abb. 2: Task-Objekte</em>
 </p>
 
-In der Anwendung sieht das dann im dashboard so aus:
+In der Anwendung sieht das dann im dashboard etwa so aus:
 
 <p align="center">
   <img src="jeeeraaah-dashboard.png" alt="Task-Objects" width="350"/>

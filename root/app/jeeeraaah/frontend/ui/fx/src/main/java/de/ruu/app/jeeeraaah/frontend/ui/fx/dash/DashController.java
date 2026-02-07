@@ -86,7 +86,7 @@ class DashController extends DefaultFXCController<Dash, DashService> implements 
 	@FXML private Button buttonExit;
 
 	// cannot use @Observes(IF_EXISTS) directly because @Dependent beans don't support conditional observers
-	@Inject private EventDispatcher<            FXCAppStartedEvent>                   appStartedEventDispatcher;
+	@Inject private EventDispatcher<                  FXCAppStartedEvent>             appStartedEventDispatcher;
 	@Inject private EventDispatcher<TaskGroupSelectorComponentReadyEvent> taskGroupSelectorReadyEventDispatcher;
 
 	// inject components that are used in the user interface
@@ -104,8 +104,6 @@ class DashController extends DefaultFXCController<Dash, DashService> implements 
 
 	@Inject private TaskGroupEditor  taskGroupEditor;
 	@Inject private PostgresBackupUI postgresBackupUI;
-
-//	@Inject private MainTaskBeansBuilder mainTaskBeansBuilder;
 
 	private Optional<TaskGroupFlat> selectedTaskGroupDTOFlat = Optional.empty();
 
@@ -227,15 +225,15 @@ class DashController extends DefaultFXCController<Dash, DashService> implements 
 			Optional<TaskGroupBean> optional = executor.execute(
 				() -> taskGroupServiceClient.findWithTasksAndDirectNeighbours(requireNonNull(actSelection.id())),
 				"fetching task group details for id: " + actSelection.id(),
-				"Failed to load task group details",
-				"Load failed after re-login"
-			);
+			"Failed to load task group details",
+			"Load failed after re-login"
+		);
 
-			if (optional.isPresent())
-			{
-				TaskGroupBean taskGroupBean = optional.get();
+		if (optional.isPresent())
+		{
+			TaskGroupBean taskGroupBean = optional.get();
 
-				// fetch all of group's tasks together with the ids of their related tasks from the server
+				// collect all of group's tasks together with the ids of their related tasks from the server
 				List<TaskBean> mainTasks = new ArrayList<>();
 
 				if (taskGroupBean.tasks().isPresent())

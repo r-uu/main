@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 class GanttAppRunner extends FXCAppRunner
 {
-	public static void main(String[] args)
+	static void main(String[] args)
 	{
 		log.debug("starting GanttAppRunner.class.getName()");
 		// Configure JPMS module access for Weld CDI

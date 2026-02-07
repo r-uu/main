@@ -8,6 +8,7 @@ import static javafx.scene.control.SelectionMode.SINGLE;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -67,8 +68,7 @@ class TaskTreeTableController extends DefaultFXCController<TaskTreeTable, TaskTr
 		ttv.getSelectionModel().selectedItemProperty().addListener(selectedItemChangeListener());
 	}
 
-	@Override
-	public void populate(@Nullable Long id, @NonNull LocalDate start, @NonNull LocalDate end)
+	@Override public void populate(@Nullable Long id, @NonNull LocalDate start, @NonNull LocalDate end)
 	{
 		if (isNull(id))
 		{
@@ -115,8 +115,8 @@ class TaskTreeTableController extends DefaultFXCController<TaskTreeTable, TaskTr
 	private TreeItem<TaskTreeTableDataItem> populateTreeNode(TaskBean task, @NonNull LocalDate start,
 			@NonNull LocalDate end)
 	{
-		TreeItem<TaskTreeTableDataItem> result = new TreeItem(task);
 		TaskTreeTableDataItem taskTreeTableDataItem = new TaskTreeTableDataItem(task, start, end);
+		TreeItem<TaskTreeTableDataItem> result = new TreeItem<>(taskTreeTableDataItem);
 		if (task.subTasks().isPresent())
 		{
 			task.subTasks().get().forEach(subTask -> result.getChildren().add(populateTreeNode(subTask, start, end)));
@@ -124,16 +124,22 @@ class TaskTreeTableController extends DefaultFXCController<TaskTreeTable, TaskTr
 		return result;
 	}
 
+	@Inject private DataItemFactory dataItemFactory;
+
 	/** returns a list of task tree table items that are meant as children for the task tree table root */
 	private List<TreeItem<TaskTreeTableDataItem>> rootTreeItemChildren()
 	{
+		TaskGroupBean taskGroup = activeTaskGroupProperty.get();
+
+		if (isNull(taskGroup)) return Collections.emptyList();
+
 		List<TreeItem<TaskTreeTableDataItem>> result = new ArrayList<>();
 
 		LocalDate startOfPeriod = LocalDate.of(2025, 1, 1);
-		LocalDate endOfPeriod = LocalDate.of(2025, 1, 31);
+		LocalDate endOfPeriod   = LocalDate.of(2025, 3, 31);
 
-		DataItemFactory factory = new DataItemFactory(startOfPeriod, endOfPeriod);
-		for (TaskTreeTableDataItem rootItem : factory.rootItemsInPeriod())
+//		DataItemFactory factory = new DataItemFactory(startOfPeriod, endOfPeriod);
+		for (TaskTreeTableDataItem rootItem : dataItemFactory.rootItemsInPeriod(taskGroup, startOfPeriod, endOfPeriod))
 		{
 			TreeItem<TaskTreeTableDataItem> rootTaskAsTreeItem = new TreeItem<>(rootItem);
 			result.add(rootTaskAsTreeItem);

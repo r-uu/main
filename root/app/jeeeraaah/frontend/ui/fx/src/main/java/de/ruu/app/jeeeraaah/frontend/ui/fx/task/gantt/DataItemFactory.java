@@ -1,6 +1,9 @@
 package de.ruu.app.jeeeraaah.frontend.ui.fx.task.gantt;
 
 import de.ruu.app.jeeeraaah.common.api.bean.TaskBean;
+import de.ruu.app.jeeeraaah.common.api.bean.TaskGroupBean;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
@@ -8,62 +11,50 @@ import lombok.experimental.Accessors;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 @Getter
 @Accessors(fluent = true)
+@Dependent
 class DataItemFactory
 {
-	private final @NonNull LocalDate startOfPeriod;
-	private final @NonNull LocalDate endOfPeriod;
+	@Inject private TaskFactory taskFactory;
 
-	private final @NonNull List<TaskTreeTableDataItem> rootItemsInPeriod = new ArrayList<>();
-
-	DataItemFactory(@NonNull LocalDate startOfPeriod, @NonNull LocalDate endOfPeriod)
+	@NonNull List<TaskTreeTableDataItem> rootItemsInPeriod
+			(@NonNull final TaskGroupBean taskGroupBean, @NonNull LocalDate start, @NonNull LocalDate end)
 	{
-		this.startOfPeriod = startOfPeriod;
-		this.endOfPeriod   = endOfPeriod;
+		List<TaskTreeTableDataItem> result = new ArrayList<>();
 
-		TaskFactory   taskFactory = new TaskFactory(startOfPeriod, endOfPeriod);
-		Set<TaskBean> rootTasks   = taskFactory.rootTasks();
+		LocalDate compareStart = start.minusDays(1);
+		LocalDate compareEnd   = end  .plusDays (1);
 
-		LocalDate comparePeriodStart = startOfPeriod.minusDays(1);
-		LocalDate comparePeriodEnd   = endOfPeriod  .plusDays (1);
-
-		for (TaskBean rootTask : rootTasks)
+		for (TaskBean rootTask : taskFactory.rootTasks(taskGroupBean, start, end))
 		{
 			if (rootTask.start().isPresent() && rootTask.end().isPresent())
 			{
-				if (comparePeriodStart.isBefore(rootTask.start().get()) &&
-				    comparePeriodEnd  .isAfter (rootTask.end().get()))
+				if (compareStart.isBefore(rootTask.start().get()) && compareEnd.isAfter(rootTask.end().get()))
 				{
-					rootItemsInPeriod.add(new TaskTreeTableDataItem(rootTask, startOfPeriod, endOfPeriod));
+					result.add(new TaskTreeTableDataItem(rootTask, start, end));
 				}
 			}
 		}
 
-		rootItemsInPeriod.sort
+		result.sort
 		(
-				(i1, i2) ->
-				{
-					Optional<LocalDate> optionalStartEstimated1 = i1.task().start();
-					Optional<LocalDate> optionalStartEstimated2 = i2.task().start();
-					if (optionalStartEstimated1.isPresent() && optionalStartEstimated2.isPresent())
-							return
-									optionalStartEstimated1.get().compareTo(
-									optionalStartEstimated2.get());
-					else if (optionalStartEstimated1.isEmpty() && optionalStartEstimated2.isEmpty())
-					{
-						Optional<LocalDate> optionalEndEstimated1 = i1.task().end();
-						Optional<LocalDate> optionalEndEstimated2 = i2.task().end();
-						if (optionalEndEstimated1.isPresent() && optionalEndEstimated2.isPresent())
-								return
-										optionalEndEstimated1.get().compareTo(
-										optionalEndEstimated2.get());
-					}
-					return 0;
-				}
+		   (i1, i2) ->
+		   {
+		     if (i1.task().start().isPresent() && i2.task().start().isPresent())
+			      // if start dates are available compare by start dates
+		        return i1.task().start().get().compareTo( i2.task().start().get());
+		     else if (i1.task().start().isEmpty() && i2.task().start().isEmpty())
+		     {
+					 // none of the start dates are available
+		       if (i1.task().end().isPresent() && i2.task().end().isPresent())
+						  // if end dates are available compare by end dates
+			         return i1.task().end().get().compareTo( i2.task().end().get());
+		     }
+		     return 0;
+		   }
 		);
+		return result;
 	}
 }

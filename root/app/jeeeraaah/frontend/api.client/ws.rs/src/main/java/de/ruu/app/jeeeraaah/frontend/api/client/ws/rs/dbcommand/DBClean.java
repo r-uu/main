@@ -77,9 +77,13 @@ public class DBClean
 			}
 			catch (Exception e)
 			{
-				log.error("  ❌ Automatic login failed: {}", e.getMessage(), e);
-				log.error("  Please ensure:");
-				log.error("    - Keycloak server is running (docker ps | grep keycloak)");
+				log.error("""
+						❌ Automatic login failed: {}
+						  Please ensure:
+						    - Keycloak server is running (docker ps | grep keycloak)
+						    - Credentials in microprofile-config.properties are correct
+						    - Direct Access Grants are enabled for the client""",
+						e.getMessage(), e);
 				log.error("    - Credentials in microprofile-config.properties are correct (keycloak.test.user, keycloak.test.password)");
 				log.error("    - Direct Access Grants are enabled for the client");
 				throw new TechnicalException("Automatic login in testing mode failed", e);

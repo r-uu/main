@@ -1,87 +1,77 @@
 package de.ruu.app.jeeeraaah.frontend.ui.fx.task.gantt;
 
-import de.ruu.app.jeeeraaah.frontend.api.client.ws.rs.auth.KeycloakAuthService;
-import de.ruu.app.jeeeraaah.frontend.ui.fx.auth.LoginDialog;
-import de.ruu.lib.fx.comp.FXCApp;
-import jakarta.enterprise.inject.spi.CDI;
-import jakarta.inject.Inject;
-import javafx.application.Platform;
+import de.ruu.app.jeeeraaah.frontend.ui.fx.BaseAuthenticatedApp;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Gantt Chart JavaFX application for Jeeeraaah.
- * 
- * <p>This application requires Keycloak authentication before the Gantt UI is displayed.</p>
- * 
- * <h2>Startup Flow:</h2>
- * <ol>
- *   <li>Application starts and {@link #start(Stage)} is called</li>
- *   <li>Login dialog is displayed if user not authenticated</li>
- *   <li>User authenticates with Keycloak credentials</li>
- *   <li>On success: Gantt chart UI loads</li>
- *   <li>On cancel: Application exits</li>
- * </ol>
- * 
- * @see de.ruu.app.jeeeraaah.frontend.ui.fx.auth.LoginDialog
- * @see KeycloakAuthService
+ *
+ * <p>This application extends {@link BaseAuthenticatedApp} which provides:</p>
+ * <ul>
+ *   <li>Configuration health check</li>
+ *   <li>Docker environment health check with auto-fix</li>
+ *   <li>Keycloak authentication (with optional testing mode)</li>
+ *   <li>Standardized startup flow</li>
+ * </ul>
+ *
+ * <h2>Prerequisites:</h2>
+ * <ul>
+ *   <li>Keycloak server running on configured URL (default: http://localhost:8080)</li>
+ *   <li>Realm "jeeeraaah-realm" configured in Keycloak</li>
+ *   <li>Public client "jeeeraaah-frontend" created in realm</li>
+ *   <li>Direct Access Grants enabled for client</li>
+ *   <li>User account created in Keycloak with appropriate roles</li>
+ * </ul>
+ *
+ * @see BaseAuthenticatedApp
  */
 @Slf4j
-public class GanttApp extends FXCApp
+public class GanttApp extends BaseAuthenticatedApp
 {
-	/**
-	 * Keycloak authentication service for token management.
-	 */
-	@Inject
-	private KeycloakAuthService authService;
-	
-	/**
-	 * Starts the application with Keycloak authentication.
-	 * 
-	 * @param primaryStage the primary stage for this application
-	 * @throws ExceptionInInitializerError if UI initialization fails
-	 */
-	@Override
-	public void start(Stage primaryStage) throws ExceptionInInitializerError
+	@Override protected String getApplicationName() { return "Gantt Chart"; }
+
+	@Override protected void initializeUI(Stage primaryStage) throws ExceptionInInitializerError
 	{
-		log.info("Starting Gantt application");
-		
-		// Check authentication and show login dialog if needed
-		if (!authService.isLoggedIn())
-		{
-			log.info("User not authenticated - showing login dialog");
-			LoginDialog loginDialog = CDI.current().select(LoginDialog.class).get();
-			boolean loginSuccessful = loginDialog.showAndWait(primaryStage);
-			
-			if (!loginSuccessful)
-			{
-				log.info("User cancelled login - exiting application");
-				Platform.exit();
-				return;
-			}
-			
-			log.info("User authenticated successfully");
-		}
-		
-		// User authenticated - proceed with UI initialization
 		primaryStage.setResizable(true);
 		super.start(primaryStage);
 		primaryStage.setMaximized(true);
-		
-		log.info("Gantt UI initialized successfully");
 	}
-	
-	/**
-	 * Called when application stops - performs cleanup.
-	 */
-	@Override
-	public void stop() throws Exception
+
+	@Override protected void loadInitialData()
 	{
-		log.info("Stopping Gantt application");
-		if (authService.isLoggedIn())
-		{
-			authService.logout();
-		}
-		super.stop();
+		log.info("""
+				=== Loading initial data from backend ===
+				  Verifying authentication status before data load...
+				  isLoggedIn(): {}
+				  Access token present: {}
+				  Access token length: {}""",
+				authService.isLoggedIn(),
+				authService.getAccessToken() != null,
+				authService.getAccessToken() != null ? authService.getAccessToken().length() : 0);
+
+		optionalPrimaryView().ifPresentOrElse(
+				view -> {
+					// Cast to Gantt to access getController()
+					if (view instanceof Gantt gantt)
+					{
+						GanttController controller = gantt.getController();
+						if (controller != null)
+						{
+							controller.loadInitialData();
+							log.info("Initial data loaded successfully");
+						}
+						else
+						{
+							log.error("Controller is null - cannot load initial data!");
+						}
+					}
+					else
+					{
+						log.error("View is not an instance of Gantt - cannot access controller!");
+					}
+				},
+				() -> log.error("View is not present - cannot access controller!")
+		);
 	}
 }

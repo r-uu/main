@@ -2,42 +2,77 @@ package de.ruu.app.jeeeraaah.frontend.ui.fx.task.gantt;
 
 import de.ruu.app.jeeeraaah.common.api.bean.TaskBean;
 import de.ruu.app.jeeeraaah.common.api.bean.TaskGroupBean;
+import de.ruu.app.jeeeraaah.frontend.api.client.ws.rs.TaskGroupServiceClient;
+import de.ruu.app.jeeeraaah.frontend.ui.fx.util.ServiceOperationExecutor;
+import de.ruu.lib.fx.control.dialog.ExceptionDialog;
+import de.ruu.lib.ws.rs.NonTechnicalException;
+import de.ruu.lib.ws.rs.TechnicalException;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import static de.ruu.lib.util.BooleanFunctions.not;
-import static java.util.Objects.isNull;
+import static java.util.Objects.requireNonNull;
 
-@RequiredArgsConstructor
+@Dependent
+@Slf4j
 class TaskFactory
 {
-	private final @NonNull LocalDate start;
-	private final @NonNull LocalDate end;
+	// inject service clients that are used to fetch data from the server
+	@Inject private TaskGroupServiceClient taskGroupServiceClient;
 
-	@NonNull Set<TaskBean> rootTasks()
+	// inject the centralized executor for service operations with session retry handling
+	@Inject private ServiceOperationExecutor executor;
+
+	@NonNull Set<TaskBean> rootTasks
+			(@NonNull final TaskGroupBean taskGroupBean, @NonNull LocalDate start, @NonNull LocalDate end)
+	{
+		Set<TaskBean> result = new HashSet<>();
+
+		// fetch the task group with its tasks and their neighbour tasks from the server
+		try
+		{
+			Optional<TaskGroupBean> optional =
+					executor.execute
+					(
+							() -> taskGroupServiceClient.findWithTasksAndDirectNeighbours(requireNonNull(taskGroupBean.id())),
+							"fetching task group details for id: " + taskGroupBean.id(),
+							"Failed to load task group details",
+							"Load failed after re-login"
+					);
+
+			if (optional.isPresent())
+			{
+				TaskGroupBean taskGroupBeanWithTasksAndDirectNeighbours = optional.get();
+
+				// collect all of group's tasks together with their directly related tasks from the server
+				if (taskGroupBean.tasks().isPresent())
+						result =
+								taskGroupBean
+										.tasks()
+										.get().stream().filter(taskBean -> taskBean.superTask().isEmpty()).collect(Collectors.toSet());
+			}
+			else log.debug("no lazy group could be retrieved");
+		}
+		catch (TechnicalException | NonTechnicalException e)
+		{
+			ExceptionDialog.showAndWait("failure fetching task group from backend", e);
+		}
+
+		return result;
+	}
+
+	@NonNull Set<TaskBean> rootTasks(@NonNull LocalDate start, @NonNull LocalDate end)
 	{
 		Set<TaskBean> result = new HashSet<>();
 
 		TaskGroupBean group1 = new TaskGroupBean("group 1");
-//		TaskGroupBean taskGroup2 = new TaskGroupBean("group 2");
-//		TaskGroupBean taskGroup3 = new TaskGroupBean("group 3");
-
-//		result.add(rootTaskWithSubTasksForGroupAtDate(LocalDate.of(2025, 1,  1), group1, 1));
-//		result.add(rootTaskWithSubTasksForGroupAtDate(LocalDate.of(2025, 1, 11), group1, 2));
-//		result.add(rootTaskWithSubTasksForGroupAtDate(LocalDate.of(2025, 1, 21), group1, 3));
-//		result.add(rootTaskWithSubTasksForGroupAtDate(LocalDate.of(2025, 1,  1), taskGroup2, 1));
-//		result.add(rootTaskWithSubTasksForGroupAtDate(LocalDate.of(2025, 1, 11), taskGroup2, 2));
-//		result.add(rootTaskWithSubTasksForGroupAtDate(LocalDate.of(2025, 1, 21), taskGroup2, 3));
-
-//		result.add(rootTaskWithoutStart(start, group1));
-//		result.add(rootTaskWithoutFinish(LocalDate.of(2025, 1, 1), taskGroup3));
-
-//		result.add(rootTaskWithNeitherStartNorFinish(taskGroup3));
 
 		TaskBean root  = new TaskBean(group1, "root 1-31");
 		root.start(start);
@@ -65,62 +100,6 @@ class TaskFactory
 
 		result.add(root);
 
-		return result;
-	}
-
-	private @NonNull TaskBean rootTaskWithSubTasksForGroupAtDate(
-			@NonNull LocalDate date, @NonNull TaskGroupBean taskGroup, int i)
-	{
-		// root task has no parent, no predecessors and no successors
-		TaskBean result = new TaskBean(taskGroup, "root task " + taskGroup.name() + "." + i);
-		result.start(date);
-		result.end(date.plusDays(9));
-
-		// child rootTasks
-		TaskBean predecessor = null;
-		for (int j = 0; j < 3; j++)
-		{
-			TaskBean childTask =
-					new TaskBean(taskGroup, date.format(DateTimeFormatter.BASIC_ISO_DATE) + ", task " + i + "." + j);
-			childTask.superTask(result);
-			childTask.start(date.plusDays(j));
-			childTask.end(date.plusDays(j + 1));
-			if (not(isNull(predecessor))) childTask.addPredecessor(predecessor);
-			predecessor = childTask;
-		}
-		return result;
-	}
-
-	private @NonNull TaskBean rootTaskWithoutStart(@NonNull LocalDate date, @NonNull TaskGroupBean taskGroup)
-	{
-		TaskBean result = new TaskBean(taskGroup, "root no start");
-		TaskBean child  = new TaskBean(taskGroup, "task no start");
-		result.start(date);
-		result.end(date);
-		child .end(date);
-		result.addSubTask(child);
-		return result;
-	}
-
-	private @NonNull TaskBean rootTaskWithoutFinish(@NonNull LocalDate date, @NonNull TaskGroupBean taskGroup)
-	{
-		TaskBean result = new TaskBean(taskGroup, "root no finish");
-		TaskBean child  = new TaskBean(taskGroup, "task no finish");
-		result.start(date);
-		result.end(date);
-		child.start(date);
-		result.addSubTask(child);
-		return result;
-	}
-
-	private @NonNull TaskBean rootTaskWithNeitherStartNorFinish(@NonNull TaskGroupBean taskGroup)
-	{
-		TaskBean result = new TaskBean(taskGroup, "root no start no finish");
-		TaskBean child  = new TaskBean(taskGroup, "task no start no finish");
-		result.start(start);
-		result.end(end);
-		child .start(start);
-		result.addSubTask(child);
 		return result;
 	}
 }

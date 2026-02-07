@@ -186,12 +186,18 @@ public class KeycloakAuthService
 		int expiresIn = json.get("expires_in").asInt();
 		int refreshExpiresIn = json.get("refresh_expires_in").asInt();
 		
-		log.info("Login successful for user: {}", username);
-		log.info("  Access token expires in: {} seconds ({} minutes)", expiresIn, expiresIn / 60);
-		log.info("  Refresh token expires in: {} seconds ({} minutes)", refreshExpiresIn, refreshExpiresIn / 60);
-		log.info("  Access token (first 50 chars): {}...", accessToken.substring(0, Math.min(50, accessToken.length())));
-		log.info("  KeycloakAuthService instance ID: {}", System.identityHashCode(this));
-		
+		log.info("""
+				Login successful for user: {}
+				  Access token expires in: {} seconds ({} minutes)
+				  Refresh token expires in: {} seconds ({} minutes)
+				  Access token (first 50 chars): {}...
+				  KeycloakAuthService instance ID: {}""",
+				username,
+				expiresIn, expiresIn / 60,
+				refreshExpiresIn, refreshExpiresIn / 60,
+				accessToken.substring(0, Math.min(50, accessToken.length())),
+				System.identityHashCode(this));
+
 		return accessToken;
 	}
 	
