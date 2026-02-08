@@ -61,6 +61,7 @@ class GanttController extends FXCController.DefaultFXCController<Gantt, GanttSer
 	@FXML private DatePicker dtPckrEnd;
 
 	@FXML private Button btnApply;
+	@FXML private Button btnToggleView;
 //	@FXML private Button buttonExit;
 
 	// Inject event dispatchers for manual registration in @PostConstruct.
@@ -71,6 +72,7 @@ class GanttController extends FXCController.DefaultFXCController<Gantt, GanttSer
 	// inject components that are used in the user interface
 	@Inject private TaskGroupSelector taskGroupSelector;
 	@Inject private TaskTreeTable     taskTreeTable;
+	@Inject private HybridGantt       hybridGantt;  // New hybrid view option
 
 	// inject service clients that are used to fetch data from the server
 	@Inject private TaskGroupServiceClient taskGroupServiceClient;
@@ -79,6 +81,9 @@ class GanttController extends FXCController.DefaultFXCController<Gantt, GanttSer
 	@Inject private ServiceOperationExecutor executor;
 
 	private Optional<TaskGroupFlat> selectedTaskGroupDTOFlat = Optional.empty();
+	
+	private boolean useHybridView = false;  // Toggle between TreeTableView and Hybrid view
+	private Region currentGanttView;  // Reference to currently displayed view
 
 	@Override @FXML protected void initialize()
 	{
@@ -102,8 +107,19 @@ class GanttController extends FXCController.DefaultFXCController<Gantt, GanttSer
 		btnApply.setOnAction(e -> onApply());
 		FXUtil.wrapInTitledBorder("filter", (Region) hBxForFilter);
 
+		// Setup toggle button for switching views
+		if (btnToggleView != null) {
+			btnToggleView.setOnAction(e -> onToggleView());
+		} else {
+			log.warn("btnToggleView not found in FXML - creating it programmatically");
+			btnToggleView = new Button("Switch to Hybrid View");
+			btnToggleView.setOnAction(e -> onToggleView());
+			hBxForFilter.getChildren().add(btnToggleView);
+		}
+
 		// force task tree table to initialise itself and compose its local root into the ui
-		vBxRoot.getChildren().add(taskTreeTable.localRoot());
+		currentGanttView = taskTreeTable.localRoot();
+		vBxRoot.getChildren().add(currentGanttView);
 		VBox.setVgrow(taskTreeTable.localRoot(), ALWAYS);
 		HBox.setHgrow(taskTreeTable.localRoot(), ALWAYS);
 		FXUtil.setAnchorsInAnchorPaneTo(taskTreeTable.localRoot(), 0);
@@ -146,10 +162,47 @@ class GanttController extends FXCController.DefaultFXCController<Gantt, GanttSer
 
 	private void onApply()
 	{
-		taskTreeTable
-				.service()
-				.populate(taskGroupSelector.service().selectedTaskGroupProperty().get(),
-				dtPckrStart.getValue(), dtPckrEnd.getValue());
+		if (useHybridView) {
+			hybridGantt
+					.service()
+					.populate(taskGroupSelector.service().selectedTaskGroupProperty().get(),
+					dtPckrStart.getValue(), dtPckrEnd.getValue());
+		} else {
+			taskTreeTable
+					.service()
+					.populate(taskGroupSelector.service().selectedTaskGroupProperty().get(),
+					dtPckrStart.getValue(), dtPckrEnd.getValue());
+		}
+	}
+	
+	private void onToggleView()
+	{
+		useHybridView = !useHybridView;
+		
+		// Remove current view
+		vBxRoot.getChildren().remove(currentGanttView);
+		
+		// Switch to other view
+		if (useHybridView) {
+			currentGanttView = hybridGantt.localRoot();
+			btnToggleView.setText("Switch to TreeTableView");
+			log.info("Switched to Hybrid Gantt view (Tree + Canvas)");
+		} else {
+			currentGanttView = taskTreeTable.localRoot();
+			btnToggleView.setText("Switch to Hybrid View");
+			log.info("Switched to TreeTableView");
+		}
+		
+		// Add new view
+		vBxRoot.getChildren().add(currentGanttView);
+		VBox.setVgrow(currentGanttView, ALWAYS);
+		HBox.setHgrow(currentGanttView, ALWAYS);
+		FXUtil.setAnchorsInAnchorPaneTo(currentGanttView, 0);
+		
+		// Reload data if we have a selected task group
+		if (selectedTaskGroupDTOFlat.isPresent()) {
+			onApply();
+		}
 	}
 
 	/** called when the FX application has started */
@@ -180,7 +233,11 @@ class GanttController extends FXCController.DefaultFXCController<Gantt, GanttSer
 
 		if (isNull(actSelection)) return;
 
-		taskTreeTable.service().populate(actSelection, dtPckrStart.getValue(), dtPckrEnd.getValue());
+		if (useHybridView) {
+			hybridGantt.service().populate(actSelection, dtPckrStart.getValue(), dtPckrEnd.getValue());
+		} else {
+			taskTreeTable.service().populate(actSelection, dtPckrStart.getValue(), dtPckrEnd.getValue());
+		}
 	}
 
 	/**
