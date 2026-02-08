@@ -48,15 +48,61 @@ COPY root/sandbox/office/microsoft/word/jasperreports/model /build/root/sandbox/
 
 # Build the model first (install to local Maven repo)
 # Force Java 17 compatibility even though parent uses Java 25
+
+# Step 1: Install all parent POMs in the hierarchy
+WORKDIR /build/root/sandbox
+RUN mvn install -N -DskipTests -q \
+    -Djava.version=17 \
+    -Dmaven.compiler.release=17 \
+    -Dmaven.compiler.source=17 \
+    -Dmaven.compiler.target=17
+
+WORKDIR /build/root/sandbox/office
+RUN mvn install -N -DskipTests -q \
+    -Djava.version=17 \
+    -Dmaven.compiler.release=17 \
+    -Dmaven.compiler.source=17 \
+    -Dmaven.compiler.target=17
+
+WORKDIR /build/root/sandbox/office/microsoft
+RUN mvn install -N -DskipTests -q \
+    -Djava.version=17 \
+    -Dmaven.compiler.release=17 \
+    -Dmaven.compiler.source=17 \
+    -Dmaven.compiler.target=17
+
+WORKDIR /build/root/sandbox/office/microsoft/word
+RUN mvn install -N -DskipTests -q \
+    -Djava.version=17 \
+    -Dmaven.compiler.release=17 \
+    -Dmaven.compiler.source=17 \
+    -Dmaven.compiler.target=17
+
+WORKDIR /build/root/sandbox/office/microsoft/word/jasperreports
+RUN mvn install -N -DskipTests -q \
+    -Djava.version=17 \
+    -Dmaven.compiler.release=17 \
+    -Dmaven.compiler.source=17 \
+    -Dmaven.compiler.target=17
+
+# Step 2: Build and install model module
 WORKDIR /build/root/sandbox/office/microsoft/word/jasperreports/model
-RUN mvn clean install -DskipTests -q -Dmaven.compiler.release=17
+RUN mvn clean install -DskipTests -q \
+    -Djava.version=17 \
+    -Dmaven.compiler.release=17 \
+    -Dmaven.compiler.source=17 \
+    -Dmaven.compiler.target=17
 
 # Copy server module
 COPY root/lib/office/word/jasperreports/server /build/root/lib/office/word/jasperreports/server
 
 # Build the server (this will also build the model dependency)
 WORKDIR /build/root/lib/office/word/jasperreports/server
-RUN mvn clean package -DskipTests -q
+RUN mvn clean package -DskipTests -q \
+    -Djava.version=17 \
+    -Dmaven.compiler.release=17 \
+    -Dmaven.compiler.source=17 \
+    -Dmaven.compiler.target=17
 
 # ────────────────────────────────────────────────────────────────────────────
 # Stage 2: Runtime Stage
