@@ -1,103 +1,158 @@
-# Projekt Dokumentation - Index
+# Project Documentation - Index
 
-**📌 Haupteinstieg: [README.md](README.md)**
+**📌 Main Entry Point: [README.md](README.md)**
 
----
-
-## 🚀 Schnellstart
-
-| Dokument | Beschreibung |
-|----------|--------------|
-| [README.md](README.md) | Hauptdokumentation mit Schnellstart |
-| [STARTUP-QUICK-GUIDE.md](STARTUP-QUICK-GUIDE.md) | Kurzanleitung für täglichen Start |
-| [SCRIPTS-OVERVIEW.md](SCRIPTS-OVERVIEW.md) | ⭐ Übersicht aller Skripte & Aliase |
+**Last Updated:** 2026-02-09
 
 ---
 
-## 🐳 Docker & Infrastruktur
+## 🚀 Quick Start
 
-| Dokument | Beschreibung |
-|----------|--------------|
-| [config/shared/docker/LIB-TEST-FIX.md](config/shared/docker/LIB-TEST-FIX.md) | Warum lib_test Datenbank automatisch funktioniert |
-| [config/shared/docker/MULTI-DB-SOLUTION.md](config/shared/docker/MULTI-DB-SOLUTION.md) | Multi-Datenbank Setup (jeeeraaah + lib_test) |
-| [config/shared/docker/initdb/README.md](config/shared/docker/initdb/README.md) | Datenbank-Initialisierung |
-| [config/DOCKER-AUTO-FIX.md](config/DOCKER-AUTO-FIX.md) | Health Check & Auto-Fix System |
+| Document | Description |
+|----------|-------------|
+| [README.md](README.md) | Main documentation with quick start |
+| [QUICKSTART.md](QUICKSTART.md) | Quick start guide |
+| [GETTING-STARTED.md](GETTING-STARTED.md) | Detailed getting started guide |
+| [STARTUP-QUICK-GUIDE.md](STARTUP-QUICK-GUIDE.md) | Daily startup routine |
+| [QUICK-STATUS.md](QUICK-STATUS.md) | ⭐ Current project status at a glance |
+| [QUICK-REFERENCE.md](QUICK-REFERENCE.md) | Command quick reference |
+| [SCRIPTS-OVERVIEW.md](SCRIPTS-OVERVIEW.md) | ⭐ Overview of all scripts & aliases |
+
+---
+
+## 📝 Project Management
+
+| Document | Description |
+|----------|-------------|
+| [PROJECT-STATUS.md](PROJECT-STATUS.md) | Current project status |
+| [PROJECT-IMPROVEMENTS.md](PROJECT-IMPROVEMENTS.md) | ⭐ Comprehensive improvement recommendations |
+| [FINAL-SUMMARY.md](FINAL-SUMMARY.md) | Cleanup completion summary (2026-02-09) |
+| [BEREINIGUNG-ABSCHLUSS.md](BEREINIGUNG-ABSCHLUSS.md) | German cleanup summary |
+| [PROJECT-CLEANUP-2026-02-09.md](PROJECT-CLEANUP-2026-02-09.md) | Detailed cleanup log |
+| [DEPRECATED-FILES.md](DEPRECATED-FILES.md) | Archived/deprecated files status |
+| [todo.md](todo.md) | Task list and priorities |
+
+---
+
+## 🐳 Docker & Infrastructure
+
+| Document | Description |
+|----------|-------------|
+| [config/shared/docker/LIB-TEST-FIX.md](config/shared/docker/LIB-TEST-FIX.md) | Why lib_test database works automatically |
+| [config/shared/docker/MULTI-DB-SOLUTION.md](config/shared/docker/MULTI-DB-SOLUTION.md) | Multi-database setup (jeeeraaah + lib_test) |
+| [config/shared/docker/initdb/README.md](config/shared/docker/initdb/README.md) | Database initialization |
 
 ---
 
 ## 🔐 Security & Keycloak
 
-| Dokument | Beschreibung |
-|----------|--------------|
+| Document | Description |
+|----------|-------------|
 | [root/lib/keycloak.admin/README.md](root/lib/keycloak.admin/README.md) | Keycloak Admin Library & Setup |
-| [config/SECURITY-ARCHITEKTUR.md](config/SECURITY-ARCHITEKTUR.md) | Security Architektur |
+| [config/KEYCLOAK-ADMIN-CONSOLE.md](config/KEYCLOAK-ADMIN-CONSOLE.md) | Keycloak admin console guide |
+| [config/AUTHENTICATION-CREDENTIALS.md](config/AUTHENTICATION-CREDENTIALS.md) | ⭐ Authentication & credentials |
+| [config/CREDENTIALS-OVERVIEW.md](config/CREDENTIALS-OVERVIEW.md) | Credentials overview |
+| [config/CREDENTIALS.md](config/CREDENTIALS.md) | Detailed credentials |
+| [config/JWT-TROUBLESHOOTING.md](config/JWT-TROUBLESHOOTING.md) | JWT troubleshooting |
 
 ---
 
-## 🏗️ Architektur & Entwicklung
+## 🏗️ Architecture & Development
 
-### Allgemein
-| Dokument | Beschreibung |
-|----------|--------------|
+### General
+| Document | Description |
+|----------|-------------|
 | [root/app/jeeeraaah/doc/md/architecture/requirements.md](root/app/jeeeraaah/doc/md/architecture/requirements.md) | Requirements |
-| [root/app/jeeeraaah/doc/md/article - entwicklung modularer software in java/developing modular software in java.md](root/app/jeeeraaah/doc/md/article%20-%20entwicklung%20modularer%20software%20in%20java/developing%20modular%20software%20in%20java.md) | Artikel: Modulare Software in Java |
+| [root/app/jeeeraaah/doc/md/modular-software-in-java/modular-software-in-java.md](root/app/jeeeraaah/doc/md/modular-software-in-java/modular-software-in-java.md) | Article: Modular Software in Java |
+| [root/app/jeeeraaah/doc/md/jpms in action - jeeeraaah/jpms in action - jeeeraaah.md](root/app/jeeeraaah/doc/md/jpms%20in%20action%20-%20jeeeraaah/jpms%20in%20action%20-%20jeeeraaah.md) | JPMS in action |
 
 ### Backend
-| Dokument | Beschreibung |
-|----------|--------------|
-| [root/app/jeeeraaah/backend/api/ws.rs/README.md](root/app/jeeeraaah/backend/api/ws.rs/README.md) | Backend REST API Dokumentation |
+| Document | Description |
+|----------|-------------|
+| [root/app/jeeeraaah/backend/api/ws.rs/README.md](root/app/jeeeraaah/backend/api/ws.rs/README.md) | Backend REST API documentation |
 
 ### Frontend
-| Dokument | Beschreibung |
-|----------|--------------|
+| Document | Description |
+|----------|-------------|
 | [root/lib/fx/comp/readme.md](root/lib/fx/comp/readme.md) | JavaFX Component Framework |
-| [root/lib/fx/comp/doc/fx-comp-architecture.md](root/lib/fx/comp/doc/fx-comp-architecture.md) | FX Component Architektur |
+| [root/lib/fx/comp/doc/fx-comp-architecture.md](root/lib/fx/comp/doc/fx-comp-architecture.md) | FX Component Architecture |
 
 ### Libraries
-| Dokument | Beschreibung |
-|----------|--------------|
+| Document | Description |
+|----------|-------------|
 | [root/lib/docker.health/README.md](root/lib/docker.health/README.md) | Docker Health Check Library |
 | [root/lib/mp.config/README.md](root/lib/mp.config/README.md) | MicroProfile Config Integration |
 
 ---
 
-## 📝 Datenmodell
+## 📝 Data Model
 
-| Dokument | Beschreibung |
-|----------|--------------|
-| [root/app/jeeeraaah/doc/md/datamodel/datamodel.md](root/app/jeeeraaah/doc/md/datamodel/datamodel.md) | Datenmodell Basis |
-| [root/app/jeeeraaah/doc/md/datamodel/datamodel-extended.md](root/app/jeeeraaah/doc/md/datamodel/datamodel-extended.md) | Erweitertes Datenmodell |
+| Document | Description |
+|----------|-------------|
+| [root/app/jeeeraaah/doc/md/datamodel/datamodel.md](root/app/jeeeraaah/doc/md/datamodel/datamodel.md) | Base data model |
+| [root/app/jeeeraaah/doc/md/datamodel/datamodel-extended.md](root/app/jeeeraaah/doc/md/datamodel/datamodel-extended.md) | Extended data model |
 
 ---
 
-## 🔧 Build & Tools
+## 🔧 Build & Configuration
 
-| Dokument | Beschreibung |
-|----------|--------------|
+| Document | Description |
+|----------|-------------|
 | [bom/readme.md](bom/readme.md) | Bill of Materials (BOM) |
-| [config/shared/scripts/readme.md](config/shared/scripts/readme.md) | Build & Setup Scripts |
-| [config/QUICK-COMMANDS.md](config/QUICK-COMMANDS.md) | Häufig verwendete Befehle |
+| [config/CONFIGURATION-GUIDE.md](config/CONFIGURATION-GUIDE.md) | Configuration guide |
+| [config/SINGLE-POINT-OF-TRUTH.md](config/SINGLE-POINT-OF-TRUTH.md) | Configuration single point of truth |
+| [config/STRUCTURE.md](config/STRUCTURE.md) | Project structure |
+| [config/STATUS.md](config/STATUS.md) | Configuration status |
+| [config/QUICK-COMMANDS.md](config/QUICK-COMMANDS.md) | Frequently used commands |
+| [config/AUTOMATIC-MODULES-DOCUMENTATION.md](config/AUTOMATIC-MODULES-DOCUMENTATION.md) | Automatic modules documentation |
+
+---
+
+## 🔨 IntelliJ IDEA & Development Tools
+
+| Document | Description |
+|----------|-------------|
+| [INTELLIJ-CACHE-CLEANUP.md](INTELLIJ-CACHE-CLEANUP.md) | ⭐ Fix IntelliJ JPMS cache issues |
+| [JPMS-INTELLIJ-QUICKSTART.md](JPMS-INTELLIJ-QUICKSTART.md) | JPMS setup in IntelliJ |
+| [JPMS-RUN-CONFIGURATIONS.md](JPMS-RUN-CONFIGURATIONS.md) | JPMS run configurations |
+| [config/INTELLIJ-APPLICATION-RUN-CONFIG.md](config/INTELLIJ-APPLICATION-RUN-CONFIG.md) | IntelliJ application run configs |
+| [config/FRESH-CLONE-SETUP.md](config/FRESH-CLONE-SETUP.md) | Setup from fresh clone |
 
 ---
 
 ## 🐛 Troubleshooting
 
-| Dokument | Beschreibung |
-|----------|--------------|
-| [config/TROUBLESHOOTING.md](config/TROUBLESHOOTING.md) | Allgemeine Problemlösungen |
-| [root/app/jeeeraaah/backend/api/ws.rs/src/main/liberty/config/TROUBLESHOOTING-DATABASE.md](root/app/jeeeraaah/backend/api/ws.rs/src/main/liberty/config/TROUBLESHOOTING-DATABASE.md) | Datenbank Probleme |
-| [INTELLIJ-PLUGIN-FIX-QUICKSTART.md](INTELLIJ-PLUGIN-FIX-QUICKSTART.md) | ⭐ IntelliJ Plugin Fehler beheben (Lombok/MapStruct) |
-| [INTELLIJ-PLUGIN-FIX.md](INTELLIJ-PLUGIN-FIX.md) | Detaillierte Erklärung des IntelliJ Plugin Fixes |
+| Document | Description |
+|----------|-------------|
+| [config/TROUBLESHOOTING.md](config/TROUBLESHOOTING.md) | ⭐ General troubleshooting |
+| [root/app/jeeeraaah/backend/api/ws.rs/src/main/liberty/config/TROUBLESHOOTING-DATABASE.md](root/app/jeeeraaah/backend/api/ws.rs/src/main/liberty/config/TROUBLESHOOTING-DATABASE.md) | Database problems |
+| [config/JWT-TROUBLESHOOTING.md](config/JWT-TROUBLESHOOTING.md) | JWT/Authentication issues |
 
 ---
 
-## 📚 Spezial-Themen
+## 📚 Archive
 
-### Office Dokumente
-| Dokument | Beschreibung |
-|----------|--------------|
-| [root/sandbox/office/microsoft/word/README.md](root/sandbox/office/microsoft/word/README.md) | Word Dokument-Generierung |
-| [root/sandbox/office/microsoft/word/docx4j/README.md](root/sandbox/office/microsoft/word/docx4j/README.md) | DOCX4J Implementierung |
+**Archived documentation** is located in `config/archive/`:
+- `docs-20260123/` - Previous archive (7 files)
+- `docs-20260209/` - Latest cleanup (29+ files)
+
+See [DEPRECATED-FILES.md](DEPRECATED-FILES.md) for details.
+
+---
+
+## 📖 Reading Order for New Developers
+
+1. **Start here:** [README.md](README.md)
+2. **Quick start:** [QUICKSTART.md](QUICKSTART.md) or [GETTING-STARTED.md](GETTING-STARTED.md)
+3. **Daily routine:** [STARTUP-QUICK-GUIDE.md](STARTUP-QUICK-GUIDE.md)
+4. **Architecture:** [PROJECT-STATUS.md](PROJECT-STATUS.md)
+5. **IntelliJ setup:** [INTELLIJ-CACHE-CLEANUP.md](INTELLIJ-CACHE-CLEANUP.md)
+6. **Improvements:** [PROJECT-IMPROVEMENTS.md](PROJECT-IMPROVEMENTS.md)
+7. **Tasks:** [todo.md](todo.md)
+
+---
+
+**Need help?** Check [QUICK-STATUS.md](QUICK-STATUS.md) or [config/TROUBLESHOOTING.md](config/TROUBLESHOOTING.md)
 
 ### MapStruct & Bidirektionale Relationen
 | Dokument | Beschreibung |

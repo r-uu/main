@@ -246,7 +246,7 @@ public abstract class FXUtil
 		BorderStrokeStyle oldBorderStrokeStyle =
 				oldBorderStroke.isStrokeUniform() ? oldBorderStroke.getTopStyle() : BorderStrokeStyle.SOLID;
 
-		// Neuer Stroke mit gleichem Setup, aber geändertem BorderWidth
+		// New stroke with same setup, but changed BorderWidth
 		BorderStroke newStroke =
 				new BorderStroke(
 						oldBorderStroke.getTopStroke(),

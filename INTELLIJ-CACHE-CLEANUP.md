@@ -1,59 +1,59 @@
-# IntelliJ IDEA Cache-Problem Behebung
+# IntelliJ IDEA Cache Problem Fix
 
 ## Problem
-IntelliJ zeigt Fehler an wie:
+IntelliJ shows errors like:
 ```
-java: Inkompatible Typen: java.lang.Class<de.ruu.lib.jsonb.recursion.ChildrenAdapter> 
-kann nicht in java.lang.Class<? extends jakarta.json.bind.adapter.JsonbAdapter> konvertiert werden
+java: Incompatible types: java.lang.Class<de.ruu.lib.jsonb.recursion.ChildrenAdapter> 
+cannot be converted to java.lang.Class<? extends jakarta.json.bind.adapter.JsonbAdapter>
 ```
 
-**Aber**: Der Code kompiliert erfolgreich mit Maven!
+**But**: The code compiles successfully with Maven!
 
-## Ursache
-Dies ist ein bekanntes IntelliJ IDEA-Problem mit:
+## Cause
+This is a known IntelliJ IDEA issue with:
 - JPMS (Java Platform Module System)
-- Test-module-info.java Dateien
-- Cached Modulinformationen
+- Test module-info.java files
+- Cached module information
 
-## Lösung
+## Solution
 
-### Option 1: IntelliJ Cache löschen (Empfohlen)
+### Option 1: Clear IntelliJ Cache (Recommended)
 1. **File → Invalidate Caches...**
-2. Wählen Sie:
+2. Select:
    - ✅ Clear file system cache and Local History
    - ✅ Clear VCS Log caches and indexes
    - ✅ Clear downloaded shared indexes
    - ✅ Invalidate and Restart
-3. Klicken Sie auf **"Invalidate and Restart"**
+3. Click **"Invalidate and Restart"**
 
-### Option 2: Maven Reimport
-1. Öffnen Sie das Maven Tool Window
-2. Rechtsklick auf das Projekt
-3. Wählen Sie **"Reload All Maven Projects"**
+### Option 2: Reload Maven Projects
+1. Open the Maven Tool Window
+2. Right-click on the project
+3. Select **"Reload All Maven Projects"**
 
-### Option 3: Module neu laden
+### Option 3: Reload Modules
 1. **File → Project Structure → Modules**
-2. Löschen Sie alle Module
-3. Klicken Sie auf **"+"** → **"Import Module"**
-4. Wählen Sie die root pom.xml
+2. Delete all modules
+3. Click **"+"** → **"Import Module"**
+4. Select the root pom.xml
 
-### Option 4: Projekt neu öffnen
+### Option 4: Reopen Project
 1. **File → Close Project**
-2. Projekt aus der Liste löschen
-3. **File → Open** → Wählen Sie das Projektverzeichnis
+2. Delete project from the list
+3. **File → Open** → Select project directory
 
-## Verifikation
-Nach der Cache-Löschung sollten die Fehler verschwinden. Sie können verifizieren, dass der Code korrekt ist mit:
+## Verification
+After clearing the cache, the errors should disappear. You can verify that the code is correct with:
 
 ```bash
 cd /home/r-uu/develop/github/main/root/lib/jsonb
 mvn clean test-compile
 ```
 
-Dieser Befehl sollte **BUILD SUCCESS** zeigen.
+This command should show **BUILD SUCCESS**.
 
-## Warum funktioniert Maven?
-Maven ignoriert das Test-module-info.java gemäß der Konfiguration in der pom.xml:
+## Why Does Maven Work?
+Maven ignores the test module-info.java according to the configuration in pom.xml:
 
 ```xml
 <testExcludes>
@@ -61,14 +61,14 @@ Maven ignoriert das Test-module-info.java gemäß der Konfiguration in der pom.x
 </testExcludes>
 ```
 
-IntelliJ nutzt jedoch das Test-module-info.java für JPMS-konforme Test-Ausführung, was manchmal zu Cache-Inkonsistenzen führt.
+IntelliJ, however, uses the test module-info.java for JPMS-compliant test execution, which sometimes leads to cache inconsistencies.
 
-## Der Code ist korrekt!
-Der `ChildrenAdapter` ist korrekt implementiert:
-- Erweitert `AbstractSetAdapter<Child>`
-- `AbstractSetAdapter` implementiert `JsonbAdapter<Set<T>, JsonValue>`
-- Daher implementiert `ChildrenAdapter` indirekt `JsonbAdapter<Set<Child>, JsonValue>`
-- Dies ist kompatibel mit `@JsonbTypeAdapter(ChildrenAdapter.class)` auf einem `Set<Child>` Feld
+## The Code Is Correct!
+The `ChildrenAdapter` is correctly implemented:
+- Extends `AbstractSetAdapter<Child>`
+- `AbstractSetAdapter` implements `JsonbAdapter<Set<T>, JsonValue>`
+- Therefore `ChildrenAdapter` indirectly implements `JsonbAdapter<Set<Child>, JsonValue>`
+- This is compatible with `@JsonbTypeAdapter(ChildrenAdapter.class)` on a `Set<Child>` field
 
-**→ Dies ist ein IntelliJ-Cache-Problem, kein Code-Problem!**
+**→ This is an IntelliJ cache problem, not a code problem!**
 

@@ -223,11 +223,11 @@ class DashController extends DefaultFXCController<Dash, DashService> implements 
 		try
 		{
 			Optional<TaskGroupBean> optional = executor.execute(
-				() -> taskGroupServiceClient.findWithTasksAndDirectNeighbours(requireNonNull(actSelection.id())),
-				"fetching task group details for id: " + actSelection.id(),
-			"Failed to load task group details",
-			"Load failed after re-login"
-		);
+					() -> taskGroupServiceClient.findWithTasksAndDirectNeighbours(requireNonNull(actSelection.id())),
+					"fetching task group details for id: " + actSelection.id(),
+					"Failed to load task group details",
+					"Load failed after re-login"
+			);
 
 		if (optional.isPresent())
 		{

@@ -18,7 +18,7 @@ class SimpleTypeServiceJPA implements SimpleTypeService
 
 	@Override public SimpleTypeEntity save(SimpleTypeEntity entity)
 	{
-		// Wenn Entity schon eine ID hat, ist es ein Update, sonst Create
+		// If entity already has an ID, it's an update, otherwise create
 		if (entity.id() != null)
 		{
 			return repository.update(entity);

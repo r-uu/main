@@ -167,7 +167,7 @@ public class KeycloakRealmSetup
 
 	private static void createClient(Keycloak keycloak) throws KeycloakAdminException
 	{
-		log.info("Prüfe Client '{}'...", CLIENT_ID);
+		log.info("Checking client '{}'...", CLIENT_ID);
 
 		try (KeycloakClientManager clientManager = KeycloakClientManager.builder()
 				.serverUrl(KEYCLOAK_URL)
@@ -176,16 +176,16 @@ public class KeycloakRealmSetup
 				.adminPassword(ADMIN_PASSWORD)
 				.build())
 		{
-			// Prüfe ob Client existiert
+			// Check if client exists
 			org.keycloak.representations.idm.ClientRepresentation existingClient =
 				clientManager.findClientByClientId(CLIENT_ID);
 
 			if (existingClient != null)
 			{
 				String clientUuid = existingClient.getId();
-				log.info("✓ Client '{}' existiert bereits (UUID: {})", CLIENT_ID, clientUuid);
+				log.info("✓ Client '{}' already exists (UUID: {})", CLIENT_ID, clientUuid);
 
-				// Stelle sicher, dass Direct Access Grants aktiviert ist
+				// Ensure Direct Access Grants is enabled
 				try
 				{
 					org.keycloak.representations.idm.ClientRepresentation client =
@@ -193,29 +193,29 @@ public class KeycloakRealmSetup
 
 					if (!Boolean.TRUE.equals(client.isDirectAccessGrantsEnabled()))
 					{
-						log.info("Aktiviere Direct Access Grants für Client '{}'...", CLIENT_ID);
+						log.info("Enabling Direct Access Grants for client '{}'...", CLIENT_ID);
 						client.setDirectAccessGrantsEnabled(true);
 						client.setPublicClient(true);
 						keycloak.realm(REALM_NAME).clients().get(clientUuid).update(client);
-						log.info("✅ Direct Access Grants aktiviert");
+						log.info("✅ Direct Access Grants enabled");
 					}
 					else
 					{
-						log.info("✓ Direct Access Grants bereits aktiviert");
+						log.info("✓ Direct Access Grants already enabled");
 					}
 				}
 				catch (Exception ex)
 				{
-					log.warn("Konnte Direct Access Grants nicht prüfen/setzen: {}", ex.getMessage());
+					log.warn("Could not check/set Direct Access Grants: {}", ex.getMessage());
 				}
 
-				// Prüfe und erstelle ggf. Audience Mapper
+				// Check and create Audience Mapper if needed
 				ensureAudienceMapper(keycloak, clientUuid);
 			}
 			else
 			{
-				// Client existiert nicht, erstelle ihn
-				log.info("Erstelle Client '{}'...", CLIENT_ID);
+				// Client does not exist, create it
+				log.info("Creating client '{}'...", CLIENT_ID);
 
 				String clientUuid = clientManager.createPublicClient(
 						CLIENT_ID,
@@ -334,9 +334,9 @@ public class KeycloakRealmSetup
 	 */
 	private static void createRoles(Keycloak keycloak)
 	{
-		log.info("Erstelle erforderliche Realm-Rollen...");
+		log.info("Creating required realm roles...");
 
-		// Alle erforderlichen Rollen (basierend auf @RolesAllowed Annotationen im Backend)
+		// All required roles (based on @RolesAllowed annotations in backend)
 		String[] requiredRoles = {
 			"taskgroup-read",
 			"taskgroup-create",
@@ -355,16 +355,16 @@ public class KeycloakRealmSetup
 		{
 			try
 			{
-				// Prüfe ob Rolle bereits existiert
+				// Check if role already exists
 				try
 				{
 					keycloak.realm(REALM_NAME).roles().get(roleName).toRepresentation();
 					existing++;
-					log.info("  ✓ Rolle '{}' existiert bereits", roleName);
+					log.info("  ✓ Role '{}' already exists", roleName);
 				}
 				catch (jakarta.ws.rs.NotFoundException e)
 				{
-					// Rolle existiert nicht → erstellen
+					// Role does not exist → create
 					org.keycloak.representations.idm.RoleRepresentation role =
 						new org.keycloak.representations.idm.RoleRepresentation();
 					role.setName(roleName);
@@ -372,12 +372,12 @@ public class KeycloakRealmSetup
 
 					keycloak.realm(REALM_NAME).roles().create(role);
 					created++;
-					log.info("  ✅ Rolle '{}' erstellt", roleName);
+					log.info("  ✅ Role '{}' created", roleName);
 				}
 			}
 			catch (Exception ex)
 			{
-				log.error("  ❌ Fehler beim Erstellen der Rolle '{}': {}", roleName, ex.getMessage());
+				log.error("  ❌ Error creating role '{}': {}", roleName, ex.getMessage());
 			}
 		}
 
@@ -468,46 +468,46 @@ public class KeycloakRealmSetup
 
 			if (existingUser != null)
 			{
-				// User existiert bereits
+				// User already exists
 				String userId = existingUser.getId();
-				log.info("✓ User '{}' existiert bereits (ID: {})", TEST_USER, userId);
+				log.info("✓ User '{}' already exists (ID: {})", TEST_USER, userId);
 
-				// Aktualisiere Passwort und lösche Required Actions
-				log.info("Aktualisiere User-Konfiguration...");
+				// Update password and delete Required Actions
+				log.info("Updating user configuration...");
 
-				// Passwort direkt über Keycloak API setzen
+				// Set password directly via Keycloak API
 				org.keycloak.representations.idm.CredentialRepresentation credential =
 					new org.keycloak.representations.idm.CredentialRepresentation();
 				credential.setType(org.keycloak.representations.idm.CredentialRepresentation.PASSWORD);
 				credential.setValue(TEST_PASSWORD);
 				credential.setTemporary(false);
 				keycloak.realm(REALM_NAME).users().get(userId).resetPassword(credential);
-				log.info("✅ Passwort für User '{}' gesetzt", TEST_USER);
+				log.info("✅ Password set for user '{}'", TEST_USER);
 
-				// Required Actions explizit löschen über Keycloak API
+				// Explicitly delete Required Actions via Keycloak API
 				try
 				{
 					UserRepresentation user = keycloak.realm(REALM_NAME).users().get(userId).toRepresentation();
-					user.setRequiredActions(new java.util.ArrayList<>());  // Leere Liste
+					user.setRequiredActions(new java.util.ArrayList<>());  // Empty list
 					user.setEmailVerified(true);
 					user.setEnabled(true);
-					user.setFirstName("Test");  // firstName ist erforderlich für Keycloak User Profile
-					user.setLastName("User");   // lastName ist erforderlich für Keycloak User Profile
+					user.setFirstName("Test");  // firstName is required for Keycloak User Profile
+					user.setLastName("User");   // lastName is required for Keycloak User Profile
 					keycloak.realm(REALM_NAME).users().get(userId).update(user);
-					log.info("✅ User '{}' aktualisiert (Required Actions gelöscht)", TEST_USER);
+					log.info("✅ User '{}' updated (Required Actions deleted)", TEST_USER);
 				}
 				catch (Exception ex)
 				{
-					log.warn("Warnung beim Aktualisieren des Users: {}", ex.getMessage());
+					log.warn("Warning updating user: {}", ex.getMessage());
 				}
 
-				// Rollen zuweisen (für existierenden User)
+				// Assign roles (for existing user)
 				assignRolesToUser(keycloak, userId);
 			}
 			else
 			{
-				// User existiert nicht, erstelle ihn
-				log.info("Erstelle Testuser '{}'...", TEST_USER);
+				// User does not exist, create it
+				log.info("Creating test user '{}'...", TEST_USER);
 
 				String userId = userManager.createUser(
 						TEST_USER,

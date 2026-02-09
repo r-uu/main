@@ -21,7 +21,6 @@ public class Parent
 {
 	@NonNull
 	private String      field;
-//	@JsonbTransient
 	@JsonbTypeAdapter(ChildrenAdapter.class)
 	private Set<Child> children = new HashSet<>();
 

@@ -29,7 +29,7 @@ public class InvoiceData
 		this.totalAmount = BigDecimal.ZERO;
 	}
 
-	// Getter und Setter
+	// Getters and Setters
 	public String getInvoiceNumber() { return invoiceNumber; }
 	public void setInvoiceNumber(String invoiceNumber) { this.invoiceNumber = invoiceNumber; }
 

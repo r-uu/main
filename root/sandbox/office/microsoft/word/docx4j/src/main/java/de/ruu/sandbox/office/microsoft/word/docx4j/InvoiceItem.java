@@ -34,7 +34,7 @@ public class InvoiceItem
 		calculateTotal();
 	}
 
-	// Getter und Setter
+	// Getters and Setters
 	public int getPosition() { return position; }
 	public void setPosition(int position) { this.position = position; }
 

@@ -51,9 +51,10 @@ public class HealthCheckRunner
 		results.clear();
 		allHealthy = true;
 
-		log.info("════════════════════════════════════════════════════════════════");
-		log.info("🏥 Docker Environment Health Check");
-		log.info("════════════════════════════════════════════════════════════════");
+		log.info("""
+				════════════════════════════════════════════════════════════════
+				🏥 Docker Environment Health Check
+				════════════════════════════════════════════════════════════════""");
 
 		for (HealthCheck check : checks)
 		{
@@ -102,35 +103,43 @@ public class HealthCheckRunner
 
 		if (allHealthy)
 		{
-			log.info("✅ ALL SERVICES HEALTHY - Ready to start!");
-			log.info("════════════════════════════════════════════════════════════════");
+			log.info("""
+					✅ ALL SERVICES HEALTHY - Ready to start!
+					════════════════════════════════════════════════════════════════""");
 		}
 		else
 		{
 			List<HealthCheckResult> failures = getFailures();
 			log.error("❌ HEALTH CHECK FAILED - {} issue(s) found", failures.size());
-			log.info("════════════════════════════════════════════════════════════════");
-			log.info("");
-			log.info("🔧 HOW TO FIX:");
-			log.info("");
+			log.info("""
+					════════════════════════════════════════════════════════════════
+					
+					🔧 HOW TO FIX:
+					""");
 
 			for (int i = 0; i < failures.size(); i++)
 			{
 				HealthCheckResult failure = failures.get(i);
-				log.info("Issue {}/{}: {}", i + 1, failures.size(), failure.getService());
-				log.info("  Problem: {}", failure.getProblem());
-				log.info("  ");
-				log.info("  ⚡ Quick fix (alias):");
-				log.info("     {}", failure.getAlias());
-				log.info("  ");
-				log.info("  📝 Full command:");
-				log.info("     {}", failure.getFixCommand());
-				log.info("  ");
+				log.info("""
+						Issue {}/{}: {}
+						  Problem: {}
+						  
+						  ⚡ Quick fix (alias):
+						     {}
+						  
+						  📝 Full command:
+						     {}
+						  """,
+						i + 1, failures.size(), failure.getService(),
+						failure.getProblem(),
+						failure.getAlias(),
+						failure.getFixCommand());
 			}
 
-			log.info("════════════════════════════════════════════════════════════════");
-			log.info("💡 TIP: Copy & paste commands above to fix all issues");
-			log.info("════════════════════════════════════════════════════════════════");
+			log.info("""
+					════════════════════════════════════════════════════════════════
+					💡 TIP: Copy & paste commands above to fix all issues
+					════════════════════════════════════════════════════════════════""");
 		}
 	}
 

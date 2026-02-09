@@ -154,7 +154,7 @@ public class InvoiceGeneratorAdvanced
 		addTableBorders(table);
 		addTableHeader(table);
 
-		int itemsOnCurrentPage = 1; // Header zählt mit
+		int itemsOnCurrentPage = 1; // Header counts as well
 		int currentPage = 1;
 		BigDecimal pageSubtotal = BigDecimal.ZERO;
 		BigDecimal carryOver = BigDecimal.ZERO;
