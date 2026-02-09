@@ -5,23 +5,22 @@ import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Gantt Chart JavaFX application for Jeeeraaah.
+ * Gantt Chart JavaFX application - TableView-based with frozen first two columns.
  *
- * <p>This application extends {@link BaseAuthenticatedApp} which provides:</p>
+ * <p>This application uses a different approach than the original GanttApp:</p>
  * <ul>
- *   <li>Configuration health check</li>
- *   <li>Docker environment health check with auto-fix</li>
- *   <li>Keycloak authentication (with optional testing mode)</li>
- *   <li>Standardized startup flow</li>
+ *   <li>Single TableView instead of TreeTableView</li>
+ *   <li>Manual hierarchy management with expand/collapse checkboxes</li>
+ *   <li>First two columns are FIXED (Checkbox + Task Name)</li>
+ *   <li>Date columns are horizontally scrollable</li>
  * </ul>
  *
- * <h2>Prerequisites:</h2>
+ * <h2>Advantages over TreeTableView approach:</h2>
  * <ul>
- *   <li>Keycloak server running on configured URL (default: http://localhost:8080)</li>
- *   <li>Realm "jeeeraaah-realm" configured in Keycloak</li>
- *   <li>Public client "jeeeraaah-frontend" created in realm</li>
- *   <li>Direct Access Grants enabled for client</li>
- *   <li>User account created in Keycloak with appropriate roles</li>
+ *   <li>True frozen columns (no complex synchronization needed)</li>
+ *   <li>Simpler implementation (~200 lines vs 500+)</li>
+ *   <li>Better performance with many columns</li>
+ *   <li>Full control over hierarchy display</li>
  * </ul>
  *
  * @see BaseAuthenticatedApp
@@ -29,14 +28,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GanttApp extends BaseAuthenticatedApp
 {
-	@Override protected String getApplicationName() { return "Gantt Chart"; }
+	@Override protected String getApplicationName() { return "Gantt Chart 2.0"; }
 
 	@Override protected void initializeUI(Stage primaryStage) throws ExceptionInInitializerError
 	{
 		primaryStage.setResizable(true);
 		initializeStageAndScene(primaryStage);
 
-		// Ensure window can be maximized - override sizeToScene constraints
+		// Ensure window can be maximized
 		primaryStage.setMaxWidth(Double.MAX_VALUE);
 		primaryStage.setMaxHeight(Double.MAX_VALUE);
 
@@ -57,18 +56,19 @@ public class GanttApp extends BaseAuthenticatedApp
 
 		optionalPrimaryView().ifPresentOrElse(
 				view -> {
-					// Cast to Gantt to access getController()
-					if (view instanceof Gantt gantt)
+					// Gantt extends DefaultFXCView which has controller() method
+					if (view instanceof Gantt ganttView)
 					{
-						GanttController controller = gantt.getController();
-						if (controller != null)
+						// Access controller via the view's controller() method
+						GanttService service = ganttView.service();
+						if (service != null)
 						{
-							controller.loadInitialData();
+							service.loadInitialData();
 							log.info("Initial data loaded successfully");
 						}
 						else
 						{
-							log.error("Controller is null - cannot load initial data!");
+							log.error("Service is null - cannot load initial data!");
 						}
 					}
 					else
@@ -80,3 +80,5 @@ public class GanttApp extends BaseAuthenticatedApp
 		);
 	}
 }
+
+

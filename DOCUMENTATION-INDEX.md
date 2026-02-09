@@ -86,6 +86,8 @@
 |----------|--------------|
 | [config/TROUBLESHOOTING.md](config/TROUBLESHOOTING.md) | Allgemeine Problemlösungen |
 | [root/app/jeeeraaah/backend/api/ws.rs/src/main/liberty/config/TROUBLESHOOTING-DATABASE.md](root/app/jeeeraaah/backend/api/ws.rs/src/main/liberty/config/TROUBLESHOOTING-DATABASE.md) | Datenbank Probleme |
+| [INTELLIJ-PLUGIN-FIX-QUICKSTART.md](INTELLIJ-PLUGIN-FIX-QUICKSTART.md) | ⭐ IntelliJ Plugin Fehler beheben (Lombok/MapStruct) |
+| [INTELLIJ-PLUGIN-FIX.md](INTELLIJ-PLUGIN-FIX.md) | Detaillierte Erklärung des IntelliJ Plugin Fixes |
 
 ---
 
@@ -144,4 +146,4 @@ grep -r "suchbegriff" --include="*.md" .
 
 ---
 
-**Letzte Aktualisierung:** 2026-01-23
+**Letzte Aktualisierung:** 2026-02-09

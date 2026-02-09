@@ -35,7 +35,6 @@ module de.ruu.app.jeeeraaah.frontend.ui.fx
 	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task;
 	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task.edit;
 	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task.gantt;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task.gantt2;
 	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task.selector;
 	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task.view;
 	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task.view.directneighbours;
@@ -62,7 +61,6 @@ module de.ruu.app.jeeeraaah.frontend.ui.fx
 	opens de.ruu.app.jeeeraaah.frontend.ui.fx.task;
 	opens de.ruu.app.jeeeraaah.frontend.ui.fx.task.edit;
 	opens de.ruu.app.jeeeraaah.frontend.ui.fx.task.gantt;
-	opens de.ruu.app.jeeeraaah.frontend.ui.fx.task.gantt2;
 	opens de.ruu.app.jeeeraaah.frontend.ui.fx.task.selector;
 	opens de.ruu.app.jeeeraaah.frontend.ui.fx.task.view;
 	opens de.ruu.app.jeeeraaah.frontend.ui.fx.task.view.directneighbours;

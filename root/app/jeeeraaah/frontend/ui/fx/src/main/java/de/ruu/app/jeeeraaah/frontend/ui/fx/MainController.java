@@ -3,7 +3,7 @@ package de.ruu.app.jeeeraaah.frontend.ui.fx;
 import static de.ruu.lib.fx.FXUtil.getStage;
 
 import de.ruu.app.jeeeraaah.frontend.ui.fx.task.TaskManagement;
-import de.ruu.app.jeeeraaah.frontend.ui.fx.task.gantt.TaskTreeTable;
+import de.ruu.app.jeeeraaah.frontend.ui.fx.task.gantt.GanttTable;
 import de.ruu.app.jeeeraaah.frontend.ui.fx.taskgroup.TaskGroupManagement;
 import de.ruu.app.jeeeraaah.frontend.ui.fx.taskgroup.TaskGroupManagementDisposeRequestEvent;
 import de.ruu.lib.cdi.se.EventDispatcher;
@@ -62,7 +62,7 @@ class MainController extends DefaultFXCController<Main, MainService> implements 
 	@Inject
 	private TaskManagement taskManagement;
 	@Inject
-	private TaskTreeTable taskTreeTable;
+	private GanttTable ganttTable;
 
 	@Override @FXML
 	protected void initialize()
@@ -122,12 +122,12 @@ class MainController extends DefaultFXCController<Main, MainService> implements 
 	private void onGantt(ActionEvent e)
 	{
 		ObservableList<Node> mainRootChildren = root.getChildren();
-		Parent taskTreeTableViewRoot = taskTreeTable.localRoot();
+		Parent ganttTableRoot = ganttTable.localRoot();
 
 		mainRootChildren.remove(main);
-		mainRootChildren.add(taskTreeTableViewRoot);
+		mainRootChildren.add(ganttTableRoot);
 
-		FXUtil.setAnchorsInAnchorPaneTo(taskTreeTableViewRoot, 0);
+		FXUtil.setAnchorsInAnchorPaneTo(ganttTableRoot, 0);
 
 		getStage(root).ifPresent(s -> s.setTitle(APP_TITLE + " - gantt"));
 	}

@@ -1,4 +1,4 @@
-package de.ruu.app.jeeeraaah.frontend.ui.fx.task.gantt2;
+package de.ruu.app.jeeeraaah.frontend.ui.fx.task.gantt;
 
 import de.ruu.app.jeeeraaah.common.api.domain.TaskFlat;
 import de.ruu.app.jeeeraaah.common.api.domain.TaskGroupFlat.TaskGroupWithTasks;
@@ -12,14 +12,13 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import static java.util.Objects.isNull;
@@ -57,6 +56,9 @@ public class GanttTableController
 		// Configure table
 		ganttTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 		ganttTable.setFixedCellSize(28.0);
+
+		// Remove bold font from column headers
+		ganttTable.setStyle("-fx-font-weight: normal;");
 	}
 
 	@Override
@@ -81,25 +83,35 @@ public class GanttTableController
 	}
 
 	/**
-	 * Creates all columns: Checkbox, Task Name, and Date columns.
+	 * Creates all columns: Expand/Collapse Button, Task Name, and Date columns.
 	 */
 	private void createColumns(LocalDate start, LocalDate end)
 	{
-		// Column 1: Checkbox for expand/collapse (FIXED, 40px)
+		// Column 1: Expand/Collapse Button (FIXED, 20px - minimal width)
 		TableColumn<GanttTableRow, String> expandColumn = new TableColumn<>("");
-		expandColumn.setPrefWidth(40);
-		expandColumn.setMinWidth(40);
-		expandColumn.setMaxWidth(40);
+		expandColumn.setPrefWidth(20);
+		expandColumn.setMinWidth(20);
+		expandColumn.setMaxWidth(20);
 		expandColumn.setResizable(false);
 		expandColumn.setReorderable(false);
 		expandColumn.setSortable(false);
+		expandColumn.setStyle("-fx-font-weight: normal;");
 
 		expandColumn.setCellFactory(col -> new TableCell<>() {
-			private final CheckBox checkBox = new CheckBox();
+			private final Button expandButton = new Button();
 
 			{
-				checkBox.setAllowIndeterminate(false);
-				checkBox.setOnAction(e -> {
+				expandButton.setMinSize(14, 14);
+				expandButton.setMaxSize(14, 14);
+				expandButton.setPrefSize(14, 14);
+				expandButton.setStyle("""
+						-fx-background-color: transparent;
+						-fx-border-color: transparent;
+						-fx-padding: 0;
+						-fx-font-size: 9px;
+						-fx-cursor: hand;
+						""");
+				expandButton.setOnAction(e -> {
 					GanttTableRow row = getTableRow().getItem();
 					if (row != null && row.hasChildren())
 					{
@@ -124,9 +136,9 @@ public class GanttTableController
 				{
 					if (row.hasChildren())
 					{
-						checkBox.setSelected(row.isExpanded());
-						checkBox.setDisable(false);
-						setGraphic(checkBox);
+						// Use ▶ for collapsed, ▼ for expanded
+						expandButton.setText(row.isExpanded() ? "▼" : "▶");
+						setGraphic(expandButton);
 					}
 					else
 					{
@@ -146,6 +158,7 @@ public class GanttTableController
 		nameColumn.setResizable(true);
 		nameColumn.setReorderable(false);
 		nameColumn.setSortable(false);
+		nameColumn.setStyle("-fx-font-weight: normal;");
 
 		nameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTaskName()));
 
@@ -171,17 +184,8 @@ public class GanttTableController
 						String indent = "  ".repeat(level);
 						setText(indent + item);
 
-						// Visual style
-						if (level == 0)
-						{
-							// Main tasks: bold
-							setStyle("-fx-font-weight: bold; -fx-background-color: #f0f0f0;");
-						}
-						else
-						{
-							// Subtasks: normal
-							setStyle("");
-						}
+						// Normal style for all rows
+						setStyle("");
 					}
 				}
 			}
@@ -189,53 +193,72 @@ public class GanttTableController
 
 		ganttTable.getColumns().add(nameColumn);
 
-		// Date columns (3-N): One column per day (SCROLLABLE, 30px each)
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd");
+		// Date columns (3-N): Grouped by month with nested day columns
+		DateTimeFormatter dayFormatter = DateTimeFormatter.ofPattern("dd");
+		DateTimeFormatter monthYearFormatter = DateTimeFormatter.ofPattern("MMM yyyy");
+
 		LocalDate current = start;
 
 		while (!current.isAfter(end))
 		{
-			final LocalDate date = current;
+			// Create month header column
+			YearMonth currentMonth = YearMonth.from(current);
+			String monthHeader = monthYearFormatter.format(current);
 
-			TableColumn<GanttTableRow, String> dateColumn = new TableColumn<>(formatter.format(date));
-			dateColumn.setPrefWidth(30);
-			dateColumn.setMinWidth(30);
-			dateColumn.setMaxWidth(30);
-			dateColumn.setResizable(false);
-			dateColumn.setReorderable(false);
-			dateColumn.setSortable(false);
+			TableColumn<GanttTableRow, String> monthColumn = new TableColumn<>(monthHeader);
+			monthColumn.setStyle("-fx-font-weight: normal; -fx-alignment: center;");
+			monthColumn.setResizable(false);
+			monthColumn.setReorderable(false);
+			monthColumn.setSortable(false);
 
-			dateColumn.setCellFactory(col -> new TableCell<>() {
-				@Override
-				protected void updateItem(String item, boolean empty)
-				{
-					super.updateItem(item, empty);
+			// Add day columns for this month
+			while (!current.isAfter(end) && YearMonth.from(current).equals(currentMonth))
+			{
+				final LocalDate date = current;
 
-					if (empty)
+				TableColumn<GanttTableRow, String> dateColumn = new TableColumn<>(dayFormatter.format(date));
+				dateColumn.setPrefWidth(30);
+				dateColumn.setMinWidth(30);
+				dateColumn.setMaxWidth(30);
+				dateColumn.setResizable(false);
+				dateColumn.setReorderable(false);
+				dateColumn.setSortable(false);
+				dateColumn.setStyle("-fx-font-weight: normal; -fx-alignment: center;");
+
+				dateColumn.setCellFactory(col -> new TableCell<>() {
+					@Override
+					protected void updateItem(String item, boolean empty)
 					{
-						setText(null);
-						setStyle("");
-					}
-					else
-					{
-						GanttTableRow row = getTableRow().getItem();
-						if (row != null && row.spansDate(date))
+						super.updateItem(item, empty);
+
+						if (empty)
 						{
-							setText("x");
-							setAlignment(Pos.CENTER);
-							setStyle("-fx-background-color: #4a90e2; -fx-text-fill: white;");
+							setText(null);
+							setStyle("");
 						}
 						else
 						{
-							setText("");
-							setStyle("");
+							GanttTableRow row = getTableRow().getItem();
+							if (row != null && row.spansDate(date))
+							{
+								setText("x");
+								setAlignment(Pos.CENTER);
+								setStyle("-fx-background-color: #4a90e2; -fx-text-fill: white;");
+							}
+							else
+							{
+								setText("");
+								setStyle("");
+							}
 						}
 					}
-				}
-			});
+				});
 
-			ganttTable.getColumns().add(dateColumn);
-			current = current.plusDays(1);
+				monthColumn.getColumns().add(dateColumn);
+				current = current.plusDays(1);
+			}
+
+			ganttTable.getColumns().add(monthColumn);
 		}
 	}
 
