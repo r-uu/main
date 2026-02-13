@@ -38,3 +38,39 @@ Eine Gantt-Diagramm-Darstellung zeigt eine andere Sicht auf Aufgaben und die gep
   <em>Abb. 4: jeeeraaah Gantt Diagramm</em>
 </p>
 
+## Der Technologiestack
+
+Ein Ziel des POCs ist, die Versionen der eingesetzten Technologien dauerhaft auf einem möglichst modernen Stand zu halten. Updates aller Technologien gehören daher zur Tagesordnung.
+
+Jeeeraaah ist eine client-server Java Anwendung, deren Bestandteile (bis auf eine Ausnahme, dazu später mehr) mit Java 25 entwickelt wurden. Dabei kommen aktuell folgende Technologien zum Einsatz:
+
+Das backend ist eine Jakarta EE 10 / Microprofile 6.1 Anwendung. Als Application Server wird Open Liberty verwendet. Im frontend kommt JavaFX 25 zum Einsatz.
+
+Beide Anwendungen sind weitestgehend mit JPMS modularisiert. Die Kommunikation zwischen frontend und backend erfolgt über REST APIs, die mit JAX-RS implementiert wurden. Die build Prozesse für beide Anwendungen werden mit Maven realisiert.
+
+Für das Identity and Access Management (IAM) wird Keycloak verwendet, das über OpenID Connect (OIDC) mit dem backend kommuniziert. Das frontend kommuniziert direkt mit Keycloak, um die Authentifizierung und Autorisierung der Benutzer zu gewährleisten.
+
+Im Backend wird die Persistenz mit JPA (hibernate) und postgres realisiert. Postgres und Keycloak laufen in Docker Containern, die über docker-compose orchestriert werden. Der Postgres Container enthält im POC die Datenbank für sowohl für die Anwendung als auch für das IAM mit Keycloak.
+
+## Architektur
+
+Das backend ist in zwei Hauptmodule aufgeteilt: api und persistence. Das api Modul enthält die REST API Schnittstellen, die mit Jakarta-RS implementiert wurden. Im persistence Modul befindet sich die Datenzugriffsschicht, die mit JPA (hibernate) implementiert wurde.
+
+Das frontend ist ebenfalls in zwei Module aufgeteilt: ui und api.client. Das ui Modul enthält die JavaFX Komponenten, die für die Darstellung der Benutzeroberfläche verantwortlich sind. Das api.client Modul enthält die Logik für die Kommunikation mit dem backend über REST APIs.
+
+Das Bindeglied zwischen frontend und backend ist das common Modul, das Objekte und Objekt-Mappings enthält, die von beiden Seiten verwendet werden.
+
+### Modul common
+
+Das common.api.domain Modul enthält zentrale Schnittstellen und Basisklassen des Domänenmodells. Dieses Modul bildet das Fundament für das Jeeeraaah Task-Management-System und definiert:
+
+- Zentrale Domain-Entitäten und deren Verträge,
+- Lazy-Loading-Varianten zur Performanceoptimierung
+- Flache Repräsentationen für vereinfachten Datentransfer
+- Konfigurationen für Beziehungen zwischen Tasks
+
+Das Modul ist so konzipiert, dass es transitiv sowohl vom Frontend als auch vom Backend benötigt wird, um ein konsistentes Domänenmodell über alle Anwendungsschichten hinweg zu gewährleisten.
+
+### Modul backend
+
+

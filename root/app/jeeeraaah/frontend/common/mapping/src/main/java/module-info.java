@@ -1,3 +1,17 @@
+/**
+ * Frontend Common Mapping module containing JavaFX-specific mappers.
+ * <p>
+ * This module provides bidirectional mappings between:
+ * <ul>
+ *   <li>Bean ↔ FXBean - for JavaFX property binding and UI reactivity</li>
+ *   <li>Bean → FlatBean - for simplified table/tree representations</li>
+ * </ul>
+ * <p>
+ * These mappers enable seamless integration between backend data structures
+ * and JavaFX UI components, handling observable properties and UI-specific requirements.
+ *
+ * @since 0.0.1
+ */
 module de.ruu.app.jeeeraaah.frontend.common.mapping
 {
 	exports de.ruu.app.jeeeraaah.frontend.common.mapping;
@@ -5,14 +19,10 @@ module de.ruu.app.jeeeraaah.frontend.common.mapping
 	exports de.ruu.app.jeeeraaah.frontend.common.mapping.bean.fxbean;
 	exports de.ruu.app.jeeeraaah.frontend.common.mapping.fxbean.bean;
 
-	// MapStruct context helper used in mappers
 	requires de.ruu.lib.mapstruct;
-
-	// Reads common API bean types used by mappers
 	requires de.ruu.app.jeeeraaah.common.api.bean;
+	requires de.ruu.app.jeeeraaah.common.api.domain;
 	requires de.ruu.app.jeeeraaah.frontend.ui.fx.model;
 
-	// Optional lombok at compile time only
 	requires static lombok;
-	requires de.ruu.app.jeeeraaah.common.api.domain;
 }

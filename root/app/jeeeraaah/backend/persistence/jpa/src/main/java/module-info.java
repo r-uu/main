@@ -1,3 +1,18 @@
+/**
+ * Backend Persistence JPA module containing JPA entities and repository services.
+ * <p>
+ * This module provides:
+ * <ul>
+ *   <li>TaskJPA, TaskGroupJPA - JPA entity implementations</li>
+ *   <li>TaskServiceJPA, TaskGroupServiceJPA - CDI-managed repository services</li>
+ *   <li>Database persistence layer for the task management system</li>
+ * </ul>
+ * <p>
+ * All entities are managed by Hibernate and exposed through CDI-injectable services
+ * for use in REST endpoints and business logic.
+ *
+ * @since 0.0.1
+ */
 module de.ruu.app.jeeeraaah.backend.persistence.jpa
 {
 	exports de.ruu.app.jeeeraaah.backend.persistence.jpa;
@@ -6,8 +21,8 @@ module de.ruu.app.jeeeraaah.backend.persistence.jpa
 	requires jakarta.cdi;
 	requires jakarta.inject;
 	requires jakarta.persistence;
-	requires static jakarta.transaction;
 	requires jakarta.ws.rs;
+	requires static jakarta.transaction;
 
 	requires de.ruu.lib.jpa.core;
 	requires de.ruu.lib.mapstruct;
@@ -15,14 +30,15 @@ module de.ruu.app.jeeeraaah.backend.persistence.jpa
 	requires de.ruu.app.jeeeraaah.common.api.mapping;
 	requires de.ruu.app.jeeeraaah.common.api.domain;
 	requires de.ruu.app.jeeeraaah.common.api.ws.rs;
-
 	requires org.slf4j;
+
 	requires static lombok;
 
-	// Open packages for JPA entity scanning (Hibernate)
+	// Open for reflection-based frameworks (minimal, targeted access):
+	// - Hibernate: JPA entity scanning and proxy generation
 	opens de.ruu.app.jeeeraaah.backend.persistence.jpa;
 
-	// Open ee package for CDI bean discovery and proxy generation (OpenLiberty/Weld)
-	// Opens to all unnamed modules for Weld SE compatibility
+	// - Weld: CDI bean discovery and proxy generation for @ApplicationScoped services
+	// Note: Opens to all unnamed modules for Weld SE compatibility
 	opens de.ruu.app.jeeeraaah.backend.persistence.jpa.ee;
 }

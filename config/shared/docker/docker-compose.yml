@@ -197,4 +197,3 @@ volumes:
 #
 # Einzelnen Container neu starten:
 #   docker compose restart <container-name>
-

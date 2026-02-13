@@ -1,3 +1,18 @@
+/**
+ * Common API Mapping module containing MapStruct mappers for API layer transformations.
+ * <p>
+ * This module provides bidirectional mappings between:
+ * <ul>
+ *   <li>Bean ↔ DTO - for REST API communication</li>
+ *   <li>Bean ↔ Lazy - for lazy-loading scenarios</li>
+ *   <li>Flat → Bean - for simplified data structures</li>
+ * </ul>
+ * <p>
+ * All mappers use MapStruct for type-safe, compile-time code generation and include
+ * proper cycle detection for circular references.
+ *
+ * @since 0.0.1
+ */
 module de.ruu.app.jeeeraaah.common.api.mapping
 {
 	exports de.ruu.app.jeeeraaah.common.api.mapping;
@@ -13,6 +28,7 @@ module de.ruu.app.jeeeraaah.common.api.mapping
 	requires de.ruu.lib.jpa.core;
 	requires de.ruu.lib.mapstruct;
 	requires jakarta.annotation;
+
 	requires static lombok;
-	requires static java.compiler; // needed for MapStruct generated code
+	requires static java.compiler; // Needed for MapStruct generated code
 }
