@@ -17,10 +17,8 @@
 
 	<modules>
 		<module>common</module>
-		<module>backend.common.mapping</module>
 		<module>backend</module>
 		<module>frontend</module>
-		<module>frontend.common.mapping</module>
 	</modules>
 
 </project>

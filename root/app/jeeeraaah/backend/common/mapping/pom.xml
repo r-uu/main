@@ -9,7 +9,7 @@
 
 	<parent>
 		<groupId>r-uu</groupId>
-		<artifactId>r-uu.app.jeeeraaah</artifactId>
+		<artifactId>r-uu.app.jeeeraaah.backend.common</artifactId>
 		<version>0.0.1</version>
 	</parent>
 
