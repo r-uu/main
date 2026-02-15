@@ -1,7 +1,5 @@
 package de.ruu.app.jeeeraaah.frontend.ui.fx.task;
 
-import static de.ruu.app.jeeeraaah.frontend.common.mapping.Mappings.toBean;
-import static de.ruu.app.jeeeraaah.frontend.common.mapping.Mappings.toFXBean;
 import static de.ruu.lib.fx.FXUtil.getStage;
 import static java.util.Objects.isNull;
 import static javafx.scene.control.ButtonBar.ButtonData.OK_DONE;
@@ -13,9 +11,12 @@ import java.util.Set;
 
 import de.ruu.app.jeeeraaah.common.api.bean.TaskBean;
 import de.ruu.app.jeeeraaah.common.api.bean.TaskGroupBean;
-import de.ruu.app.jeeeraaah.common.api.mapping.Mappings;
+import de.ruu.app.jeeeraaah.common.api.mapping.flat.bean.Map_TaskGroup_Flat_Bean;
 import de.ruu.app.jeeeraaah.frontend.api.client.ws.rs.TaskGroupServiceClient;
 import de.ruu.app.jeeeraaah.frontend.api.client.ws.rs.TaskServiceClient;
+import de.ruu.app.jeeeraaah.frontend.common.mapping.bean.fxbean.Map_Task_Bean_FXBean;
+import de.ruu.app.jeeeraaah.frontend.common.mapping.bean.fxbean.Map_TaskGroup_Bean_FXBean;
+import de.ruu.app.jeeeraaah.frontend.common.mapping.fxbean.bean.Map_Task_FXBean_Bean;
 import de.ruu.app.jeeeraaah.frontend.ui.fx.model.TaskFXBean;
 import de.ruu.app.jeeeraaah.frontend.ui.fx.model.TaskGroupFXBean;
 import de.ruu.app.jeeeraaah.frontend.ui.fx.task.edit.TaskEditor;
@@ -124,7 +125,11 @@ class TaskManagementController extends DefaultFXCController<TaskManagement, Task
 		{
 			taskGroupServiceClient.findAllFlat()
 					// map to bean and then to fx-bean
-					.forEach(tg -> cmbBxGroups.getItems().add(toFXBean(Mappings.toBean(tg), context)));
+					.forEach(flat -> {
+						TaskGroupBean bean = Map_TaskGroup_Flat_Bean.INSTANCE.map(flat);
+						TaskGroupFXBean fxBean = Map_TaskGroup_Bean_FXBean.INSTANCE.map(bean, context);
+						cmbBxGroups.getItems().add(fxBean);
+					});
 		}
 		catch (TechnicalException | NonTechnicalException e)
 		{
@@ -165,7 +170,7 @@ class TaskManagementController extends DefaultFXCController<TaskManagement, Task
 				if (optionalTasks.isPresent())
 				{
 					ReferenceCycleTracking context = new ReferenceCycleTracking();
-					optionalTasks.get().forEach(t -> tv.getItems().add(toFXBean(t, context)));
+					optionalTasks.get().forEach(t -> tv.getItems().add(Map_Task_Bean_FXBean.INSTANCE.map(t, context)));
 				}
 			}
 		}
@@ -190,7 +195,7 @@ class TaskManagementController extends DefaultFXCController<TaskManagement, Task
 		// internal java fx bindings can be established (see initialize)
 		TaskGroupBean taskGroupBean = new TaskGroupBean("new task group");
 		TaskBean taskBean = new TaskBean(taskGroupBean, "new task");
-		TaskFXBean taskFXBean = toFXBean(taskBean, new ReferenceCycleTracking());
+		TaskFXBean taskFXBean = Map_Task_Bean_FXBean.INSTANCE.map(taskBean, new ReferenceCycleTracking());
 
 		editor.service().task(taskFXBean);
 
@@ -208,13 +213,13 @@ class TaskManagementController extends DefaultFXCController<TaskManagement, Task
 		if (optional.isPresent())
 		{
 			taskFXBean = optional.get();
-			taskBean = toBean(taskFXBean, new ReferenceCycleTracking());
+			taskBean = Map_Task_FXBean_Bean.INSTANCE.map(taskFXBean, new ReferenceCycleTracking());
 
 			// let client create a new item in db
 			try
 			{
 				taskBean = taskServiceClient.create(taskBean);
-				taskFXBean = toFXBean(taskBean, new ReferenceCycleTracking());
+				taskFXBean = Map_Task_Bean_FXBean.INSTANCE.map(taskBean, new ReferenceCycleTracking());
 
 				// add and select item with retrieved item
 				tv.getItems().add(taskFXBean);

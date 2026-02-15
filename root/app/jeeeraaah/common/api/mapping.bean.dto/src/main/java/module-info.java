@@ -21,6 +21,7 @@ module de.ruu.app.jeeeraaah.common.api.mapping.bean.dto
 	exports de.ruu.app.jeeeraaah.common.api.mapping.lazy.bean;
 	exports de.ruu.app.jeeeraaah.common.api.mapping.bean.lazy;
 	exports de.ruu.app.jeeeraaah.common.api.mapping.flat.bean;
+	exports de.ruu.app.jeeeraaah.common.api.mapping.bean.flat;
 
 	requires de.ruu.app.jeeeraaah.common.api.domain;
 	requires de.ruu.app.jeeeraaah.common.api.bean;

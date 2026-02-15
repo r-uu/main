@@ -18,18 +18,21 @@ import javafx.collections.ObservableSet;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter
+@Setter
+@NoArgsConstructor
 @Accessors(fluent = true)
 public class TaskGroupFXBean implements TaskGroupEntity<TaskFXBean>
 {
 	@EqualsAndHashCode.Include // documents intent of including id for equals() and hashCode() but both methods are
 	                           // manually created
-	@Setter(AccessLevel.NONE) @Nullable private Long  id;
-	@Setter(AccessLevel.NONE) @Nullable private Short version;
+	@Nullable private Long  id;
+	@Nullable private Short version;
 
 	private final StringProperty nameProperty        = new SimpleStringProperty();
 	private final StringProperty descriptionProperty = new SimpleStringProperty();

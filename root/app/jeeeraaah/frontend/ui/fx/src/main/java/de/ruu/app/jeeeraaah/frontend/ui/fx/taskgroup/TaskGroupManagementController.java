@@ -1,6 +1,5 @@
 package de.ruu.app.jeeeraaah.frontend.ui.fx.taskgroup;
 
-import static de.ruu.app.jeeeraaah.frontend.common.mapping.Mappings.toFXBean;
 import static de.ruu.lib.fx.FXUtil.getStage;
 import static javafx.scene.control.ButtonBar.ButtonData.OK_DONE;
 import static javafx.scene.control.ButtonType.CANCEL;
@@ -11,8 +10,10 @@ import java.util.Optional;
 
 import de.ruu.app.jeeeraaah.common.api.bean.TaskGroupBean;
 import de.ruu.app.jeeeraaah.common.api.domain.TaskGroupLazy;
+import de.ruu.app.jeeeraaah.common.api.mapping.flat.bean.Map_TaskGroup_Flat_Bean;
 import de.ruu.app.jeeeraaah.frontend.api.client.ws.rs.TaskGroupServiceClient;
-import de.ruu.app.jeeeraaah.frontend.common.mapping.Mappings;
+import de.ruu.app.jeeeraaah.frontend.common.mapping.bean.fxbean.Map_TaskGroup_Bean_FXBean;
+import de.ruu.app.jeeeraaah.frontend.common.mapping.fxbean.bean.Map_TaskGroup_FXBean_Bean;
 import de.ruu.app.jeeeraaah.frontend.ui.fx.model.TaskGroupFXBean;
 import de.ruu.app.jeeeraaah.frontend.ui.fx.taskgroup.edit.TaskGroupEditor;
 import de.ruu.lib.cdi.common.CDIUtil;
@@ -107,7 +108,11 @@ class TaskGroupManagementController extends DefaultFXCController<TaskGroupManage
 		try
 		{
 			client.findAllFlat().forEach(
-					tg -> tv.getItems().add(toFXBean(de.ruu.app.jeeeraaah.common.api.mapping.Mappings.toBean(tg), context)));
+					flat -> {
+						TaskGroupBean bean = Map_TaskGroup_Flat_Bean.INSTANCE.map(flat);
+						TaskGroupFXBean fxBean = Map_TaskGroup_Bean_FXBean.INSTANCE.map(bean, context);
+						tv.getItems().add(fxBean);
+					});
 		}
 		catch (TechnicalException | NonTechnicalException e)
 		{
@@ -150,7 +155,7 @@ class TaskGroupManagementController extends DefaultFXCController<TaskGroupManage
 		// populate editor with new item, call to getService() has to be done after call to getLocalRoot() to make sure
 		// internal java fx bindings can be established (see initialize)
 		TaskGroupBean taskGroupBean = new TaskGroupBean("new task group");
-		TaskGroupFXBean taskGroupFXBean = toFXBean(taskGroupBean, context);
+		TaskGroupFXBean taskGroupFXBean = Map_TaskGroup_Bean_FXBean.INSTANCE.map(taskGroupBean, context);
 		editor.service().taskGroup(taskGroupFXBean);
 
 		Dialog<TaskGroupFXBean> dialog = new Dialog<>();
@@ -167,14 +172,14 @@ class TaskGroupManagementController extends DefaultFXCController<TaskGroupManage
 		if (optional.isPresent())
 		{
 			taskGroupFXBean = optional.get();
-			taskGroupBean = toBean(taskGroupFXBean);
+			taskGroupBean = Map_TaskGroup_FXBean_Bean.INSTANCE.map(taskGroupFXBean, context);
 
 			// let client create a new item in backend
 			try
 			{
 				taskGroupBean = client.create(taskGroupBean);
 				// create fx bean from entity dto
-				taskGroupFXBean = toFXBean(taskGroupBean, context);
+				taskGroupFXBean = Map_TaskGroup_Bean_FXBean.INSTANCE.map(taskGroupBean, context);
 				// add and select item with retrieved item
 				tv.getItems().add(taskGroupFXBean);
 				tv.getSelectionModel().select(taskGroupFXBean);
@@ -208,14 +213,14 @@ class TaskGroupManagementController extends DefaultFXCController<TaskGroupManage
 		if (optional.isPresent())
 		{
 			taskGroupFXBean = optional.get();
-			TaskGroupBean taskGroupBean = toBean(optional.get());
+			TaskGroupBean taskGroupBean = Map_TaskGroup_FXBean_Bean.INSTANCE.map(optional.get(), context);
 
 			// let client update the item in background
 			try
 			{
 				taskGroupBean = client.update(taskGroupBean);
 				// create fx bean from entity dto
-				taskGroupFXBean = toFXBean(taskGroupBean, context);
+				taskGroupFXBean = Map_TaskGroup_Bean_FXBean.INSTANCE.map(taskGroupBean, context);
 				// add and select item with retrieved item
 				tv.getSelectionModel().select(taskGroupFXBean);
 			}
@@ -244,15 +249,5 @@ class TaskGroupManagementController extends DefaultFXCController<TaskGroupManage
 	private void onAppStarted(FXCAppStartedEvent e)
 	{
 		getStage(root).ifPresent(s -> s.setTitle(APP_TITLE));
-	}
-
-	private @NonNull TaskGroupBean toBean(TaskGroupLazy lazy)
-	{
-		return de.ruu.app.jeeeraaah.common.api.mapping.Mappings.toBean(lazy, new ReferenceCycleTracking());
-	}
-
-	private @NonNull TaskGroupBean toBean(TaskGroupFXBean taskGroupFXBean)
-	{
-		return Mappings.toBean(taskGroupFXBean, new ReferenceCycleTracking());
 	}
 }

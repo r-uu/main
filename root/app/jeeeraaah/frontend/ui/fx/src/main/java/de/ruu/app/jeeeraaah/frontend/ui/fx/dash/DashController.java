@@ -1,9 +1,6 @@
 package de.ruu.app.jeeeraaah.frontend.ui.fx.dash;
 
 import static de.ruu.app.jeeeraaah.common.api.domain.Task.COMPARATOR;
-import static de.ruu.app.jeeeraaah.frontend.common.mapping.Mappings.toBean;
-import static de.ruu.app.jeeeraaah.frontend.common.mapping.Mappings.toFXBean;
-import static de.ruu.app.jeeeraaah.frontend.common.mapping.Mappings.toFlatBean;
 import static de.ruu.lib.fx.FXUtil.getStage;
 import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
@@ -21,7 +18,12 @@ import java.util.stream.Collectors;
 import de.ruu.app.jeeeraaah.common.api.bean.TaskBean;
 import de.ruu.app.jeeeraaah.common.api.bean.TaskGroupBean;
 import de.ruu.app.jeeeraaah.common.api.domain.TaskGroupFlat;
+import de.ruu.app.jeeeraaah.common.api.mapping.bean.flat.Map_TaskGroup_Bean_Flat;
+import de.ruu.app.jeeeraaah.common.api.mapping.dto.bean.Map_TaskGroup_DTO_Bean;
+import de.ruu.app.jeeeraaah.common.api.mapping.flat.bean.Map_TaskGroup_Flat_Bean;
 import de.ruu.app.jeeeraaah.frontend.api.client.ws.rs.TaskGroupServiceClient;
+import de.ruu.app.jeeeraaah.frontend.common.mapping.bean.fxbean.Map_TaskGroup_Bean_FXBean;
+import de.ruu.app.jeeeraaah.frontend.common.mapping.fxbean.bean.Map_TaskGroup_FXBean_Bean;
 import de.ruu.app.jeeeraaah.frontend.ui.fx.util.ServiceOperationExecutor;
 import de.ruu.app.jeeeraaah.frontend.ui.fx.model.TaskGroupFXBean;
 import de.ruu.app.jeeeraaah.frontend.ui.fx.task.view.hierarchy.predecessor.TaskHierarchyPredecessors;
@@ -285,7 +287,7 @@ class DashController extends DefaultFXCController<Dash, DashService> implements 
 		// populate editor with new item, call to service() has to be done after call to localRoot() to make sure internal
 		// java fx bindings can be established (see initialize)
 		TaskGroupBean   taskGroupBean   = new TaskGroupBean("new task group");
-		TaskGroupFXBean taskGroupFXBean = toFXBean(taskGroupBean, new ReferenceCycleTracking());
+		TaskGroupFXBean taskGroupFXBean = Map_TaskGroup_Bean_FXBean.INSTANCE.map(taskGroupBean, new ReferenceCycleTracking());
 
 		taskGroupEditor.service().taskGroup(taskGroupFXBean);
 
@@ -294,7 +296,7 @@ class DashController extends DefaultFXCController<Dash, DashService> implements 
 		if (optional.isPresent())
 		{
 			taskGroupFXBean = optional.get();
-			final TaskGroupBean beanToCreate = toBean(taskGroupFXBean, new ReferenceCycleTracking());
+			final TaskGroupBean beanToCreate = Map_TaskGroup_FXBean_Bean.INSTANCE.map(taskGroupFXBean, new ReferenceCycleTracking());
 
 			// let task group service client create a new item in the backend
 			try
@@ -356,7 +358,7 @@ class DashController extends DefaultFXCController<Dash, DashService> implements 
 		// populate editor with selected item, call to getService() has to be done after call to getLocalRoot() to make
 		// sure editor internal java fx bindings can be established (see initialize)
 		TaskGroupBean   taskGroupBean   = optionalPersisted.get();
-		TaskGroupFXBean taskGroupFXBean = toFXBean(taskGroupBean, new ReferenceCycleTracking());
+		TaskGroupFXBean taskGroupFXBean = Map_TaskGroup_Bean_FXBean.INSTANCE.map(taskGroupBean, new ReferenceCycleTracking());
 		taskGroupEditor.service().taskGroup(taskGroupFXBean);
 
 		Dialog<TaskGroupFXBean> dialog = new Dialog<>();
@@ -372,7 +374,7 @@ class DashController extends DefaultFXCController<Dash, DashService> implements 
 
 		if (optional.isPresent())
 		{
-			final TaskGroupBean beanToUpdate = toBean(optional.get(), new ReferenceCycleTracking());
+			final TaskGroupBean beanToUpdate = Map_TaskGroup_FXBean_Bean.INSTANCE.map(optional.get(), new ReferenceCycleTracking());
 
 			// let client update the item in backend
 			try
@@ -388,7 +390,7 @@ class DashController extends DefaultFXCController<Dash, DashService> implements 
 				);
 
 				// update task group selector
-				taskGroupSelector.service().updateItem(toFlatBean(beanToUpdate, new ReferenceCycleTracking()));
+				taskGroupSelector.service().updateItem(Map_TaskGroup_Bean_Flat.INSTANCE.map(beanToUpdate));
 			}
 			catch (TechnicalException | NonTechnicalException e)
 			{
