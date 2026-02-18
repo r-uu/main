@@ -13,5 +13,6 @@
 	</parent>
 	<modules>
 		<module>mapping.jpa.dto</module>
+		<module>mapping.jpa.lazy</module>
 	</modules>
 </project>
