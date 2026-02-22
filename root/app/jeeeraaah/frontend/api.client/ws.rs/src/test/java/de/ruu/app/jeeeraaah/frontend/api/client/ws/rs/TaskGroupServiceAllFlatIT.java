@@ -1,10 +1,7 @@
 package de.ruu.app.jeeeraaah.frontend.api.client.ws.rs;
 
 import static java.util.Objects.nonNull;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.emptyString;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.util.Set;
@@ -127,12 +124,12 @@ class TaskGroupServiceAllFlatIT
 		log.info("=== Step 1: Authenticating user '{}' with Keycloak ===", TEST_USERNAME);
 		String accessToken = keycloakAuthService.login(TEST_USERNAME, TEST_PASSWORD);
 		
-		assertThat("access token should not be null" , accessToken, notNullValue());
-		assertThat("access token should not be empty", accessToken, not(emptyString()));
-		
+		assertThat(accessToken).as("access token should not be null").isNotNull();
+		assertThat(accessToken).as("access token should not be empty").isNotEmpty();
+
 		log.info("✅ Authentication successful");
 		log.info("   Access token length: {} characters", accessToken.length());
-		log.info("   Access token prefix: {}...", accessToken.substring(0, Math.min(50, accessToken.length())));
+		log.info("   Access token prefix: {} ...", accessToken.substring(0, Math.min(50, accessToken.length())));
 		
 		// Step 2: Call findAllFlat() endpoint
 		// The AuthorizationHeaderFilter will automatically add: Authorization: Bearer <token>
@@ -144,7 +141,7 @@ class TaskGroupServiceAllFlatIT
 		
 		// Step 3: Verify response
 		log.info("=== Step 3: Verifying response ===");
-		assertThat("result should not be null", result, notNullValue());
+		assertThat(result).as("result should not be null").isNotNull();
 		// Don't assert empty/non-empty - could be either depending on DB state
 		
 		log.info("✅ findAllFlat() call succeeded");

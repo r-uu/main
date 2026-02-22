@@ -14,7 +14,7 @@ import java.util.TreeSet;
 
 import static de.ruu.lib.util.StringBuilders.sb;
 import static de.ruu.lib.util.classpath.Classpath.*;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 //@Disabled // log level for this class is set to info in log4j2.xml
 @Slf4j
@@ -24,7 +24,7 @@ class ClasspathTest
 	{
 		final Map<String, List<ClasspathResource>> classpathResourceLists = getClasspathResources();
 
-		assertTrue(classpathResourceLists.size() > 0);
+		assertThat(classpathResourceLists.size() > 0).isTrue();
 
 		final Set<String> resourceNamesSorted = new TreeSet<>(classpathResourceLists.keySet());
 
@@ -73,7 +73,7 @@ class ClasspathTest
 		final Map<String, List<ClasspathResource>> classpathResourcesWithFilter    =
 				getClasspathResources(resourceContainerFilter, FILTER_ACCEPT_FILES_ALL, FILTER_ACCEPT_ZIP_ENTRIES_ALL);
 
-		assertTrue(classpathResourcesWithoutFilter.size() > classpathResourcesWithFilter.size());
+		assertThat(classpathResourcesWithoutFilter.size() > classpathResourcesWithFilter.size()).isTrue();
 
 		log.debug(
 				"\nnumber of resources with filter: " + classpathResourcesWithFilter.size() +
@@ -91,7 +91,7 @@ class ClasspathTest
 		final Map<String, List<ClasspathResource>> classpathResourceListsWithFilter    =
 				getClasspathResources(resourceContainerFilter, directoryResourceFilter, FILTER_ACCEPT_ZIP_ENTRIES_ALL);
 
-		assertTrue(classpathResourceListsWithoutFilter.size() > classpathResourceListsWithFilter.size());
+		assertThat(classpathResourceListsWithoutFilter.size() > classpathResourceListsWithFilter.size()).isTrue();
 
 		log.debug(
 				"\nnumber of resources with filter: " + classpathResourceListsWithFilter.size() +
@@ -103,7 +103,7 @@ class ClasspathTest
 		final Map<String, List<ClasspathResource>> classpathResourceListsWithoutFilter = getClasspathResources();
 		final Map<String, List<ClasspathResource>> classpathResourceListsWithFilter    = getPackagesAsClasspathResources();
 
-		assertTrue(classpathResourceListsWithoutFilter.size() > classpathResourceListsWithFilter.size());
+		assertThat(classpathResourceListsWithoutFilter.size() > classpathResourceListsWithFilter.size()).isTrue();
 
 		log.debug(
 				"\nnumber of resources with filter: " + classpathResourceListsWithFilter.size() +

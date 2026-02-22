@@ -6,9 +6,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests for {@link TaskMapper} - bidirectional Task Bean ↔ Lazy mappings.
  * <p>
@@ -43,14 +43,14 @@ class TaskMapperTest {
     }
     @Test
     void mapperInstanceExists() {
-        assertNotNull(TaskMapper.INSTANCE, "Mapper instance should exist");
+        assertThat(TaskMapper.INSTANCE).as("Mapper instance should exist").isNotNull();
     }
     @Test
     void beanToLazy_shouldMapBasicFields() throws Exception {
         TaskBean bean = createTaskBean("Test Task", null, null, null);
         TaskLazy lazy = TaskMapper.INSTANCE.toLazy(bean);
-        assertNotNull(lazy);
-        assertThat(lazy.name(), is(equalTo(bean.name())));
+        assertThat(lazy).isNotNull();
+        assertThat(lazy.name()).isEqualTo(bean.name());
     }
     @Test
     void beanToLazy_shouldMapOptionalFields() throws Exception {
@@ -58,18 +58,18 @@ class TaskMapperTest {
         LocalDate end = start.plusDays(7);
         TaskBean bean = createTaskBean("Test Task", start, end, "Test Description");
         TaskLazy lazy = TaskMapper.INSTANCE.toLazy(bean);
-        assertNotNull(lazy);
-        assertThat(lazy.description(), is(equalTo(bean.description())));
-        assertThat(lazy.start(), is(equalTo(bean.start())));
-        assertThat(lazy.end(), is(equalTo(bean.end())));
+        assertThat(lazy).isNotNull();
+        assertThat(lazy.description()).isEqualTo(bean.description());
+        assertThat(lazy.start()).isEqualTo(bean.start());
+        assertThat(lazy.end()).isEqualTo(bean.end());
     }
     @Test
     void lazyToBean_shouldMapBasicFields() throws Exception {
         TaskBean sourceBean = createTaskBean("Test Task", null, null, null);
         TaskLazy lazy = TaskMapper.INSTANCE.toLazy(sourceBean);
         TaskBean bean = TaskMapper.INSTANCE.toBean(testGroup, lazy);
-        assertNotNull(bean);
-        assertThat(bean.name(), is(equalTo(lazy.name())));
+        assertThat(bean).isNotNull();
+        assertThat(bean.name()).isEqualTo(lazy.name());
     }
     @Test
     void lazyToBean_shouldMapOptionalFields() throws Exception {
@@ -78,10 +78,10 @@ class TaskMapperTest {
         TaskBean sourceBean = createTaskBean("Test Task", start, end, "Test Description");
         TaskLazy lazy = TaskMapper.INSTANCE.toLazy(sourceBean);
         TaskBean bean = TaskMapper.INSTANCE.toBean(testGroup, lazy);
-        assertNotNull(bean);
-        assertThat(bean.description(), is(equalTo(lazy.description())));
-        assertThat(bean.start(), is(equalTo(lazy.start())));
-        assertThat(bean.end(), is(equalTo(lazy.end())));
+        assertThat(bean).isNotNull();
+        assertThat(bean.description()).isEqualTo(lazy.description());
+        assertThat(bean.start()).isEqualTo(lazy.start());
+        assertThat(bean.end()).isEqualTo(lazy.end());
     }
     @Test
     void bidirectionalMapping_shouldPreserveData() throws Exception {
@@ -90,16 +90,16 @@ class TaskMapperTest {
         TaskBean originalBean = createTaskBean("Original Task", start, end, "Original Description");
         TaskLazy lazy = TaskMapper.INSTANCE.toLazy(originalBean);
         TaskBean resultBean = TaskMapper.INSTANCE.toBean(testGroup, lazy);
-        assertNotNull(resultBean);
-        assertThat(resultBean.name(), is(equalTo(originalBean.name())));
-        assertThat(resultBean.description(), is(equalTo(originalBean.description())));
+        assertThat(resultBean).isNotNull();
+        assertThat(resultBean.name()).isEqualTo(originalBean.name());
+        assertThat(resultBean.description()).isEqualTo(originalBean.description());
     }
     @Test
     void emptyOptionalFields_shouldMapCorrectly() throws Exception {
         TaskBean sourceBean = createTaskBean("Test Task", null, null, null);
         TaskLazy lazy = TaskMapper.INSTANCE.toLazy(sourceBean);
         TaskBean bean = TaskMapper.INSTANCE.toBean(testGroup, lazy);
-        assertNotNull(bean);
-        assertThat("Description should be empty", bean.description().isPresent(), is(false));
+        assertThat(bean).isNotNull();
+        assertThat(bean.description().isPresent()).as("Description should be empty").isEqualTo(false);
     }
 }

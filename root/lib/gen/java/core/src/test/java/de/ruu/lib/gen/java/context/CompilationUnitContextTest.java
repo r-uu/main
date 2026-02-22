@@ -2,11 +2,8 @@ package de.ruu.lib.gen.java.context;
 
 import static de.ruu.lib.gen.java.Generator.generator;
 import static de.ruu.lib.gen.java.context.CompilationUnitContext.context;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Collections;
 
@@ -23,26 +20,25 @@ class CompilationUnitContextTest
 
 		CompilationUnitContext context = context(packageName, simpleFileName);
 
-		assertThat(context, is(not(nullValue())));
+		assertThat(context).isNotNull();
 
-		assertThat(context.packageName()   .toString(), is(packageName));
-		assertThat(context.simpleFileName().toString(), is(simpleFileName));
+		assertThat(context.packageName()   .toString()).isEqualTo(packageName);
+		assertThat(context.simpleFileName().toString()).isEqualTo(simpleFileName);
 
-		assertThat(context.registeredGenerators(), is(not(nullValue())));
-		assertThat(context.registeredGenerators(), is(Collections.emptyList()));
+		assertThat(context.registeredGenerators()).isNotNull();
+		assertThat(context.registeredGenerators()).isEqualTo(Collections.emptyList());
 
-		assertThat(context.importManager().targetCompilationUnitPackageName(), is(packageName));
-		assertThat(context.importManager().targetCompilationUnitSimpleName() , is(simpleFileName));
+		assertThat(context.importManager().targetCompilationUnitPackageName()).isEqualTo(packageName);
+		assertThat(context.importManager().targetCompilationUnitSimpleName() ).isEqualTo(simpleFileName);
 
 		Generator generator = generator(context);
-		assertThat(context.registeredGenerators().size(), is(0)); // generator was not registered
+		assertThat(context.registeredGenerators().size()).isEqualTo(0); // generator was not registered
 
 		context.register(generator);
-		assertThat(context.registeredGenerators().size(), is(1)); // generator was     registered once
+		assertThat(context.registeredGenerators().size()).isEqualTo(1); // generator was     registered once
 
-		assertThrows(
-				UnsupportedOperationException.class,
-				() -> context.register(generator),
-				"expected adding generator more than once to be unsupported");
+		assertThatThrownBy(() -> context.register(generator))
+				.isInstanceOf(UnsupportedOperationException.class)
+				.hasMessageContaining("generator can not be registered more than once");
 	}
 }

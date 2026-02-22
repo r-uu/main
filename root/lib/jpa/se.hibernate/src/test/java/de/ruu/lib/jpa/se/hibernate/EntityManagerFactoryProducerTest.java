@@ -16,10 +16,7 @@ import java.sql.DriverManager;
 import java.sql.Connection;
 
 import static de.ruu.lib.jpa.se.hibernate.PersistenceUnitProperties.HBM2DLLAuto.CREATE;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 class EntityManagerFactoryProducerTest
@@ -101,11 +98,11 @@ class EntityManagerFactoryProducerTest
 
 		EntityManagerFactory entityManagerFactory = producer.produce(databaseUser, databasePass);
 
-		assertThat(entityManagerFactory, is(not(nullValue())));
+		assertThat(entityManagerFactory).isNotNull();
 
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 
-		assertThat(entityManager,                  is(not(nullValue())));
-		assertThat(entityManager.getTransaction(), is(not(nullValue())));
+		assertThat(entityManager).isNotNull();
+		assertThat(entityManager.getTransaction()).isNotNull();
 	}
 }

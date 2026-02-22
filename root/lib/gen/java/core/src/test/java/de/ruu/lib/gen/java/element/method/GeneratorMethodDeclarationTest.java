@@ -9,10 +9,7 @@ import static de.ruu.lib.gen.java.element.GeneratorModifiersMethod.methodModifie
 import static de.ruu.lib.gen.java.element.method.GeneratorMethodDeclaration.declaration;
 import static de.ruu.lib.util.Constants.LS;
 import static de.ruu.lib.util.Strings.normaliseLineSeparator;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,8 +30,8 @@ class GeneratorMethodDeclarationTest
 
 		GeneratorMethodDeclaration generator = declaration(context, type, name);
 
-		assertThat(generator, is(not(nullValue())));
-		assertThat(generator.generate().toString(), is(type + " " + name + "()"));
+		assertThat(generator).isNotNull();
+		assertThat(generator.generate().toString()).isEqualTo(type + " " + name + "()");
 	}
 
 	@Test void generatorAnnotations() throws GeneratorException
@@ -49,9 +46,9 @@ class GeneratorMethodDeclarationTest
 								annotations(context)
 										.add(annotation(context, annotation)));
 
-		assertThat(generator, is(not(nullValue())));
+		assertThat(generator).isNotNull();
 		assertThat(
-				generator.generate().toString(), is("@" + annotation + LS + type + " " + name + "()"));
+				generator.generate().toString()).isEqualTo("@" + annotation + LS + type + " " + name + "()");
 	}
 
 	@Test void generatorModifiers() throws GeneratorException
@@ -70,10 +67,9 @@ class GeneratorMethodDeclarationTest
 						)
 						;
 
-		assertThat(generator, is(not(nullValue())));
+		assertThat(generator).isNotNull();
 		assertThat(
-				generator.generate().toString(),
-				is("public final static " + type + " " + name + "()"));
+				generator.generate().toString()).isEqualTo("public final static " + type + " " + name + "()");
 	}
 
 	@Test void generatorJavaDocModifiers() throws GeneratorException
@@ -99,7 +95,7 @@ class GeneratorMethodDeclarationTest
 						)
 						;
 
-		assertThat(generator, is(not(nullValue())));
+		assertThat(generator).isNotNull();
 
 		String expected =
 				"""
@@ -112,7 +108,6 @@ class GeneratorMethodDeclarationTest
 //		log.debug(LS + "/**" + LS + " * javaDoc" + LS + " */" + LS + "public final static " + type + " " + name + " = " + value + ";");
 
 		assertThat(
-				normaliseLineSeparator(generator.generate().toString()),
-				is(normaliseLineSeparator(expected)));
+				normaliseLineSeparator(generator.generate().toString())).isEqualTo(normaliseLineSeparator(expected));
 	}
 }

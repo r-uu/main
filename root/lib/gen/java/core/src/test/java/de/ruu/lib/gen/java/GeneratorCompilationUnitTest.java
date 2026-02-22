@@ -3,10 +3,7 @@ package de.ruu.lib.gen.java;
 import static de.ruu.lib.gen.java.Generator.GeneratorSimple.generator;
 import static de.ruu.lib.gen.java.GeneratorCompilationUnit.compilationUnit;
 import static de.ruu.lib.gen.java.context.CompilationUnitContext.context;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,8 +21,8 @@ class GeneratorCompilationUnitTest
 	{
 		GeneratorCompilationUnit compilationUnit = compilationUnit(context, generator(context));
 		
-		assertThat(compilationUnit                      , is(not(nullValue())));
-		assertThat(compilationUnit.generate().toString(), is(""));
+		assertThat(compilationUnit                      ).isNotNull();
+		assertThat(compilationUnit.generate().toString()).isEqualTo("");
 	}
 
 	@Test void defaultCompilationUnitWithSimpleGenerator() throws GeneratorException
@@ -37,7 +34,6 @@ class GeneratorCompilationUnitTest
 						context,
 						generator(context)
 								.output(output))
-								.generate().toString(),
-				is(output));
+								.generate().toString()).isEqualTo(output);
 	}
 }

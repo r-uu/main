@@ -1,13 +1,13 @@
 package de.ruu.lib.util;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.*;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Properties;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 class Wsl2IpResolverTest
 {
@@ -22,14 +22,13 @@ class Wsl2IpResolverTest
 	{
 		String ip = Wsl2IpResolver.getWsl2Ip();
 
-		assertNotNull(ip, "IP should not be null");
-		assertFalse(ip.isEmpty(), "IP should not be empty");
+		assertThat(ip).as("IP should not be null").isNotNull();
+		assertThat(ip.isEmpty()).as("IP should not be empty").isFalse();
 
 		// Should be either localhost or valid IP format
-		assertTrue(
-				ip.equals("localhost") || ip.matches("\\d+\\.\\d+\\.\\d+\\.\\d+"),
-				"IP should be 'localhost' or valid IP format, but was: " + ip
-		);
+		assertThat(ip.equals("localhost") || ip.matches("\\d+\\.\\d+\\.\\d+\\.\\d+"))
+				.as("IP should be 'localhost' or valid IP format, but was: " + ip)
+				.isTrue();
 
 		System.out.println("Detected WSL2 IP: " + ip);
 	}
@@ -40,7 +39,7 @@ class Wsl2IpResolverTest
 		String ip1 = Wsl2IpResolver.getWsl2Ip();
 		String ip2 = Wsl2IpResolver.getWsl2Ip();
 
-		assertSame(ip1, ip2, "Should return same cached instance");
+		assertThat(ip1).as("Should return same cached instance").isSameAs(ip2);
 	}
 
 	@Test
@@ -51,7 +50,7 @@ class Wsl2IpResolverTest
 		String ip2 = Wsl2IpResolver.getWsl2Ip();
 
 		// Values should be equal, but not same instance (new object after cache clear)
-		assertEquals(ip1, ip2, "IPs should be equal");
+		assertThat(ip2).as("IPs should be equal").isEqualTo(ip1);
 	}
 
 	@Test
@@ -65,13 +64,13 @@ class Wsl2IpResolverTest
 		Wsl2IpResolver.resolve(props);
 
 		String dbHost = props.getProperty("db.host");
-		assertNotNull(dbHost);
-		assertFalse(dbHost.contains("${WSL2_IP}"), "Placeholder should be replaced");
-		assertFalse(dbHost.contains("$"), "No dollar signs should remain");
+		assertThat(dbHost).isNotNull();
+		assertThat(dbHost.contains("${WSL2_IP}")).as("Placeholder should be replaced").isFalse();
+		assertThat(dbHost.contains("$")).as("No dollar signs should remain").isFalse();
 
 		// Other properties should remain unchanged
-		assertEquals("5432", props.getProperty("db.port"));
-		assertEquals("localhost", props.getProperty("other.host"));
+		assertThat(props.getProperty("db.port")).isEqualTo("5432");
+		assertThat(props.getProperty("other.host")).isEqualTo("localhost");
 
 		System.out.println("Resolved db.host: " + dbHost);
 	}
@@ -90,11 +89,11 @@ class Wsl2IpResolverTest
 		String host2 = props.getProperty("host2");
 		String url = props.getProperty("url");
 
-		assertFalse(host1.contains("$"));
-		assertFalse(host2.contains("$"));
-		assertFalse(url.contains("$"));
-		assertTrue(url.startsWith("jdbc:postgresql://"));
-		assertTrue(url.endsWith(":5432/db"));
+		assertThat(host1.contains("$")).isFalse();
+		assertThat(host2.contains("$")).isFalse();
+		assertThat(url.contains("$")).isFalse();
+		assertThat(url.startsWith("jdbc:postgresql://")).isTrue();
+		assertThat(url.endsWith(":5432/db")).isTrue();
 
 		System.out.println("Resolved URL: " + url);
 	}
@@ -118,13 +117,13 @@ class Wsl2IpResolverTest
 		String dbHost = props.getProperty("db.host");
 		String apiUrl = props.getProperty("api.url");
 
-		assertNotNull(dbHost);
-		assertFalse(dbHost.contains("$"));
+		assertThat(dbHost).isNotNull();
+		assertThat(dbHost.contains("$")).isFalse();
 
-		assertNotNull(apiUrl);
-		assertFalse(apiUrl.contains("$"));
-		assertTrue(apiUrl.startsWith("http://"));
-		assertTrue(apiUrl.endsWith(":9080"));
+		assertThat(apiUrl).isNotNull();
+		assertThat(apiUrl.contains("$")).isFalse();
+		assertThat(apiUrl.startsWith("http://")).isTrue();
+		assertThat(apiUrl.endsWith(":9080")).isTrue();
 
 		System.out.println("Loaded and resolved properties:");
 		System.out.println("  db.host = " + dbHost);

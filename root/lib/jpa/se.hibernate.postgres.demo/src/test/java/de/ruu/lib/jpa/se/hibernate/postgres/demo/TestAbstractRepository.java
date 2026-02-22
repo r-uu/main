@@ -14,9 +14,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisabledOnServerNotListening(propertyNameHost = "database.host", propertyNamePort = "database.port")
 @Slf4j class TestAbstractRepository
@@ -35,19 +34,18 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 	@BeforeEach void beforeEach()
 	{
 		repository = CDI.current().select(SimpleTypeRepository.class).get();
-		assertThat(repository, is(not(nullValue())));
+		assertThat(repository).isNotNull();
 	}
 
 	@Test void testAbstractRepositoryWithoutTransaction()
 	{
-		Exception exception =
-				assertThrows(TransactionRequiredException.class, () ->
-				{
-					String name = "schmottekk";
-					SimpleTypeEntity entity = new SimpleTypeEntity(name);
-					entity = repository.create(entity);
-					repository.entityManager().flush();
-				});
+		assertThatThrownBy(() ->
+		{
+			String name = "schmottekk";
+			SimpleTypeEntity entity = new SimpleTypeEntity(name);
+			entity = repository.create(entity);
+			repository.entityManager().flush();
+		}).isInstanceOf(TransactionRequiredException.class);
 	}
 
 	@Test void testAbstractRepositoryWithTransaction()
@@ -59,21 +57,21 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 		String name = "schmottekk";
 		SimpleTypeEntity entity = new SimpleTypeEntity(name);
 		entity = repository.create(entity);
-		assertThat(entity       , is(not(nullValue())));
-		assertThat(entity.id()  , is(not(nullValue())));
-		assertThat(entity.name(), is(name));
+		assertThat(entity       ).isNotNull();
+		assertThat(entity.id()  ).isNotNull();
+		assertThat(entity.name()).isEqualTo(name);
 
 		name = "äffchen";
 		entity.name(name);
 		entity = repository.create(entity);
-		assertThat(entity       , is(not(nullValue())));
-		assertThat(entity.id()  , is(not(nullValue())));
-		assertThat(entity.name(), is(name));
+		assertThat(entity       ).isNotNull();
+		assertThat(entity.id()  ).isNotNull();
+		assertThat(entity.name()).isEqualTo(name);
 
 		repository.delete(entity.getId());
 		Optional<SimpleTypeEntity> optional = repository.find(entity.getId());
-		assertThat(optional            , is(not(nullValue())));
-		assertThat(optional.isPresent(), is(false));
+		assertThat(optional            ).isNotNull();
+		assertThat(optional.isPresent()).isEqualTo(false);
 
 		transaction.commit();
 	}

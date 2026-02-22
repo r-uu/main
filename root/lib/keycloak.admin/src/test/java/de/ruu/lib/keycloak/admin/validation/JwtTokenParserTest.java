@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Base64;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 
 /**
  * Unit tests for {@link JwtTokenParser}.
@@ -66,22 +66,22 @@ class JwtTokenParserTest
 	{
 		TokenInfo tokenInfo = JwtTokenParser.parseToken(SAMPLE_TOKEN);
 		
-		assertNotNull(tokenInfo);
-		assertEquals("http://localhost:8080/realms/test-realm", tokenInfo.getIssuer());
-		assertEquals("user-123", tokenInfo.getSubject());
-		assertEquals("testuser", tokenInfo.getPreferredUsername());
-		assertEquals(1735680000L, tokenInfo.getExpirationTime());
-		assertEquals(1735679700L, tokenInfo.getIssuedAt());
-		
+		assertThat(tokenInfo).isNotNull();
+		assertThat(tokenInfo.getIssuer()).isEqualTo("http://localhost:8080/realms/test-realm");
+		assertThat(tokenInfo.getSubject()).isEqualTo("user-123");
+		assertThat(tokenInfo.getPreferredUsername()).isEqualTo("testuser");
+		assertThat(tokenInfo.getExpirationTime()).isEqualTo(1735680000L);
+		assertThat(tokenInfo.getIssuedAt()).isEqualTo(1735679700L);
+
 		// Check audiences
-		assertTrue(tokenInfo.getAudiences().contains("jeeeraaah-backend"));
-		assertTrue(tokenInfo.getAudiences().contains("account"));
-		assertEquals(2, tokenInfo.getAudiences().size());
-		
+		assertThat(tokenInfo.getAudiences()).contains("jeeeraaah-backend");
+		assertThat(tokenInfo.getAudiences()).contains("account");
+		assertThat(tokenInfo.getAudiences()).hasSize(2);
+
 		// Check roles
-		assertTrue(tokenInfo.getRoles().contains("task-read"));
-		assertTrue(tokenInfo.getRoles().contains("task-write"));
-		assertEquals(2, tokenInfo.getRoles().size());
+		assertThat(tokenInfo.getRoles()).contains("task-read");
+		assertThat(tokenInfo.getRoles()).contains("task-write");
+		assertThat(tokenInfo.getRoles()).hasSize(2);
 	}
 	
 	@Test
@@ -90,39 +90,35 @@ class JwtTokenParserTest
 		TokenInfo tokenInfo = JwtTokenParser.parseToken(SAMPLE_TOKEN);
 		
 		// Lifetime should be exp - iat = 1735680000 - 1735679700 = 300 seconds
-		assertEquals(300L, tokenInfo.getLifetimeSeconds());
+		assertThat(tokenInfo.getLifetimeSeconds()).isEqualTo(300L);
 	}
 	
 	@Test
 	void testParseToken_NullToken()
 	{
-		assertThrows(IllegalArgumentException.class, () -> {
-			JwtTokenParser.parseToken(null);
-		});
+		assertThatThrownBy(() -> JwtTokenParser.parseToken(null))
+				.isInstanceOf(IllegalArgumentException.class);
 	}
 	
 	@Test
 	void testParseToken_BlankToken()
 	{
-		assertThrows(IllegalArgumentException.class, () -> {
-			JwtTokenParser.parseToken("   ");
-		});
+		assertThatThrownBy(() -> JwtTokenParser.parseToken("   "))
+				.isInstanceOf(IllegalArgumentException.class);
 	}
 	
 	@Test
 	void testParseToken_InvalidFormat_TwoParts()
 	{
-		assertThrows(IllegalArgumentException.class, () -> {
-			JwtTokenParser.parseToken("header.payload");
-		});
+		assertThatThrownBy(() -> JwtTokenParser.parseToken("header.payload"))
+				.isInstanceOf(IllegalArgumentException.class);
 	}
 	
 	@Test
 	void testParseToken_InvalidFormat_FourParts()
 	{
-		assertThrows(IllegalArgumentException.class, () -> {
-			JwtTokenParser.parseToken("header.payload.signature.extra");
-		});
+		assertThatThrownBy(() -> JwtTokenParser.parseToken("header.payload.signature.extra"))
+				.isInstanceOf(IllegalArgumentException.class);
 	}
 	
 	@Test
@@ -140,8 +136,8 @@ class JwtTokenParserTest
 		String expiredToken = "header." + expiredPayload + ".signature";
 		TokenInfo tokenInfo = JwtTokenParser.parseToken(expiredToken);
 		
-		assertTrue(tokenInfo.isExpired());
-		assertEquals(0L, tokenInfo.getRemainingLifetimeSeconds()); // Should be 0, not negative
+		assertThat(tokenInfo.isExpired()).isTrue();
+		assertThat(tokenInfo.getRemainingLifetimeSeconds()).isEqualTo(0L); // Should be 0, not negative
 	}
 	
 	@Test
@@ -162,9 +158,9 @@ class JwtTokenParserTest
 		String futureToken = "header." + futurePayload + ".signature";
 		TokenInfo tokenInfo = JwtTokenParser.parseToken(futureToken);
 		
-		assertFalse(tokenInfo.isExpired());
-		assertTrue(tokenInfo.getRemainingLifetimeSeconds() > 3500); // Should be close to 1 hour
-		assertTrue(tokenInfo.getRemainingLifetimeSeconds() < 3700);
+		assertThat(tokenInfo.isExpired()).isFalse();
+		assertThat(tokenInfo.getRemainingLifetimeSeconds()).isGreaterThan(3500); // Should be close to 1 hour
+		assertThat(tokenInfo.getRemainingLifetimeSeconds()).isLessThan(3700);
 	}
 	
 	@Test
@@ -183,8 +179,8 @@ class JwtTokenParserTest
 		String token = "header." + singleAudPayload + ".signature";
 		TokenInfo tokenInfo = JwtTokenParser.parseToken(token);
 		
-		assertEquals(1, tokenInfo.getAudiences().size());
-		assertTrue(tokenInfo.getAudiences().contains("jeeeraaah-backend"));
+		assertThat(tokenInfo.getAudiences()).hasSize(1);
+		assertThat(tokenInfo.getAudiences()).contains("jeeeraaah-backend");
 	}
 	
 	@Test
@@ -202,7 +198,7 @@ class JwtTokenParserTest
 		String token = "header." + noRolesPayload + ".signature";
 		TokenInfo tokenInfo = JwtTokenParser.parseToken(token);
 		
-		assertNotNull(tokenInfo.getRoles());
-		assertTrue(tokenInfo.getRoles().isEmpty());
+		assertThat(tokenInfo.getRoles()).isNotNull();
+		assertThat(tokenInfo.getRoles()).isEmpty();
 	}
 }

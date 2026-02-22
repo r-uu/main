@@ -1,15 +1,13 @@
 package de.ruu.lib.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.hamcrest.core.Is;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import static de.ruu.lib.util.Time.datesInPeriod;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 class TimeTest
@@ -20,7 +18,7 @@ class TimeTest
 	{
 		List<LocalDate> localDates = datesInPeriod(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 1, 31));
 //		localDates.forEach(d -> log.debug("day in period {}", d));
-		assertThat(localDates.size(), is(30));
+		assertThat(localDates.size()).isEqualTo(30);
 		LocalDate start = LocalDate.of(2025, 1,  1);
 		LocalDate date  = LocalDate.of(2025, 1, 31);
 		LocalDate end   = LocalDate.of(2025, 1, 31);

@@ -8,8 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class TestPersistenceUnitInfo
 {
@@ -51,7 +50,7 @@ class TestPersistenceUnitInfo
 		PersistenceUnitInfo persistenceUnitInfo =
 				new PersistenceUnitInfo(persistenceUnitName, dataSource);
 
-		assertThat(persistenceUnitInfo.getPersistenceUnitName(), is(persistenceUnitName));
-		assertThat(persistenceUnitInfo.getPersistenceProvider(), is(HibernatePersistenceProvider.class));
+		assertThat(persistenceUnitInfo.getPersistenceUnitName()).isEqualTo(persistenceUnitName);
+		assertThat(persistenceUnitInfo.getPersistenceProvider()).isEqualTo(HibernatePersistenceProvider.class);
 	}
 }

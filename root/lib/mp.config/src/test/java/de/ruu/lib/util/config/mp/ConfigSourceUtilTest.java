@@ -15,8 +15,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit tests for {@link ConfigSourceUtil}.
@@ -85,11 +84,11 @@ class ConfigSourceUtilTest
 		// Use the utility to find the WritableFileConfigSource
 		Optional<WritableFileConfigSource> result = ConfigSourceUtil.activeWritableFileConfigSource();
 
-		assertThat("Should find a WritableFileConfigSource", result.isPresent(), is(true));
+		assertThat(result.isPresent()).as("Should find a WritableFileConfigSource").isEqualTo(true);
 
 		WritableFileConfigSource source = result.get();
-		assertThat("Found source should not be null", source, is(notNullValue()));
-		assertThat("Found source should be correct type", source, is(instanceOf(WritableFileConfigSource.class)));
+		assertThat(source).as("Found source should not be null").isNotNull();
+		assertThat(source).as("Found source should be correct type").isInstanceOf(WritableFileConfigSource.class);
 	}
 
 	/**
@@ -100,18 +99,18 @@ class ConfigSourceUtilTest
 	{
 		Optional<WritableFileConfigSource> result = ConfigSourceUtil.activeWritableFileConfigSource();
 
-		assertThat("Should find a WritableFileConfigSource", result.isPresent(), is(true));
+		assertThat(result.isPresent()).as("Should find a WritableFileConfigSource").isEqualTo(true);
 
 		WritableFileConfigSource source = result.get();
 
 		// Test that it can write values (this will create the file if it doesn't exist)
 		source.setProperty("new.test.key", "new.test.value");
 		String newValue = source.getValue("new.test.key");
-		assertThat("Should be able to write and read new property", newValue, is("new.test.value"));
+		assertThat(newValue).as("Should be able to write and read new property").isEqualTo("new.test.value");
 
 		// Test that it can read the value we just wrote
 		String value = source.getValue("new.test.key");
-		assertThat("Should be able to read property", value, is("new.test.value"));
+		assertThat(value).as("Should be able to read property").isEqualTo("new.test.value");
 	}
 
 	/**
@@ -122,17 +121,17 @@ class ConfigSourceUtilTest
 	{
 		Optional<WritableFileConfigSource> result = ConfigSourceUtil.activeWritableFileConfigSource();
 
-		assertThat("Should find a WritableFileConfigSource", result.isPresent(), is(true));
+		assertThat(result.isPresent()).as("Should find a WritableFileConfigSource").isEqualTo(true);
 
 		WritableFileConfigSource source = result.get();
 
 		String name = source.getName();
 		int ordinal = source.getOrdinal();
 
-		assertThat("Name should contain class name", name, containsString("WritableFileConfigSource"));
-		assertThat("Name should contain parentheses with path", name, containsString("("));
-		assertThat("Name should contain parentheses with path", name, containsString(")"));
-		assertThat("Ordinal should be 500", ordinal, is(500));
+		assertThat(name).as("Name should contain class name").contains("WritableFileConfigSource");
+		assertThat(name).as("Name should contain parentheses with path").contains("(");
+		assertThat(name).as("Name should contain parentheses with path").contains(")");
+		assertThat(ordinal).as("Ordinal should be 500").isEqualTo(500);
 	}
 
 	/**
@@ -145,14 +144,14 @@ class ConfigSourceUtilTest
 		Optional<WritableFileConfigSource> result1 = ConfigSourceUtil.activeWritableFileConfigSource();
 		Optional<WritableFileConfigSource> result2 = ConfigSourceUtil.activeWritableFileConfigSource();
 
-		assertThat("First call should find a source", result1.isPresent(), is(true));
-		assertThat("Second call should find a source", result2.isPresent(), is(true));
+		assertThat(result1.isPresent()).as("First call should find a source").isEqualTo(true);
+		assertThat(result2.isPresent()).as("Second call should find a source").isEqualTo(true);
 
 		WritableFileConfigSource source1 = result1.get();
 		WritableFileConfigSource source2 = result2.get();
 
 		// In MicroProfile Config, config sources are typically singletons
-		assertThat("Both calls should return the same instance", source1, is(sameInstance(source2)));
+		assertThat(source1).as("Both calls should return the same instance").isSameAs(source2);
 	}
 
 	/**
@@ -177,7 +176,7 @@ class ConfigSourceUtilTest
 
 		log.debug("Total config sources: {}", totalSources);
 
-		assertThat("Should have at least one config source", totalSources, is(greaterThan(0)));
-		assertThat("Should find WritableFileConfigSource among sources", foundWritableFileConfigSource, is(true));
+		assertThat(totalSources).as("Should have at least one config source").isGreaterThan(0);
+		assertThat(foundWritableFileConfigSource).as("Should find WritableFileConfigSource among sources").isEqualTo(true);
 	}
 }

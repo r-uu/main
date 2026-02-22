@@ -8,12 +8,7 @@ import java.util.Set;
 import static de.ruu.lib.util.Collections.asArray;
 import static de.ruu.lib.util.Collections.asList;
 import static de.ruu.lib.util.Collections.asSet;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class CollectionsTest
 {
@@ -21,43 +16,43 @@ class CollectionsTest
 	{
 		Set<String> set = asSet("A", "B", "C");
 
-		assertThat(set, containsInAnyOrder("A", "B", "C"));
-		assertThat(set, hasSize(3));
+		assertThat(set).containsExactlyInAnyOrder("A", "B", "C");
+		assertThat(set).hasSize(3);
 	}
 
 	@Test void testAsSetWithNull()
 	{
 		Set<String> set = asSet((String[]) null);
 
-		assertThat(set, is(empty()));
+		assertThat(set).isEmpty();
 	}
 
 	@Test void testAsListWithElements()
 	{
 		List<Integer> list = asList(1, 2, 3);
 
-		assertThat(list, contains(1, 2, 3));
+		assertThat(list).containsExactly(1, 2, 3);
 	}
 
 	@Test void testAsListWithNull()
 	{
 		List<Integer> list = asList((Integer[]) null);
 
-		assertThat(list, is(empty()));
+		assertThat(list).isEmpty();
 	}
 
 	@Test void testAsListWithIterable()
 	{
 		List<Integer> list = asList(List.of(1, 2, 3));
 
-		assertThat(list, contains(1, 2, 3));
+		assertThat(list).containsExactly(1, 2, 3);
 	}
 
 	@Test void testAsListWithNullIterable()
 	{
 		List<Integer> list = asList((Iterable<Integer>) null);
 
-		assertThat(list, is(empty()));
+		assertThat(list).isEmpty();
 	}
 
 	@Test void testAsArray()
@@ -65,6 +60,6 @@ class CollectionsTest
 		List<String> list = List.of("A", "B", "C");
 		String[]     arr  = asArray(String.class, list);
 
-		assertThat(arr, is(new String[]{"A", "B", "C"}));
+		assertThat(arr).isEqualTo(new String[]{"A", "B", "C"});
 	}
 }

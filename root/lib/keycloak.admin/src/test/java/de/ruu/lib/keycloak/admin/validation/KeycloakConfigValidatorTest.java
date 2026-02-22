@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 
 /**
  * Unit tests for {@link KeycloakConfigValidator}.
@@ -23,10 +23,10 @@ class KeycloakConfigValidatorTest
 		
 		RoleValidationResult result = KeycloakConfigValidator.validateRoles(tokenRoles, requiredRoles);
 		
-		assertTrue(result.isValid());
-		assertTrue(result.getMissingRoles().isEmpty());
-		assertEquals(1, result.getExtraRoles().size());
-		assertTrue(result.getExtraRoles().contains("task-delete"));
+		assertThat(result.isValid()).isTrue();
+		assertThat(result.getMissingRoles()).isEmpty();
+		assertThat(result.getExtraRoles()).hasSize(1);
+		assertThat(result.getExtraRoles()).contains("task-delete");
 	}
 	
 	@Test
@@ -37,14 +37,14 @@ class KeycloakConfigValidatorTest
 		
 		RoleValidationResult result = KeycloakConfigValidator.validateRoles(tokenRoles, requiredRoles);
 		
-		assertFalse(result.isValid());
-		assertEquals(2, result.getMissingRoles().size());
-		assertTrue(result.getMissingRoles().contains("task-write"));
-		assertTrue(result.getMissingRoles().contains("task-delete"));
-		assertTrue(result.getExtraRoles().isEmpty());
-		
-		assertFalse(result.getRecommendations().isEmpty());
-		assertTrue(result.getSummary().contains("Missing"));
+		assertThat(result.isValid()).isFalse();
+		assertThat(result.getMissingRoles()).hasSize(2);
+		assertThat(result.getMissingRoles()).contains("task-write");
+		assertThat(result.getMissingRoles()).contains("task-delete");
+		assertThat(result.getExtraRoles()).isEmpty();
+
+		assertThat(result.getRecommendations()).isNotEmpty();
+		assertThat(result.getSummary()).contains("Missing");
 	}
 	
 	@Test
@@ -56,8 +56,8 @@ class KeycloakConfigValidatorTest
 		AudienceValidationResult result = KeycloakConfigValidator
 				.validateAudience(tokenAudiences, expectedAudience);
 		
-		assertTrue(result.isValid());
-		assertEquals("jeeeraaah-backend", result.getExpectedAudience());
+		assertThat(result.isValid()).isTrue();
+		assertThat(result.getExpectedAudience()).isEqualTo("jeeeraaah-backend");
 	}
 	
 	@Test
@@ -69,9 +69,9 @@ class KeycloakConfigValidatorTest
 		AudienceValidationResult result = KeycloakConfigValidator
 				.validateAudience(tokenAudiences, expectedAudience);
 		
-		assertFalse(result.isValid());
-		assertFalse(result.getRecommendations().isEmpty());
-		assertTrue(result.getSummary().contains("does not contain"));
+		assertThat(result.isValid()).isFalse();
+		assertThat(result.getRecommendations()).isNotEmpty();
+		assertThat(result.getSummary()).contains("does not contain");
 	}
 	
 	@Test
@@ -82,9 +82,9 @@ class KeycloakConfigValidatorTest
 		NamingConsistencyResult result = KeycloakConfigValidator
 				.validateRoleNamingConsistency(roles);
 		
-		assertTrue(result.isConsistent());
-		assertTrue(result.getSuspiciousRoles().isEmpty());
-		assertTrue(result.getSuggestions().isEmpty());
+		assertThat(result.isConsistent()).isTrue();
+		assertThat(result.getSuspiciousRoles()).isEmpty();
+		assertThat(result.getSuggestions()).isEmpty();
 	}
 	
 	@Test
@@ -96,11 +96,11 @@ class KeycloakConfigValidatorTest
 		NamingConsistencyResult result = KeycloakConfigValidator
 				.validateRoleNamingConsistency(roles);
 		
-		assertFalse(result.isConsistent());
-		assertFalse(result.getSuspiciousRoles().isEmpty());
-		
+		assertThat(result.isConsistent()).isFalse();
+		assertThat(result.getSuspiciousRoles()).isNotEmpty();
+
 		// Both "taskgroup-read" and "task-group-read" should be flagged as conflicting
-		assertFalse(result.getRecommendations().isEmpty());
+		assertThat(result.getRecommendations()).isNotEmpty();
 	}
 	
 	@Test
@@ -112,9 +112,9 @@ class KeycloakConfigValidatorTest
 		TokenLifetimeValidationResult result = KeycloakConfigValidator
 				.validateTokenLifetime(accessTokenLifetime, refreshTokenLifetime);
 		
-		assertTrue(result.getWarnings().isEmpty());
-		assertEquals(300, result.getAccessTokenLifetimeSeconds());
-		assertEquals(1800, result.getRefreshTokenLifetimeSeconds());
+		assertThat(result.getWarnings()).isEmpty();
+		assertThat(result.getAccessTokenLifetimeSeconds()).isEqualTo(300);
+		assertThat(result.getRefreshTokenLifetimeSeconds()).isEqualTo(1800);
 	}
 	
 	@Test
@@ -126,12 +126,12 @@ class KeycloakConfigValidatorTest
 		TokenLifetimeValidationResult result = KeycloakConfigValidator
 				.validateTokenLifetime(accessTokenLifetime, refreshTokenLifetime);
 		
-		assertFalse(result.getWarnings().isEmpty());
-		assertTrue(result.getSummary().contains("warning"));
-		
+		assertThat(result.getWarnings()).isNotEmpty();
+		assertThat(result.getSummary()).contains("warning");
+
 		// Should have warnings about short lifetimes
-		assertTrue(result.getWarnings().stream()
-				.anyMatch(w -> w.contains("very short")));
+		assertThat(result.getWarnings().stream()
+				.anyMatch(w -> w.contains("very short"))).isTrue();
 	}
 	
 	@Test
@@ -143,9 +143,9 @@ class KeycloakConfigValidatorTest
 		TokenLifetimeValidationResult result = KeycloakConfigValidator
 				.validateTokenLifetime(accessTokenLifetime, refreshTokenLifetime);
 		
-		assertFalse(result.getWarnings().isEmpty());
-		assertTrue(result.getWarnings().stream()
-				.anyMatch(w -> w.contains("shorter than access token")));
+		assertThat(result.getWarnings()).isNotEmpty();
+		assertThat(result.getWarnings().stream()
+				.anyMatch(w -> w.contains("shorter than access token"))).isTrue();
 	}
 	
 	@Test
@@ -170,12 +170,12 @@ class KeycloakConfigValidatorTest
 				.tokenLifetime(tokenLifetime)
 				.build();
 		
-		assertTrue(report.isFullyValid());
+		assertThat(report.isFullyValid()).isTrue();
 		
 		String detailedReport = report.getDetailedReport();
-		assertNotNull(detailedReport);
-		assertTrue(detailedReport.contains("Overall Status"));
-		assertTrue(detailedReport.contains("VALID"));
+		assertThat(detailedReport).isNotNull();
+		assertThat(detailedReport).contains("Overall Status");
+		assertThat(detailedReport).contains("VALID");
 	}
 	
 	@Test
@@ -200,11 +200,11 @@ class KeycloakConfigValidatorTest
 				.tokenLifetime(tokenLifetime)
 				.build();
 		
-		assertFalse(report.isFullyValid());
-		
+		assertThat(report.isFullyValid()).isFalse();
+
 		String detailedReport = report.getDetailedReport();
-		assertNotNull(detailedReport);
-		assertTrue(detailedReport.contains("ISSUES DETECTED"));
-		assertTrue(detailedReport.contains("task-write")); // Missing role
+		assertThat(detailedReport).isNotNull();
+		assertThat(detailedReport).contains("ISSUES DETECTED");
+		assertThat(detailedReport).contains("task-write"); // Missing role
 	}
 }

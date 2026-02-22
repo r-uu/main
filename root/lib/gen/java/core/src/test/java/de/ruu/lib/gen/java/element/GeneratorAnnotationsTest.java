@@ -6,10 +6,7 @@ import static de.ruu.lib.gen.java.element.GeneratorAnnotationParameter.parameter
 import static de.ruu.lib.gen.java.element.GeneratorAnnotationParameters.parameters;
 import static de.ruu.lib.gen.java.element.GeneratorAnnotations.annotations;
 import static de.ruu.lib.util.Constants.LS;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,8 +25,8 @@ class GeneratorAnnotationsTest
 	{
 		GeneratorAnnotations generator = annotations(context);
 		
-		assertThat(generator, is(not(nullValue())));
-		assertThat(generator.generate().toString(), is(""));
+		assertThat(generator).isNotNull();
+		assertThat(generator.generate().toString()).isEqualTo("");
 	}
 
 	@Test void parameterisedGenerator() throws GeneratorException
@@ -48,9 +45,8 @@ class GeneratorAnnotationsTest
 		
 		assertThat(
 				Strings.normaliseLineSeparator(
-						generator.generate().toString()),
-				is(
-						Strings.normaliseLineSeparator("@" + type1 + LS + "@" + type2 + LS + "@" + type3)));
+						generator.generate().toString())).isEqualTo(
+						Strings.normaliseLineSeparator("@" + type1 + LS + "@" + type2 + LS + "@" + type3));
 	}
 
 	@Test void parameterisedGenerator2() throws GeneratorException
@@ -80,10 +76,6 @@ class GeneratorAnnotationsTest
 						;
 		
 		assertThat(
-				generator.generate().toString(),
-				is
-				(
-"@type(name1 = value1, name2 = value2, name3 = value3)"
-		    ));
+				generator.generate().toString()).isEqualTo("@type(name1 = value1, name2 = value2, name3 = value3)");
 	}
 }

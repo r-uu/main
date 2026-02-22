@@ -1,9 +1,6 @@
 package de.ruu.app.jeeeraaah.backend.common.mapping.dto.jpa;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +13,7 @@ import de.ruu.lib.mapstruct.ReferenceCycleTracking;
 /**
  * Unit tests for {@link Map_TaskGroup_DTO_JPA} mapper. These tests verify basic mapping functionality without database.
  */
-public class Map_TaskGroup_DTO_JPA_Test
+class Map_TaskGroup_DTO_JPA_Test
 {
 	@Test
 	void map_usesObjectFactory_andCopiesBasicFields()
@@ -31,14 +28,14 @@ public class Map_TaskGroup_DTO_JPA_Test
 		TaskGroupJPA jpa = Map_TaskGroup_DTO_JPA.INSTANCE.map(dto, context);
 
 		// assert: basic fields are copied
-		assertThat(jpa, notNullValue());
-		assertThat(jpa.name(), is("test group"));
-		assertThat(jpa.description().isPresent(), is(true));
-		assertThat(jpa.description().get(), is("test description"));
+		assertThat(jpa).isNotNull();
+		assertThat(jpa.name()).isEqualTo("test group");
+		assertThat(jpa.description().isPresent()).isTrue();
+		assertThat(jpa.description().get()).isEqualTo("test description");
 
 		// assert: group is added to context
 		TaskGroupJPA jpaFromContext = context.get(dto, TaskGroupJPA.class);
-		assertThat(jpaFromContext, notNullValue());
+		assertThat(jpaFromContext).isNotNull();
 	}
 
 	@Test
@@ -58,12 +55,12 @@ public class Map_TaskGroup_DTO_JPA_Test
 		// assert: tasks should be mapped into context
 		TaskJPA task1Mapped = context.get(task1, TaskJPA.class);
 		TaskJPA task2Mapped = context.get(task2, TaskJPA.class);
-		assertThat(task1Mapped, notNullValue());
-		assertThat(task2Mapped, notNullValue());
+		assertThat(task1Mapped).isNotNull();
+		assertThat(task2Mapped).isNotNull();
 
 		// assert: tasks are in JPA group
-		assertThat(jpa.tasks().isPresent(), is(true));
-		assertThat(jpa.tasks().get().size(), is(2));
+		assertThat(jpa.tasks().isPresent()).isTrue();
+		assertThat(jpa.tasks().get().size()).isEqualTo(2);
 	}
 
 	@Test
@@ -78,18 +75,18 @@ public class Map_TaskGroup_DTO_JPA_Test
 
 		// pre-map task into context
 		TaskJPA preMappedTask = Map_Task_DTO_JPA.INSTANCE.map(taskDTO, context);
-		assertThat(preMappedTask, notNullValue());
+		assertThat(preMappedTask).isNotNull();
 
 		// act: mapping the group should reuse the existing task mapping
 		TaskGroupJPA jpa = Map_TaskGroup_DTO_JPA.INSTANCE.map(dto, context);
 
 		// assert: task mapping still the same instance in context
 		TaskJPA taskFromContext = context.get(taskDTO, TaskJPA.class);
-		assertThat(taskFromContext, sameInstance(preMappedTask));
+		assertThat(taskFromContext).isEqualTo(preMappedTask);
 
 		// assert: task is in JPA group
-		assertThat(jpa.tasks().isPresent(), is(true));
-		assertThat(jpa.tasks().get().contains(preMappedTask), is(true));
+		assertThat(jpa.tasks().isPresent()).isTrue();
+		assertThat(jpa.tasks().get().contains(preMappedTask)).isTrue();
 	}
 
 	@Test
@@ -105,8 +102,8 @@ public class Map_TaskGroup_DTO_JPA_Test
 		TaskGroupJPA jpa = Map_TaskGroup_DTO_JPA.INSTANCE.map(dto, context);
 
 		// assert
-		assertThat(jpa.description().isPresent(), is(true));
-		assertThat(jpa.description().get(), is("A detailed description"));
+		assertThat(jpa.description().isPresent()).isTrue();
+		assertThat(jpa.description().get()).isEqualTo("A detailed description");
 	}
 
 	@Test
@@ -122,7 +119,7 @@ public class Map_TaskGroup_DTO_JPA_Test
 		TaskGroupJPA jpa = Map_TaskGroup_DTO_JPA.INSTANCE.map(dto, context);
 
 		// assert
-		assertThat(jpa.description().isPresent(), is(false));
+		assertThat(jpa.description().isPresent()).isFalse();
 	}
 
 	@Test
@@ -138,8 +135,8 @@ public class Map_TaskGroup_DTO_JPA_Test
 
 		// assert: group is registered in context
 		TaskGroupJPA fromContext = context.get(dto, TaskGroupJPA.class);
-		assertThat(fromContext, notNullValue());
-		assertThat(fromContext.name(), is("test group"));
+		assertThat(fromContext).isNotNull();
+		assertThat(fromContext.name()).isEqualTo("test group");
 	}
 
 	@Test
@@ -156,8 +153,8 @@ public class Map_TaskGroup_DTO_JPA_Test
 
 		// assert: when DTO has no tasks (null), the JPA entity will have no tasks either
 		// (tasks is not mapped because of @AfterMapping condition)
-		assertThat("JPA should be created", jpa, notNullValue());
-		assertThat("name should be copied", jpa.name(), is("test group"));
+		assertThat(jpa).as("JPA should be created").isNotNull();
+		assertThat(jpa.name()).as("name should be copied").isEqualTo("test group");
 	}
 
 	@Test
@@ -176,8 +173,8 @@ public class Map_TaskGroup_DTO_JPA_Test
 		TaskGroupJPA jpa = Map_TaskGroup_DTO_JPA.INSTANCE.map(dto, context);
 
 		// assert: all tasks are mapped
-		assertThat(jpa.tasks().isPresent(), is(true));
-		assertThat(jpa.tasks().get().size(), is(3));
+		assertThat(jpa.tasks().isPresent()).isTrue();
+		assertThat(jpa.tasks().get().size()).isEqualTo(3);
 	}
 
 	@Test
@@ -192,7 +189,7 @@ public class Map_TaskGroup_DTO_JPA_Test
 		TaskGroupJPA jpa = Map_TaskGroup_DTO_JPA.INSTANCE.map(dto, context);
 
 		// assert: correct type is created
-		assertThat(jpa, notNullValue());
-		assertThat(jpa.getClass().getSimpleName(), is("TaskGroupJPA"));
+		assertThat(jpa).isNotNull();
+		assertThat(jpa.getClass().getSimpleName()).isEqualTo("TaskGroupJPA");
 	}
 }

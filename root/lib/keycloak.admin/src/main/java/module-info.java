@@ -1,3 +1,6 @@
+/**
+ * Keycloak Admin Client module for user and realm management.
+ */
 module de.ruu.lib.keycloak.admin
 {
 	// Keycloak Admin Client (automatic modules)
@@ -7,6 +10,10 @@ module de.ruu.lib.keycloak.admin
 	// JAX-RS API
 	requires jakarta.ws.rs;
 	
+	// JAXB - Required by Keycloak Admin Client
+	requires jakarta.xml.bind;
+	requires transitive org.glassfish.jaxb.runtime;
+
 	// Jackson - Required by Keycloak Admin Client
 	requires com.fasterxml.jackson.core;
 	requires com.fasterxml.jackson.databind;
@@ -21,5 +28,6 @@ module de.ruu.lib.keycloak.admin
 	requires org.slf4j;
 
 	exports de.ruu.lib.keycloak.admin;
+	exports de.ruu.lib.keycloak.admin.setup;
 	exports de.ruu.lib.keycloak.admin.validation;
 }

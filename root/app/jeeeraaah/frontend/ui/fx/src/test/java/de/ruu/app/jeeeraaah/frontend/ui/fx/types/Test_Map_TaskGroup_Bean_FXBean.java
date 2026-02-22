@@ -8,8 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static de.ruu.app.jeeeraaah.frontend.common.mapping.Mappings.toBean;
 import static de.ruu.app.jeeeraaah.frontend.common.mapping.Mappings.toFXBean;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class Test_Map_TaskGroup_Bean_FXBean
 {
@@ -18,8 +17,8 @@ class Test_Map_TaskGroup_Bean_FXBean
 		String       name  = "name";
 		TaskGroupBean group = createBean(name);
 
-		assertThat(group.name()             , is(name));
-		assertThat(group.tasks().isPresent(), is(false));
+		assertThat(group.name()             ).isEqualTo(name);
+		assertThat(group.tasks().isPresent()).isEqualTo(false);
 	}
 
 	@Test void standaloneMapped()
@@ -51,19 +50,19 @@ class Test_Map_TaskGroup_Bean_FXBean
 		TaskGroupBean group = createBean(name);
 		createTasks(group, 3);
 
-		assertThat(group.tasks().isPresent() , is(true));
-		assertThat(group.tasks().get().size(), is(count));
+		assertThat(group.tasks().isPresent() ).isEqualTo(true);
+		assertThat(group.tasks().get().size()).isEqualTo(count);
 	}
 
 	void assertIs(TaskGroupBean bean, TaskGroupFXBean fxBean)
 	{
-		assertThat(bean.id               (), is(fxBean.id               ()));
-		assertThat(bean.version          (), is(fxBean.version          ()));
-		assertThat(bean.name             (), is(fxBean.name             ()));
-		assertThat(bean.description      (), is(fxBean.description      ()));
-		assertThat(bean.tasks().isPresent(), is(fxBean.tasks().isPresent()));
+		assertThat(bean.id               ()).isEqualTo(fxBean.id               ());
+		assertThat(bean.version          ()).isEqualTo(fxBean.version          ());
+		assertThat(bean.name             ()).isEqualTo(fxBean.name             ());
+		assertThat(bean.description      ()).isEqualTo(fxBean.description      ());
+		assertThat(bean.tasks().isPresent()).isEqualTo(fxBean.tasks().isPresent());
 
-		bean.tasks().ifPresent(ts -> assertThat(ts.size(), is(fxBean.tasks().get().size())));
+		bean.tasks().ifPresent(ts -> assertThat(ts.size()).isEqualTo(fxBean.tasks().get().size()));
 	}
 
 	private TaskGroupBean createBean(String name)                     { return new TaskGroupBean("name"); }

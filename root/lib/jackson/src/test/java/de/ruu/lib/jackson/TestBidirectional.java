@@ -8,10 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 class TestBidirectional
@@ -30,9 +27,9 @@ class TestBidirectional
         TaskGroup groupOut = MAPPER.readValue(jsonIn, TaskGroup.class);
         String    jsonOut  = MAPPER.writeValueAsString(groupOut);
         log.debug("jsonOut\n{}", jsonOut);
-        assertThat("jsonOut is not jsonIn", jsonIn, is(jsonOut));
+        assertThat(jsonIn).as("jsonOut is not jsonIn").isEqualTo(jsonOut);
 
-        assertThat("groupOut is not groupIn", groupIn, is(groupOut));
+        assertThat(groupIn).as("groupOut is not groupIn").isEqualTo(groupOut);
     }
 
     @Test void taskGroupSingleWithTaskSingle() throws JsonProcessingException
@@ -45,16 +42,16 @@ class TestBidirectional
         TaskGroup groupOut = MAPPER.readValue(jsonIn, TaskGroup.class);
         String    jsonOut  = MAPPER.writeValueAsString(groupOut);
         log.debug("jsonOut\n{}", jsonOut);
-        assertThat("jsonOut is not jsonIn"    , jsonIn                 , is(jsonOut));
+        assertThat(jsonIn).as("jsonOut is not jsonIn").isEqualTo(jsonOut);
 
-        assertThat("groupOut is not groupIn"  , groupIn                , is(groupOut));
-        assertThat("groupOut.tasks is null"   , groupOut.tasks()       , is(notNullValue()));
-        assertThat("groupOut.tasks.size not 1", groupOut.tasks().size(), is(1));
+        assertThat(groupIn).as("groupOut is not groupIn").isEqualTo(groupOut);
+        assertThat(groupOut.tasks()).as("groupOut.tasks is null").isNotNull();
+        assertThat(groupOut.tasks().size()).as("groupOut.tasks.size not 1").isEqualTo(1);
 
         Task taskOut = groupOut.tasks().iterator().next();
 
-        assertThat("taskOut is not taskIn"            , taskOut        , is(taskIn));
-        assertThat("taskOut.group is not taskIn.group", taskOut.group(), is(taskIn.group()));
+        assertThat(taskOut).as("taskOut is not taskIn").isEqualTo(taskIn);
+        assertThat(taskOut.group()).as("taskOut.group is not taskIn.group").isEqualTo(taskIn.group());
     }
 
     @Test void taskWithAllRelationsSingle() throws JsonProcessingException
@@ -78,45 +75,45 @@ class TestBidirectional
         String    jsonOut  = MAPPER.writeValueAsString(groupOut);
         log.debug("jsonOut\n{}", jsonOut);
 
-        assertThat("jsonOut is not jsonIn"    , jsonIn                 , is(jsonOut)); // sequence of elements may vary
-        assertThat("groupOut is not groupIn"  , groupIn                , is(groupOut));
-        assertThat("groupOut.tasks is null"   , groupOut.tasks()       , is(notNullValue()));
-        assertThat("groupOut.tasks.size not 1", groupOut.tasks().size(), is(5));
+        assertThat(jsonIn).as("jsonOut is not jsonIn").isEqualTo(jsonOut); // sequence of elements may vary
+        assertThat(groupIn).as("groupOut is not groupIn").isEqualTo(groupOut);
+        assertThat(groupOut.tasks()).as("groupOut.tasks is null").isNotNull();
+        assertThat(groupOut.tasks().size()).as("groupOut.tasks.size not 1").isEqualTo(5);
 
         Optional<Task> optional = groupOut.tasks().stream().filter(t -> t.equals(taskIn)).findFirst();
-        assertThat("no task out matching task in", optional.isPresent(), is(true));
+        assertThat(optional.isPresent()).as("no task out matching task in").isEqualTo(true);
 
         Task taskOut = optional.get();
-        assertThat("taskOut is not taskIn"            , taskOut        , is(taskIn));
-        assertThat("taskOut.group is not taskIn.group", taskOut.group(), is(taskSuperIn.group()));
+        assertThat(taskOut).as("taskOut is not taskIn").isEqualTo(taskIn);
+        assertThat(taskOut.group()).as("taskOut.group is not taskIn.group").isEqualTo(taskSuperIn.group());
 
         Task taskSuperOut = taskOut.superTask();
-        assertThat("taskSuperOut is null"                       , taskSuperOut                  , is(notNullValue()));
-        assertThat("taskSuperOut.group is not taskSuperIn.group", taskSuperOut.group()          , is(taskSuperIn.group()));
-        assertThat("taskSuperOut is taskSuperIn"                , taskSuperOut                  , is(taskSuperIn));
-        assertThat("taskSuperOut.subTasks is not null"          , taskSuperOut.subTasks()       , is(notNullValue()));
-        assertThat("taskSuperOut.subTasks.size is not 1"         , taskSuperOut.subTasks().size(), is(1));
+        assertThat(taskSuperOut).as("taskSuperOut is null").isNotNull();
+        assertThat(taskSuperOut.group()).as("taskSuperOut.group is not taskSuperIn.group").isEqualTo(taskSuperIn.group());
+        assertThat(taskSuperOut).as("taskSuperOut is taskSuperIn").isEqualTo(taskSuperIn);
+        assertThat(taskSuperOut.subTasks()).as("taskSuperOut.subTasks is not null").isNotNull();
+        assertThat(taskSuperOut.subTasks().size()).as("taskSuperOut.subTasks.size is not 1").isEqualTo(1);
 
         Task taskSubOut = taskOut.subTasks().iterator().next();
-        assertThat("taskSubOut is null"                     , taskSubOut           , is(notNullValue()));
-        assertThat("taskSubOut.group is not taskSubIn.group", taskSubOut.group()   , is(taskSubIn.group()));
-        assertThat("taskSubOut is taskSubIn"                , taskSubOut           , is(taskSubIn));
-        assertThat("taskSubOut.subTasks is null"            , taskSubOut.subTasks(), is(nullValue()));
+        assertThat(taskSubOut).as("taskSubOut is null").isNotNull();
+        assertThat(taskSubOut.group()).as("taskSubOut.group is not taskSubIn.group").isEqualTo(taskSubIn.group());
+        assertThat(taskSubOut).as("taskSubOut is taskSubIn").isEqualTo(taskSubIn);
+        assertThat(taskSubOut.subTasks()).as("taskSubOut.subTasks is null").isNull();
 
         Task taskPredecessorOut = taskOut.predecessors().iterator().next();
-        assertThat("taskPredecessorOut is null"                             , taskPredecessorOut                    , is(notNullValue()));
-        assertThat("taskPredecessorOut.group is not taskPredecessorIn.group", taskPredecessorOut.group()            , is(taskPredecessorIn.group()));
-        assertThat("taskPredecessorOut is taskPredecessorIn"                , taskPredecessorOut                    , is(taskPredecessorIn));
-        assertThat("taskPredecessorOut.subTasks is null"                    , taskPredecessorOut.subTasks()         , is(nullValue()));
-        assertThat("taskPredecessorOut.successors is not null"              , taskPredecessorOut.successors()       , is(notNullValue()));
-        assertThat("taskPredecessorOut.successors.size is not 1"            , taskPredecessorOut.successors().size(), is(1));
+        assertThat(taskPredecessorOut).as("taskPredecessorOut is null").isNotNull();
+        assertThat(taskPredecessorOut.group()).as("taskPredecessorOut.group is not taskPredecessorIn.group").isEqualTo(taskPredecessorIn.group());
+        assertThat(taskPredecessorOut).as("taskPredecessorOut is taskPredecessorIn").isEqualTo(taskPredecessorIn);
+        assertThat(taskPredecessorOut.subTasks()).as("taskPredecessorOut.subTasks is null").isNull();
+        assertThat(taskPredecessorOut.successors()).as("taskPredecessorOut.successors is not null").isNotNull();
+        assertThat(taskPredecessorOut.successors().size()).as("taskPredecessorOut.successors.size is not 1").isEqualTo(1);
 
         Task taskSuccessorOut = taskOut.successors().iterator().next();
-        assertThat("taskSuccessorOut is null"                           , taskSuccessorOut                      , is(notNullValue()));
-        assertThat("taskSuccessorOut.group is not taskSuccessorIn.group", taskSuccessorOut.group()              , is(taskSuccessorOut.group()));
-        assertThat("taskSuccessorOut is taskSuccessorIn"                , taskSuccessorOut                      , is(taskSuccessorOut));
-        assertThat("taskSuccessorOut.subTasks is null"                  , taskSuccessorOut.subTasks()           , is(nullValue()));
-        assertThat("taskSuccessorOut.predecessors is not null"          , taskSuccessorOut.predecessors()       , is(notNullValue()));
-        assertThat("taskSuccessorOut.predecessors.size is not 1"        , taskSuccessorOut.predecessors().size(), is(1));
+        assertThat(taskSuccessorOut).as("taskSuccessorOut is null").isNotNull();
+        assertThat(taskSuccessorOut.group()).as("taskSuccessorOut.group is not taskSuccessorIn.group").isEqualTo(taskSuccessorOut.group());
+        assertThat(taskSuccessorOut).as("taskSuccessorOut is taskSuccessorIn").isEqualTo(taskSuccessorOut);
+        assertThat(taskSuccessorOut.subTasks()).as("taskSuccessorOut.subTasks is null").isNull();
+        assertThat(taskSuccessorOut.predecessors()).as("taskSuccessorOut.predecessors is not null").isNotNull();
+        assertThat(taskSuccessorOut.predecessors().size()).as("taskSuccessorOut.predecessors.size is not 1").isEqualTo(1);
     }
 }

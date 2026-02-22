@@ -8,8 +8,7 @@ import org.junit.jupiter.api.condition.DisabledOnOs;
 
 import java.util.Optional;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.condition.OS.LINUX;
 
 //@DisabledOnOs(LINUX)
@@ -28,8 +27,8 @@ class TestIntegerTextFieldConfigurator
 		NumberTextFieldConfigurator.configureIntegerTextField(textField);
 		textField.setText("0");
 		Optional<Integer> optionalInteger = IntegerTextFieldUtility.getCurrentTextFieldValueAsInteger(textField);
-		assertThat(optionalInteger.isPresent(), is(true));
-		assertThat(optionalInteger.get(), is(0));
+		assertThat(optionalInteger.isPresent()).isEqualTo(true);
+		assertThat(optionalInteger.get()).isEqualTo(0);
 	}
 
 	@Test void testDefaultConfiguratorWithA()
@@ -37,7 +36,7 @@ class TestIntegerTextFieldConfigurator
 		NumberTextFieldConfigurator.configureIntegerTextField(textField);
 		textField.setText("A");
 		Optional<Integer> optionalInteger = IntegerTextFieldUtility.getCurrentTextFieldValueAsInteger(textField);
-		assertThat(optionalInteger.isPresent(), is(false));
+		assertThat(optionalInteger.isPresent()).isEqualTo(false);
 	}
 
 	@Test void testConfiguratorWithConvertAction()
@@ -45,6 +44,6 @@ class TestIntegerTextFieldConfigurator
 		NumberTextFieldConfigurator.configureIntegerTextField(textField, new DefaultNumberTextFieldPostConvertAction());
 		textField.setText("A");
 		Optional<Integer> optionalInteger = IntegerTextFieldUtility.getCurrentTextFieldValueAsInteger(textField);
-		assertThat(optionalInteger.isPresent(), is(false));
+		assertThat(optionalInteger.isPresent()).isEqualTo(false);
 	}
 }

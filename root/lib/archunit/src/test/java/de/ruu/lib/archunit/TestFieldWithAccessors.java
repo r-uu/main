@@ -7,8 +7,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class TestFieldWithAccessors
 {
@@ -28,7 +27,7 @@ class TestFieldWithAccessors
 				new FieldWithAccessors(clazz.getAllFields().iterator().next());
 
 		// For fluent style accessors, the getter and setter should be present
-		assertThat(fieldAndAccessors.getter().isPresent(), is(true));
-		assertThat(fieldAndAccessors.setter().isPresent(), is(true));
+		assertThat(fieldAndAccessors.getter().isPresent()).isEqualTo(true);
+		assertThat(fieldAndAccessors.setter().isPresent()).isEqualTo(true);
 	}
 }

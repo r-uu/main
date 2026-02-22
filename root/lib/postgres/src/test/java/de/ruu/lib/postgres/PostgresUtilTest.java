@@ -7,11 +7,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.File;
 import java.nio.file.Path;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PostgresUtilTest
 {
@@ -27,16 +23,16 @@ public class PostgresUtilTest
 
 		try
 		{
-			assertThat("Config file should be created", configFile.exists(), is(true));
-			assertThat("Should have all postgres properties", config.getPropertyNames(), hasSize(greaterThanOrEqualTo(9)));
+			assertThat(configFile.exists()).as("Config file should be created").isEqualTo(true);
+			assertThat(config.getPropertyNames().size()).as("Should have all postgres properties").isGreaterThanOrEqualTo(9);
 
 			// Check some default values
-			assertThat("Should have default host", config.getValue("postgres.host"), is("localhost"));
-			assertThat("Should have default port", config.getValue("postgres.port"), is("5432"));
-			assertThat("Should have default database", config.getValue("postgres.database"), is("mydb"));
-			assertThat("Should have default username", config.getValue("postgres.username"), is("admin"));
-			assertThat("Should have default schema", config.getValue("postgres.schema"), is("public"));
-			assertThat("Should have default SSL setting", config.getValue("postgres.ssl.enabled"), is("false"));
+			assertThat(config.getValue("postgres.host")).as("Should have default host").isEqualTo("localhost");
+			assertThat(config.getValue("postgres.port")).as("Should have default port").isEqualTo("5432");
+			assertThat(config.getValue("postgres.database")).as("Should have default database").isEqualTo("mydb");
+			assertThat(config.getValue("postgres.username")).as("Should have default username").isEqualTo("admin");
+			assertThat(config.getValue("postgres.schema")).as("Should have default schema").isEqualTo("public");
+			assertThat(config.getValue("postgres.ssl.enabled")).as("Should have default SSL setting").isEqualTo("false");
 		}
 		finally
 		{
@@ -54,11 +50,11 @@ public class PostgresUtilTest
 
 		WritableFileConfigSource config = PostgresUtil.initializePostgresUtilConfig(configFile.getAbsolutePath());
 
-		assertThat("Config file should be created at custom path", configFile.exists(), is(true));
-		assertThat("Should have all postgres properties", config.getPropertyNames(), hasSize(greaterThanOrEqualTo(9)));
+		assertThat(configFile.exists()).as("Config file should be created at custom path").isEqualTo(true);
+		assertThat(config.getPropertyNames().size()).as("Should have all postgres properties").isGreaterThanOrEqualTo(9);
 
 		// Verify it's a valid postgres config
-		assertThat("Should have postgres.host property", config.getValue("postgres.host"), is(notNullValue()));
-		assertThat("Should have postgres.port property", config.getValue("postgres.port"), is(notNullValue()));
+		assertThat(config.getValue("postgres.host")).as("Should have postgres.host property").isNotNull();
+		assertThat(config.getValue("postgres.port")).as("Should have postgres.port property").isNotNull();
 	}
 }

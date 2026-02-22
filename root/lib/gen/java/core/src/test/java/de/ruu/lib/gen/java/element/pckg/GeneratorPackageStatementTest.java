@@ -2,10 +2,7 @@ package de.ruu.lib.gen.java.element.pckg;
 
 import static de.ruu.lib.gen.java.context.CompilationUnitContext.context;
 import static de.ruu.lib.gen.java.element.pckg.GeneratorPackageStatement.pckgStatement;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +22,7 @@ class GeneratorPackageStatementTest
 
 		GeneratorPackageStatement generator = pckgStatement(context, name);
 		
-		assertThat(generator, is(not(nullValue())));
-		assertThat(generator.generate().toString(), is("package " + name + ";"));
+		assertThat(generator).isNotNull();
+		assertThat(generator.generate().toString()).isEqualTo("package " + name + ";");
 	}
 }

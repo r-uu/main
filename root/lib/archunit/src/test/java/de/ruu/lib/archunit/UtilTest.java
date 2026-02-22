@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 /**
  * Unit tests for {@link Util}.
@@ -34,7 +34,7 @@ class UtilTest
         JavaClass  javaClass = importer.importClass(Sample.class);
         JavaMethod method    = javaClass.getMethod("publicMethod");
 
-        assertThat(Util.isPublic(method), is(true));
+        assertThat(Util.isPublic(method)).isEqualTo(true);
     }
 
     @Test void isPublic_shouldReturnFalseForPrivateMethod()
@@ -42,7 +42,7 @@ class UtilTest
         JavaClass  javaClass = importer.importClass(Sample.class);
         JavaMethod method    = javaClass.getMethod("privateMethod");
 
-        assertThat(Util.isPublic(method), is(false));
+        assertThat(Util.isPublic(method)).isEqualTo(false);
     }
 
     // --- fieldsAndAccessors --------------------------------------------------
@@ -51,9 +51,9 @@ class UtilTest
     {
 			List<FieldWithAccessors> fields = Util.fieldsWithAccessors(Sample.class);
 
-			assertThat(fields, is(not(empty())));
-			assertThat(tryToExtractFrom(fields, "stringField").isPresent(), is(true));
-			assertThat(tryToExtractFrom(fields, "intField"   ).isPresent(), is(true));
+			assertThat(fields).isNotEmpty();
+			assertThat(tryToExtractFrom(fields, "stringField").isPresent()).isEqualTo(true);
+			assertThat(tryToExtractFrom(fields, "intField"   ).isPresent()).isEqualTo(true);
     }
 
     // --- type checks ---------------------------------------------------------
@@ -61,20 +61,20 @@ class UtilTest
     @Test void isCollection_shouldDetectCollections()
     {
         JavaClass listClass = importer.importClass(List.class);
-        assertThat(Util.isCollection(listClass), is(true));
+        assertThat(Util.isCollection(listClass)).isEqualTo(true);
     }
 
     @Test void isGeneric_shouldDetectParameterizedTypes()
     {
         JavaClass listClass = importer.importClass(List.class);
-        assertThat(Util.isGeneric(listClass), is(true));
+        assertThat(Util.isGeneric(listClass)).isEqualTo(true);
     }
 
     @Test void isPrimitive_shouldDetectPrimitiveTypes()
     {
 	    List<FieldWithAccessors> fields = Util.fieldsWithAccessors(Sample.class);
 
-	    assertThat(fields, is(not(empty())));
+	    assertThat(fields).isNotEmpty();
 
 	    Optional<FieldWithAccessors> optional =
 			    fields
@@ -82,22 +82,22 @@ class UtilTest
               .filter(field -> "intField".equals(field.javaField().getName()))
               .findFirst();
 
-	    assertThat(optional.isPresent(), is(true));
+	    assertThat(optional.isPresent()).isEqualTo(true);
 
 	    FieldWithAccessors fieldWithAccessors = optional.get();
-			assertThat(Util.isPrimitive(fieldWithAccessors.javaField().getType()), is(true));
+			assertThat(Util.isPrimitive(fieldWithAccessors.javaField().getType())).isEqualTo(true);
     }
 
     @Test void isNumeric_shouldDetectIntegerAsNumeric()
     {
         JavaClass integerClass = importer.importClass(Integer.class);
-        assertThat(Util.isNumeric(integerClass), is(true));
+        assertThat(Util.isNumeric(integerClass)).isEqualTo(true);
     }
 
     @Test void isNumeric_shouldReturnFalseForNonNumericClass()
     {
         JavaClass stringClass = importer.importClass(String.class);
-        assertThat(Util.isNumeric(stringClass), is(false));
+        assertThat(Util.isNumeric(stringClass)).isEqualTo(false);
     }
 
     // --- generic type arguments ----------------------------------------------
@@ -108,8 +108,8 @@ class UtilTest
 
         Optional<List<JavaType>> args = Util.actualTypeArguments(type);
 
-        assertThat(args.isPresent(), is(true));
-        assertThat(args.get(), hasSize(1));
+        assertThat(args.isPresent()).isEqualTo(true);
+        assertThat(args.get()).hasSize(1);
     }
 
     @Test void firstActualTypeArgument_shouldReturnFirstArgument()
@@ -118,14 +118,14 @@ class UtilTest
 
         Optional<JavaType> arg = Util.firstActualTypeArgument(type);
 
-        assertThat(arg.isPresent(), is(true));
+        assertThat(arg.isPresent()).isEqualTo(true);
     }
 
     @Test void isParameterisedType_shouldDetectParameterizedType()
     {
         JavaType type = importer.importClass(SampleGeneric.class).getField("list").getType();
 
-        assertThat(Util.isParameterisedType(type), is(true));
+        assertThat(Util.isParameterisedType(type)).isEqualTo(true);
     }
 
     // --- publicMethodsWithAnnotationAndSortedByName --------------------------
@@ -149,7 +149,7 @@ class UtilTest
                 .sorted(Comparator.naturalOrder())
                 .collect(Collectors.toList());
 
-        assertThat(methodNames, is(sortedNames));
+        assertThat(methodNames).isEqualTo(sortedNames);
     }
 
 	private Optional<FieldWithAccessors> tryToExtractFrom(List<FieldWithAccessors> fields, String name)

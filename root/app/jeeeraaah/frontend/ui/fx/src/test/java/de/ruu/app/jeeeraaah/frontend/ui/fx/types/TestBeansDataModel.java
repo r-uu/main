@@ -8,8 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class TestBeansDataModel
 {
@@ -66,45 +65,43 @@ class TestBeansDataModel
 		taskGroups = new DataFactory(GROUP_COUNT, MAIN_TASKS_PER_GROUP_COUNT, SUB_TASKS_PER_MAIN_TASK_COUNT).data();
 	}
 
-	@Test void testGroupBeanCount() { assertThat(taskGroups.size(), is(GROUP_COUNT)); }
+	@Test void testGroupBeanCount() { assertThat(taskGroups.size()).isEqualTo(GROUP_COUNT); }
 	@Test void testTaskBeansPerGroupCount()
 	{
 		for (TaskGroupBean taskGroup : taskGroups)
 		{
 			Optional<Set<TaskBean>> optional = taskGroup.tasks();
-			assertThat(optional.isPresent (), is(true));
-			assertThat
-			(
-					optional.get().size(),
-					is
-					(
-							// number of tasks has to be calculated
-								MAIN_TASKS_PER_GROUP_COUNT                                 //                 each main task
-							+ MAIN_TASKS_PER_GROUP_COUNT * SUB_TASKS_PER_MAIN_TASK_COUNT // each subtask of each main task
-					)
+			assertThat(optional).isPresent();
+			assertThat(optional.orElseThrow().size()).isEqualTo(
+					// number of tasks has to be calculated
+						MAIN_TASKS_PER_GROUP_COUNT                                 //                 each main task
+					+ MAIN_TASKS_PER_GROUP_COUNT * SUB_TASKS_PER_MAIN_TASK_COUNT // each subtask of each main task
 			);
 		}
 	}
+
 	@Test void testSubTaskBeansPerMainTaskBeans()
 	{
 		for (TaskGroupBean taskGroup : taskGroups)
 		{
 			Optional<Set<TaskBean>> optionalMainTasks = taskGroup.mainTasks();
-			assertThat(optionalMainTasks.isPresent(), is(true));
+			assertThat(optionalMainTasks).isPresent();
 
-			for (TaskBean mainTask : optionalMainTasks.get())
+			for (TaskBean mainTask : optionalMainTasks.orElseThrow())
 			{
 				Optional<Set<TaskBean>> optionalSubTasks = mainTask.subTasks();
-				assertThat(optionalSubTasks.isPresent (), is(true));
-				assertThat(optionalSubTasks.get().size(), is(SUB_TASKS_PER_MAIN_TASK_COUNT));
+				assertThat(optionalSubTasks).isPresent();
+				assertThat(optionalSubTasks.orElseThrow().size()).isEqualTo(SUB_TASKS_PER_MAIN_TASK_COUNT);
 
-				for (TaskBean subTask : optionalSubTasks.get())
+				// Verify that each sub-task exists and is properly linked
+				for (TaskBean subTask : optionalSubTasks.orElseThrow())
 				{
-					// TODO ???
+					assertThat(subTask.superTask()).isPresent();
+					assertThat(subTask.superTask().orElseThrow()).isEqualTo(mainTask);
 				}
 			}
 
-			assertThat(optionalMainTasks.get().size(), is(MAIN_TASKS_PER_GROUP_COUNT));
+			assertThat(optionalMainTasks.orElseThrow().size()).isEqualTo(MAIN_TASKS_PER_GROUP_COUNT);
 		}
 	}
 }

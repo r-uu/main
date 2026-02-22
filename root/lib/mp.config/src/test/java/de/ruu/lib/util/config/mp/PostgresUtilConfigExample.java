@@ -1,8 +1,6 @@
 package de.ruu.lib.util.config.mp;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 
@@ -68,8 +66,8 @@ class PostgresUtilConfigExample
 
 			// Verify the file was created and properties were saved
 			File configFile = new File(configFilePath);
-			assertThat("Config file should exist", configFile.exists(), is(true));
-			assertThat("Should have 9 properties", config.getPropertyNames().size(), is(9));
+			assertThat(configFile.exists()).as("Config file should exist").isEqualTo(true);
+			assertThat(config.getPropertyNames().size()).as("Should have 9 properties").isEqualTo(9);
 
 			// Cleanup: Delete the test file
 			configFile.delete();
@@ -116,7 +114,7 @@ class PostgresUtilConfigExample
 			log.info("Default properties initialized (existing values preserved)");
 
 			// Verify
-			assertThat("postgres.host should have default value", config.getValue("postgres.host"), is("localhost"));
+			assertThat(config.getValue("postgres.host")).as("postgres.host should have default value").isEqualTo("localhost");
 
 			// Cleanup
 			new File(configFilePath).delete();
@@ -144,7 +142,7 @@ class PostgresUtilConfigExample
 			WritableFileConfigSource config = initializePostgresUtilConfig(configFilePath);
 
 			// Verify it was created with all defaults
-			assertThat("Should have all default properties", config.getPropertyNames().size(), is(greaterThanOrEqualTo(9)));
+			assertThat(config.getPropertyNames().size()).as("Should have all default properties").isGreaterThanOrEqualTo(9);
 
 			log.info("Config initialized using utility method");
 
@@ -173,14 +171,14 @@ class PostgresUtilConfigExample
 
 		// Initialize with default values (only if not already set)
 		setDefaultIfNotExists(config, "postgres.host"              , "localhost");
-		setDefaultIfNotExists(config, "postgres.port"              , "5432");
+		setDefaultIfNotExists(config, "postgres.port"              , "5432"     );
 		setDefaultIfNotExists(config, "postgres.database"          , "jeeeraaah");
 		setDefaultIfNotExists(config, "postgres.username"          , "jeeeraaah");
 		setDefaultIfNotExists(config, "postgres.password"          , "change_me");
-		setDefaultIfNotExists(config, "postgres.schema"            , "public");
-		setDefaultIfNotExists(config, "postgres.ssl.enabled"       , "false");
-		setDefaultIfNotExists(config, "postgres.connection.timeout", "30000");
-		setDefaultIfNotExists(config, "postgres.max.pool.size"     , "10");
+		setDefaultIfNotExists(config, "postgres.schema"            , "public"   );
+		setDefaultIfNotExists(config, "postgres.ssl.enabled"       , "false"    );
+		setDefaultIfNotExists(config, "postgres.connection.timeout", "30000"    );
+		setDefaultIfNotExists(config, "postgres.max.pool.size"     , "10"       );
 
 		log.info("Postgres utility config initialized at: {}", new File(configFilePath).getAbsolutePath());
 

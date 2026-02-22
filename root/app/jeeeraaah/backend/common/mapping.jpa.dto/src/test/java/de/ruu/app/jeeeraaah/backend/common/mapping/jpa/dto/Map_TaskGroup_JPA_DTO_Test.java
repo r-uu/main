@@ -1,10 +1,6 @@
 package de.ruu.app.jeeeraaah.backend.common.mapping.jpa.dto;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Optional;
 
@@ -31,11 +27,11 @@ class Map_TaskGroup_JPA_DTO_Test
 		TaskGroupDTO dto = Map_TaskGroup_JPA_DTO.INSTANCE.map(group, context);
 
 		// assert
-		assertThat(dto          , notNullValue());
-		assertThat(dto.id()     , nullValue());
-		assertThat(dto.version(), nullValue());
-		assertThat(dto.name()   , is(name));
-		assertThat("tasks should not be initialized by default", dto.tasks().isPresent(), is(false));
+		assertThat(dto          ).isNotNull();
+		assertThat(dto.id()     ).isNull();
+		assertThat(dto.version()).isNull();
+		assertThat(dto.name()   ).isEqualTo(name);
+		assertThat(dto.tasks().isPresent()).as("tasks should not be initialized by default").isFalse();
 	}
 
 	@Test void afterMapping_mapsRelatedTasks_intoContext_andAddsToDTO_whenNotAlreadyMapped()
@@ -48,23 +44,23 @@ class Map_TaskGroup_JPA_DTO_Test
 		ReferenceCycleTracking context = new ReferenceCycleTracking();
 
 		// precondition
-		assertThat(group.tasks().isPresent(), is(true));
+		assertThat(group.tasks().isPresent()).isTrue();
 
 		// act
 		TaskGroupDTO dto = Map_TaskGroup_JPA_DTO.INSTANCE.map(group, context);
 
 		// assert: tasks should be in context
-		assertThat(dto, notNullValue());
+		assertThat(dto).isNotNull();
 		TaskDTO mappedT1 = context.get(task1, TaskDTO.class);
 		TaskDTO mappedT2 = context.get(task2, TaskDTO.class);
-		assertThat(mappedT1, notNullValue());
-		assertThat(mappedT2, notNullValue());
+		assertThat(mappedT1).isNotNull();
+		assertThat(mappedT2).isNotNull();
 
 		// assert: tasks are automatically added to DTO via TaskDTO constructor
-		assertThat("tasks should be in DTO via constructor", dto.tasks().isPresent(), is(true));
-		assertThat(dto.tasks().get().size(), is(2));
-		assertThat(dto.tasks().get().contains(mappedT1), is(true));
-		assertThat(dto.tasks().get().contains(mappedT2), is(true));
+		assertThat(dto.tasks().isPresent()).as("tasks should be in DTO via constructor").isTrue();
+		assertThat(dto.tasks().get().size()).isEqualTo(2);
+		assertThat(dto.tasks().get().contains(mappedT1)).isTrue();
+		assertThat(dto.tasks().get().contains(mappedT2)).isTrue();
 	}
 
 	@Test void afterMapping_skipsRemapping_whenTaskAlreadyInContext()
@@ -77,20 +73,20 @@ class Map_TaskGroup_JPA_DTO_Test
 
 		// pre-map task into context
 		TaskDTO preMapped = Map_Task_JPA_DTO.INSTANCE.map(task, context);
-		assertThat(preMapped, notNullValue());
-		assertThat(context.get(task, TaskDTO.class), sameInstance(preMapped));
+		assertThat(preMapped).isNotNull();
+		assertThat(context.get(task, TaskDTO.class)).isEqualTo(preMapped);
 
 		// act: mapping the group should not override the existing mapping for task
 		TaskGroupDTO dto = Map_TaskGroup_JPA_DTO.INSTANCE.map(group, context);
 
 		// assert: mapping still the same instance in context
 		TaskDTO post = context.get(task, TaskDTO.class);
-		assertThat(post, sameInstance(preMapped));
+		assertThat(post).isEqualTo(preMapped);
 
 		// assert: task is in DTO because it was added via TaskDTO constructor when first mapped
-		assertThat(dto.tasks().isPresent()              , is(true));
-		assertThat(dto.tasks().get().size()             , is(1));
-		assertThat(dto.tasks().get().contains(preMapped), is(true));
+		assertThat(dto.tasks().isPresent()              ).isTrue();
+		assertThat(dto.tasks().get().size()             ).isEqualTo(1);
+		assertThat(dto.tasks().get().contains(preMapped)).isTrue();
 	}
 
 	@Test void map_handlesDescription_whenPresent()
@@ -106,7 +102,7 @@ class Map_TaskGroup_JPA_DTO_Test
 		TaskGroupDTO dto = Map_TaskGroup_JPA_DTO.INSTANCE.map(group, context);
 
 		// assert
-		assertThat(dto.description(), is(Optional.of(description)));
+		assertThat(dto.description()).isEqualTo(Optional.of(description));
 	}
 
 	@Test void map_handlesDescription_whenNull()
@@ -121,7 +117,7 @@ class Map_TaskGroup_JPA_DTO_Test
 		TaskGroupDTO dto = Map_TaskGroup_JPA_DTO.INSTANCE.map(group, context);
 
 		// assert
-		assertThat(dto.description(), is(Optional.empty()));
+		assertThat(dto.description()).isEqualTo(Optional.empty());
 	}
 
 	@Test void map_addsGroupToContext()
@@ -136,8 +132,8 @@ class Map_TaskGroup_JPA_DTO_Test
 
 		// assert: group should be registered in context after mapping
 		TaskGroupDTO fromContext = context.get(group, TaskGroupDTO.class);
-		assertThat(fromContext, notNullValue());
-		assertThat(fromContext, sameInstance(dto));
+		assertThat(fromContext).isNotNull();
+		assertThat(fromContext).isEqualTo(dto);
 	}
 
 	@Test void map_handlesEmptyTasksSet()
@@ -145,7 +141,7 @@ class Map_TaskGroup_JPA_DTO_Test
 		// arrange
 		TaskGroupJPA group = new TaskGroupJPA("group with no tasks");
 		// TaskGroupJPA constructor doesn't initialize tasks - they remain null (lazy loading)
-		assertThat(group.tasks().isPresent(), is(false));
+		assertThat(group.tasks().isPresent()).isFalse();
 
 		ReferenceCycleTracking context = new ReferenceCycleTracking();
 
@@ -153,8 +149,8 @@ class Map_TaskGroup_JPA_DTO_Test
 		TaskGroupDTO dto = Map_TaskGroup_JPA_DTO.INSTANCE.map(group, context);
 
 		// assert: tasks should remain uninitialized in DTO when source tasks are null
-		assertThat(dto, notNullValue());
-		assertThat("null source tasks should not initialize DTO tasks", dto.tasks().isPresent(), is(false));
+		assertThat(dto).isNotNull();
+		assertThat(dto.tasks().isPresent()).as("null source tasks should not initialize DTO tasks").isFalse();
 	}
 
 	@Test void map_handlesMultipleTasks()
@@ -171,13 +167,13 @@ class Map_TaskGroup_JPA_DTO_Test
 		TaskGroupDTO dto = Map_TaskGroup_JPA_DTO.INSTANCE.map(group, context);
 
 		// assert: all tasks should be mapped into context
-		assertThat(context.get(task1, TaskDTO.class), notNullValue());
-		assertThat(context.get(task2, TaskDTO.class), notNullValue());
-		assertThat(context.get(task3, TaskDTO.class), notNullValue());
+		assertThat(context.get(task1, TaskDTO.class)).isNotNull();
+		assertThat(context.get(task2, TaskDTO.class)).isNotNull();
+		assertThat(context.get(task3, TaskDTO.class)).isNotNull();
 
 		// assert: all tasks are in DTO (added automatically via TaskDTO constructor)
-		assertThat(dto.tasks().isPresent(), is(true));
-		assertThat(dto.tasks().get().size(), is(3));
+		assertThat(dto.tasks().isPresent()).isTrue();
+		assertThat(dto.tasks().get().size()).isEqualTo(3);
 	}
 
 	@Test void objectFactory_createsCorrectDTOType()
@@ -191,7 +187,7 @@ class Map_TaskGroup_JPA_DTO_Test
 		TaskGroupDTO dto = Map_TaskGroup_JPA_DTO.INSTANCE.map(group, context);
 
 		// assert: verify correct DTO class is created
-		assertThat(dto                                                               , notNullValue());
-		assertThat("should create TaskGroupDTO instance", dto instanceof TaskGroupDTO, is(true));
+		assertThat(dto                                                               ).isNotNull();
+		assertThat(dto instanceof TaskGroupDTO).as("should create TaskGroupDTO instance").isTrue();
 	}
 }

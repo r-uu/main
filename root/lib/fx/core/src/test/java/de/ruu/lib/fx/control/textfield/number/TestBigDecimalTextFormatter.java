@@ -1,19 +1,29 @@
 package de.ruu.lib.fx.control.textfield.number;
 
 import javafx.scene.control.TextField;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.framework.junit5.ApplicationExtension;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 
-@Disabled("TODO find out how to make these tests work")
+/**
+ * Tests for BigDecimalTextFormatter.
+ * Uses TestFX's ApplicationExtension to initialize JavaFX toolkit.
+ */
 @ExtendWith(ApplicationExtension.class)
 class TestBigDecimalTextFormatter
 {
+    @BeforeAll
+    static void initToolkit()
+    {
+        // ApplicationExtension handles JavaFX toolkit initialization
+        // This method ensures toolkit is ready before any test runs
+    }
+
     @Test void testInteger()
     {
         final Integer integer = 10;
@@ -22,7 +32,7 @@ class TestBigDecimalTextFormatter
         textField.setTextFormatter(BigDecimalTextFormatter.formatter());
         textField.setText(integer.toString());
         
-        assertEquals(integer, Integer.valueOf(textField.getText()));
+        assertThat(Integer.valueOf(textField.getText())).isEqualTo(integer);
     }
 
     @Test void testIntegerNegative()
@@ -33,7 +43,7 @@ class TestBigDecimalTextFormatter
         textField.setTextFormatter(BigDecimalTextFormatter.formatter());
         textField.setText(integer.toString());
         
-        assertEquals(integer, Integer.valueOf(textField.getText()));
+        assertThat(Integer.valueOf(textField.getText())).isEqualTo(integer);
     }
 
     @Test void testBigDecimal()
@@ -44,7 +54,7 @@ class TestBigDecimalTextFormatter
         textField.setTextFormatter(BigDecimalTextFormatter.formatter());
         textField.setText(bigDecimal.toString());
         
-        assertEquals(0, bigDecimal.compareTo(new BigDecimal(textField.getText())));
+        assertThat(bigDecimal.compareTo(new BigDecimal(textField.getText()))).isEqualTo(0);
     }
 
     @Test void testBigDecimalNegative()
@@ -55,6 +65,6 @@ class TestBigDecimalTextFormatter
         textField.setTextFormatter(BigDecimalTextFormatter.formatter());
         textField.setText(bigDecimal.toString());
         
-        assertEquals(0, bigDecimal.compareTo(new BigDecimal(textField.getText())));
+        assertThat(bigDecimal.compareTo(new BigDecimal(textField.getText()))).isEqualTo(0);
     }
 }

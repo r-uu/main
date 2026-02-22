@@ -12,9 +12,7 @@ import java.util.Set;
 
 import static de.ruu.lib.util.StringBuilders.rTrimChars;
 import static de.ruu.lib.util.StringBuilders.sb;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
+import static org.assertj.core.api.Assertions.assertThat;
 @Disabled("there is a subtle problem with the jsonb configurator that causes the test to fail in github actions")
 @Slf4j
 class TestJsonBWithMaxEncapsulationForData
@@ -42,23 +40,22 @@ class TestJsonBWithMaxEncapsulationForData
 		StringBuilder sb = sb("\nparents with children\n");
 		parentsWithChildrenOut.forEach(p -> sb.append(p).append("\n"));
 		log.debug(rTrimChars(sb, "\n").toString());
-		assertEquals(
-				NUMBER_OF_PARENTS,
-				parentsWithChildrenOut.size(),
-				"wrong number of parents");
+
+		assertThat(parentsWithChildrenOut.size())
+				.as("wrong number of parents")
+				.isEqualTo(NUMBER_OF_PARENTS);
 
 		parentsWithChildrenOut.forEach
 		(
 				parent ->
 				{
-					assertNotNull(parent.getChildren(), "wrong value in parent.children");
-					assertNotNull(parent.getField()   , "wrong value in parent.field"   );
+					assertThat(parent.getChildren()).isNotNull();
+					assertThat(parent.getField()).isNotNull();
 
-					assertEquals(
-							NUMBER_OF_CHILDREN,
-							parent.getChildren().size(),
-							"wrong number of children");
-					parent.getChildren().forEach(child -> assertNotNull(child.getField(), "wrong value in child.field"));
+					assertThat(parent.getChildren().size())
+							.as("wrong number of children")
+							.isEqualTo(NUMBER_OF_CHILDREN);
+					parent.getChildren().forEach(child -> assertThat(child.getField()).isNotNull());
 				}
 		);
 	}

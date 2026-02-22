@@ -2,10 +2,7 @@ package de.ruu.lib.gen.java.element.method;
 
 import static de.ruu.lib.gen.java.context.CompilationUnitContext.context;
 import static de.ruu.lib.gen.java.element.method.GeneratorThrowsClause.throwsClause;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,8 +23,8 @@ class GeneratorThrowsClauseTest
 		
 //		log.debug(generator.generate().toString());
 		
-		assertThat(generator, is(not(nullValue())));
-		assertThat(generator.generate().toString(), is(""));
+		assertThat(generator).isNotNull();
+		assertThat(generator.generate().toString()).isEqualTo("");
 	}
 
 	@Test void parameterisedGenerator() throws GeneratorException
@@ -43,7 +40,6 @@ class GeneratorThrowsClauseTest
 //		log.debug(generator.generate().toString());
 
 		assertThat(
-				generator.generate().toString(),
-				is("throws " + exception1 + ", " + exception2));
+				generator.generate().toString()).isEqualTo("throws " + exception1 + ", " + exception2);
 	}
 }

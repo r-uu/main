@@ -1,22 +1,17 @@
 package de.ruu.app.jeeeraaah.backend.common.mapping.jpa.dto;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
-
-import java.util.Optional;
-
-import org.junit.jupiter.api.Test;
-
 import de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskGroupJPA;
 import de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskJPA;
 import de.ruu.app.jeeeraaah.common.api.ws.rs.TaskDTO;
 import de.ruu.app.jeeeraaah.common.api.ws.rs.TaskGroupDTO;
 import de.ruu.lib.mapstruct.ReferenceCycleTracking;
+import org.junit.jupiter.api.Test;
 
-public class Map_Task_JPA_DTO_Test
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class Map_Task_JPA_DTO_Test
 {
 	@Test
 	void map_usesObjectFactory_andCopiesBasicFields()
@@ -31,12 +26,12 @@ public class Map_Task_JPA_DTO_Test
 		TaskDTO dto = Map_Task_JPA_DTO.INSTANCE.map(task, context);
 
 		// assert
-		assertThat(dto, notNullValue());
-		assertThat(dto.id(), nullValue());
-		assertThat(dto.version(), nullValue());
-		assertThat(dto.name(), is(taskName));
-		assertThat("taskGroup should be set via ObjectFactory", dto.taskGroup(), notNullValue());
-		assertThat(dto.taskGroup().name(), is(group.name()));
+		assertThat(dto).isNotNull();
+		assertThat(dto.id()).isNull();
+		assertThat(dto.version()).isNull();
+		assertThat(dto.name()).isEqualTo(taskName);
+		assertThat(dto.taskGroup()).as("taskGroup should be set via ObjectFactory").isNotNull();
+		assertThat(dto.taskGroup().name()).isEqualTo(group.name());
 	}
 
 	@Test
@@ -53,7 +48,7 @@ public class Map_Task_JPA_DTO_Test
 		TaskDTO dto = Map_Task_JPA_DTO.INSTANCE.map(task, context);
 
 		// assert
-		assertThat(dto.description(), is(Optional.of(description)));
+		assertThat(dto.description()).isEqualTo(Optional.of(description));
 	}
 
 	@Test
@@ -69,7 +64,7 @@ public class Map_Task_JPA_DTO_Test
 		TaskDTO dto = Map_Task_JPA_DTO.INSTANCE.map(task, context);
 
 		// assert
-		assertThat(dto.description(), is(Optional.empty()));
+		assertThat(dto.description()).isEqualTo(Optional.empty());
 	}
 
 	@Test
@@ -85,8 +80,8 @@ public class Map_Task_JPA_DTO_Test
 
 		// assert: task should be registered in context after mapping
 		TaskDTO fromContext = context.get(task, TaskDTO.class);
-		assertThat(fromContext, notNullValue());
-		assertThat(fromContext, sameInstance(dto));
+		assertThat(fromContext).isNotNull();
+		assertThat(fromContext).isEqualTo(dto);
 	}
 
 	@Test
@@ -102,8 +97,8 @@ public class Map_Task_JPA_DTO_Test
 
 		// assert: group should be registered in context by ObjectFactory
 		TaskGroupDTO groupFromContext = context.get(group, TaskGroupDTO.class);
-		assertThat(groupFromContext, notNullValue());
-		assertThat(groupFromContext, sameInstance(dto.taskGroup()));
+		assertThat(groupFromContext).isNotNull();
+		assertThat(groupFromContext).isEqualTo(dto.taskGroup());
 	}
 
 	@Test
@@ -116,15 +111,15 @@ public class Map_Task_JPA_DTO_Test
 
 		// pre-map group into context
 		TaskGroupDTO preMappedGroup = Map_TaskGroup_JPA_DTO.INSTANCE.map(group, context);
-		assertThat(preMappedGroup, notNullValue());
+		assertThat(preMappedGroup).isNotNull();
 
 		// act: mapping the task should reuse the existing group from context
 		TaskDTO dto = Map_Task_JPA_DTO.INSTANCE.map(task, context);
 
 		// assert: same group instance should be reused
-		assertThat(dto.taskGroup(), sameInstance(preMappedGroup));
+		assertThat(dto.taskGroup()).isEqualTo(preMappedGroup);
 		TaskGroupDTO groupFromContext = context.get(group, TaskGroupDTO.class);
-		assertThat(groupFromContext, sameInstance(preMappedGroup));
+		assertThat(groupFromContext).isEqualTo(preMappedGroup);
 	}
 
 	// Note: Tests for afterMapping with relational mappings (superTask, subTasks, predecessors, successors)
@@ -137,19 +132,19 @@ public class Map_Task_JPA_DTO_Test
 		TaskGroupJPA group = new TaskGroupJPA("test group");
 		TaskJPA task = new TaskJPA(group, "task with no relations");
 		// TaskJPA constructor doesn't initialize collections - they remain null (lazy loading)
-		assertThat(task.subTasks().isPresent(), is(false));
-		assertThat(task.predecessors().isPresent(), is(false));
-		assertThat(task.successors().isPresent(), is(false));
+		assertThat(task.subTasks().isPresent()).isFalse();
+		assertThat(task.predecessors().isPresent()).isFalse();
+		assertThat(task.successors().isPresent()).isFalse();
 		ReferenceCycleTracking context = new ReferenceCycleTracking();
 
 		// act
 		TaskDTO dto = Map_Task_JPA_DTO.INSTANCE.map(task, context);
 
 		// assert: collections should remain uninitialized in DTO when source is null
-		assertThat(dto, notNullValue());
-		assertThat(dto.subTasks().isPresent(), is(false));
-		assertThat(dto.predecessors().isPresent(), is(false));
-		assertThat(dto.successors().isPresent(), is(false));
+		assertThat(dto).isNotNull();
+		assertThat(dto.subTasks().isPresent()).isFalse();
+		assertThat(dto.predecessors().isPresent()).isFalse();
+		assertThat(dto.successors().isPresent()).isFalse();
 	}
 
 	@Test
@@ -164,8 +159,8 @@ public class Map_Task_JPA_DTO_Test
 		TaskDTO dto = Map_Task_JPA_DTO.INSTANCE.map(task, context);
 
 		// assert: verify correct DTO class is created
-		assertThat(dto, notNullValue());
-		assertThat("should create TaskDTO instance", dto instanceof TaskDTO, is(true));
+		assertThat(dto).isNotNull();
+		assertThat(dto instanceof TaskDTO).as("should create TaskDTO instance").isTrue();
 	}
 
 }

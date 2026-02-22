@@ -1,9 +1,6 @@
 package de.ruu.lib.util.bimapped;
 
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
@@ -26,13 +23,13 @@ class BiMapTest
 		Optional<Target> optionalTarget = biMap.lookup(source, Target.class);
 		Optional<Source> optionalSource = biMap.lookup(target, Source.class);
 
-		assertThat(optionalTarget, is(not(nullValue())));
-		assertThat(optionalSource, is(not(nullValue())));
+		assertThat(optionalTarget).isNotNull();
+		assertThat(optionalSource).isNotNull();
 
-		assertThat(optionalTarget.isPresent(), is(true));
-		assertThat(optionalSource.isPresent(), is(true));
+		assertThat(optionalTarget.isPresent()).isEqualTo(true);
+		assertThat(optionalSource.isPresent()).isEqualTo(true);
 
-		assertThat(optionalTarget.get(), is(target));
-		assertThat(optionalSource.get(), is(source));
+		assertThat(optionalTarget.get()).isEqualTo(target);
+		assertThat(optionalSource.get()).isEqualTo(source);
 	}
 }

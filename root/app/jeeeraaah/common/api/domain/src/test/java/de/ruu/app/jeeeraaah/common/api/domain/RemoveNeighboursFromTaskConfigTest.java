@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 class RemoveNeighboursFromTaskConfigTest
 {
@@ -22,11 +22,11 @@ class RemoveNeighboursFromTaskConfigTest
 				Set.of(4L, 5L)
 		);
 
-		assertThat(cfg.idTask()                , is(42L));
-		assertThat(cfg.removeFromSuperTask()   , is(true));
-		assertThat(cfg.removeFromPredecessors(), containsInAnyOrder(1L, 2L));
-		assertThat(cfg.removeFromSubTasks()    , contains(3L));
-		assertThat(cfg.removeFromSuccessors()  , containsInAnyOrder(4L, 5L));
+		assertThat(cfg.idTask()                ).isEqualTo(42L);
+		assertThat(cfg.removeFromSuperTask()   ).isEqualTo(true);
+		assertThat(cfg.removeFromPredecessors()).containsExactlyInAnyOrder(1L, 2L);
+		assertThat(cfg.removeFromSubTasks()    ).containsExactly(3L);
+		assertThat(cfg.removeFromSuccessors()  ).containsExactlyInAnyOrder(4L, 5L);
 	}
 
 	@Test void jacksonDeserializationWorks() throws Exception
@@ -45,10 +45,10 @@ class RemoveNeighboursFromTaskConfigTest
 		ObjectMapper mapper = new ObjectMapper();
 		RemoveNeighboursFromTaskConfig cfg = mapper.readValue(json, RemoveNeighboursFromTaskConfig.class);
 
-		assertThat(cfg.idTask(), is(99L));
-		assertThat(cfg.removeFromSuperTask(), is(false));
-		assertThat(cfg.removeFromPredecessors(), containsInAnyOrder(10L, 20L));
-		assertThat(cfg.removeFromSubTasks(), contains(30L));
-		assertThat(cfg.removeFromSuccessors(), empty());
+		assertThat(cfg.idTask()).isEqualTo(99L);
+		assertThat(cfg.removeFromSuperTask()).isEqualTo(false);
+		assertThat(cfg.removeFromPredecessors()).containsExactlyInAnyOrder(10L, 20L);
+		assertThat(cfg.removeFromSubTasks()).containsExactly(30L);
+		assertThat(cfg.removeFromSuccessors()).isEmpty();
 	}
 }

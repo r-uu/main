@@ -3,10 +3,7 @@ package de.ruu.lib.gen;
 import org.junit.jupiter.api.Test;
 
 import static de.ruu.lib.util.Constants.LS;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import static org.assertj.core.api.Assertions.assertThat;
 class LineIndenterTest
 {
 	@Test void testIndentString()
@@ -16,17 +13,17 @@ class LineIndenterTest
 
 		String noLines = "noLines";
 
-		assertThat(lineIndenter.indent(noLines), is(noLines));
+		assertThat(lineIndenter.indent(noLines)).isEqualTo(noLines);
 
 		// should not indent because indentation is ""
 		lineIndenter.setIndentationLevel(1);
 
-		assertThat(lineIndenter.indent(noLines), is(noLines));
+		assertThat(lineIndenter.indent(noLines)).isEqualTo(noLines);
 
 		// should indent because indentation is "x"
 		lineIndenter.setIndentation("x");
 
-		assertThat(lineIndenter.indent(noLines), is("x" + noLines));
+		assertThat(lineIndenter.indent(noLines)).isEqualTo("x" + noLines);
 	}
 
 	@Test void testIndentStringBuffer()
@@ -36,17 +33,17 @@ class LineIndenterTest
 
 		String noLines = "noLines";
 
-		assertThat(lineIndenter.indent(noLines).toString(), is(noLines));
+		assertThat(lineIndenter.indent(noLines).toString()).isEqualTo(noLines);
 
 		// should not indent because indentation is ""
 		lineIndenter.setIndentationLevel(1);
 
-		assertThat(lineIndenter.indent(noLines).toString(), is(noLines));
+		assertThat(lineIndenter.indent(noLines).toString()).isEqualTo(noLines);
 
 		// should indent because indentation is "x"
 		lineIndenter.setIndentation("x");
 
-		assertThat(lineIndenter.indent(noLines).toString(), is("x" + noLines));
+		assertThat(lineIndenter.indent(noLines).toString()).isEqualTo("x" + noLines);
 	}
 
 	@Test void testMultiLines1()
@@ -56,7 +53,7 @@ class LineIndenterTest
 
 		LineIndenter lineIndenter = new LineIndenter("x", 3);
 
-		assertEquals(expected, lineIndenter.indent(multiLines));
+		assertThat(lineIndenter.indent(multiLines)).isEqualTo(expected);
 	}
 
 	@Test void testMultiLines2()
@@ -75,6 +72,6 @@ class LineIndenterTest
 
 		LineIndenter lineIndenter = new LineIndenter("x", 3);
 
-		assertEquals(expected, lineIndenter.indent(multiLines));
+		assertThat(lineIndenter.indent(multiLines)).isEqualTo(expected);
 	}
 }

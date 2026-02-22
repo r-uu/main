@@ -4,10 +4,7 @@ import static de.ruu.lib.gen.java.Generator.GeneratorSimple.generator;
 import static de.ruu.lib.gen.java.GeneratorCodeBlock.codeBlokk;
 import static de.ruu.lib.gen.java.context.CompilationUnitContext.context;
 import static de.ruu.lib.util.Constants.LS;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,8 +22,8 @@ class GeneratorCodeBlockTest
 	{
 		GeneratorCodeBlock codeBlock = codeBlokk(context);
 		
-		assertThat(codeBlock                      , is(not(nullValue())));
-		assertThat(codeBlock.generate().toString(), is("{" + LS + "}"));
+		assertThat(codeBlock                      ).isNotNull();
+		assertThat(codeBlock.generate().toString()).isEqualTo("{" + LS + "}");
 	}
 
 	@Test void defaultCompilationUnitWithSimpleGenerator() throws GeneratorException
@@ -42,7 +39,6 @@ class GeneratorCodeBlockTest
 								generator(context)
 										.output(content)
 						)
-						.generate().toString(),
-				is("{" + LS + "\t" + content + LS + "}"));
+						.generate().toString()).isEqualTo("{" + LS + "\t" + content + LS + "}");
 	}
 }

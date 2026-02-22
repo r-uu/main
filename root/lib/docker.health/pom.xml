@@ -46,6 +46,13 @@
 			<artifactId>r-uu.lib.util</artifactId>
 		</dependency>
 
+		<!-- Keycloak Admin library (for auto-fix strategy) -->
+		<dependency>
+			<groupId>r-uu</groupId>
+			<artifactId>r-uu.lib.keycloak.admin</artifactId>
+			<optional>true</optional>
+		</dependency>
+
 		<!-- JUnit for testing -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>

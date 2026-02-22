@@ -8,19 +8,18 @@ import org.junit.jupiter.api.Test;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 class TestDataSourceFactory
 {
 	@DisabledOnServerNotListening(propertyNameHost = "database.host", propertyNamePort = "database.port")
-	@Test void testDataSourceFactory() throws SQLException
+	@Test void testDataSourceFactory()
 	{
 		String databaseHost =
 				ConfigProvider
 					.getConfig()
-					.getOptionalValue("database.host", String .class)
+					.getOptionalValue("database.host", String.class)
 					.orElse("localhost");
 		int    databasePort =
 				ConfigProvider
@@ -30,17 +29,17 @@ class TestDataSourceFactory
 		String databaseName =
 				ConfigProvider
 					.getConfig()
-					.getOptionalValue("database.name", String .class)
+					.getOptionalValue("database.name", String.class)
 					.orElse("lib_test");
 		String databaseUser =
 				ConfigProvider
 					.getConfig()
-					.getOptionalValue("database.user", String .class)
+					.getOptionalValue("database.user", String.class)
 					.orElse("lib_test");
 		String databasePass =
 				ConfigProvider
 					.getConfig()
-					.getOptionalValue("database.pass", String .class)
+					.getOptionalValue("database.pass", String.class)
 					.orElse("lib_test");
 
 		JDBCURL jdbcURL = new JDBCURL(databaseHost, databasePort, databaseName);
@@ -50,10 +49,10 @@ class TestDataSourceFactory
 		DataSourceFactory dataSourceFactory = new DataSourceFactory(jdbcURL, databaseUser, databasePass);
 		DataSource        dataSource        = dataSourceFactory.create();
 
-		assertThat(dataSource,                 is(not(nullValue())));
+		assertThat(dataSource).isNotNull();
 		try (var connection = dataSource.getConnection())
 		{
-			assertThat(connection, is(not(nullValue())));
+			assertThat(connection).isNotNull();
 		}
 		catch (SQLException e)
 		{

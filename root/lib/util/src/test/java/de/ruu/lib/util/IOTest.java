@@ -1,8 +1,6 @@
 package de.ruu.lib.util;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.net.ServerSocket;
@@ -17,7 +15,7 @@ class IOTest
 		ByteArrayInputStream stream = new ByteArrayInputStream(input.getBytes());
 		String               output = IO.toString(stream);
 
-		assertThat(output, is(input));
+		assertThat(output).isEqualTo(input);
 	}
 
 	@Test void testIsListeningTrue() throws Exception
@@ -25,7 +23,7 @@ class IOTest
 		try (ServerSocket serverSocket = new ServerSocket(0))
 		{
 			int port = serverSocket.getLocalPort();
-			assertThat(IO.isListening("localhost", port), is(true));
+			assertThat(IO.isListening("localhost", port)).isEqualTo(true);
 		}
 	}
 
@@ -33,6 +31,6 @@ class IOTest
 	{
 		String input  = "input";
 		String output = IO.capturePrintStreamOutputOfRunnable(System.out, () ->  System.out.print(input));
-		assertThat(output, containsString(input));
+		assertThat(output).contains(input);
 	}
 }

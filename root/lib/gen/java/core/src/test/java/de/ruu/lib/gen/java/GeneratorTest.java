@@ -2,11 +2,8 @@ package de.ruu.lib.gen.java;
 
 import static de.ruu.lib.gen.java.Generator.generator;
 import static de.ruu.lib.gen.java.context.CompilationUnitContext.context;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,12 +21,11 @@ class GeneratorTest
 	{
 		Generator generator = generator(context);
 		
-		assertThat(generator, is(not(nullValue())));
-		assertThat(generator.generate().toString(), is(""));
+		assertThat(generator).isNotNull();
+		assertThat(generator.generate().toString()).isEqualTo("");
 		
-		assertThrows(
-				UnsupportedOperationException.class,
-				() -> generator.add(generator),
-				"expected adding generator to itself to be unsupported");
+		assertThatThrownBy(() -> generator.add(generator))
+				.isInstanceOf(UnsupportedOperationException.class)
+				.hasMessageContaining("generator can not be registered at itself");
 	}
 }

@@ -1,7 +1,6 @@
 package de.ruu.lib.jpa.core.mapstruct;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
@@ -19,6 +18,6 @@ class TestMapstruct
 
 	private void isEquals(SimpleMappedDTO source, SimpleMappedEntity target)
 	{
-		assertThat(source.name(), is(target.name()));
+		assertThat(source.name()).isEqualTo(target.name());
 	}
 }

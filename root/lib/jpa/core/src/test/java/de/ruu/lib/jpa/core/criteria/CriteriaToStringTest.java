@@ -4,7 +4,7 @@ import de.ruu.lib.jpa.core.criteria.restriction.Restrictions;
 import jakarta.persistence.Entity;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class CriteriaToStringTest {
 
@@ -15,7 +15,7 @@ class CriteriaToStringTest {
     void eqProducesExpectedEqlAndParams() {
         Criteria<Dummy> c = Criteria.forClass(Dummy.class)
                 .add(Restrictions.eq("name", "Bob"));
-        assertEquals("select this from Dummy as this where this.name=? [[Bob]]", c.toString());
+        assertThat(c.toString()).isEqualTo("select this from Dummy as this where this.name=? [[Bob]]");
     }
 
     @Test
@@ -25,6 +25,6 @@ class CriteriaToStringTest {
                         .add(Restrictions.isNull("name"))
                         .add(Restrictions.ge("age", 18))
                 );
-        assertEquals("select this from Dummy as this where (this.name is null and this.age>=?) [[18]]", c.toString());
+        assertThat(c.toString()).isEqualTo("select this from Dummy as this where (this.name is null and this.age>=?) [[18]]");
     }
 }

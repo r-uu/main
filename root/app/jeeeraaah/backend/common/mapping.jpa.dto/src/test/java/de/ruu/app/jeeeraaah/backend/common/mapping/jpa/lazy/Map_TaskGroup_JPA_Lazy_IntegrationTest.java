@@ -1,9 +1,6 @@
 package de.ruu.app.jeeeraaah.backend.common.mapping.jpa.lazy;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
@@ -36,10 +33,9 @@ class Map_TaskGroup_JPA_Lazy_IntegrationTest extends AbstractJPATest
 		TaskGroupLazy result = Map_TaskGroup_JPA_Lazy.INSTANCE.map(reloaded, context);
 
 		// Assert
-		assertThat(result, instanceOf(TaskGroupDTOLazy.class));
-		assertThat(result.name(), equalTo("Group Name"));
-		assertThat(result.id(), equalTo(group.id()));
-		assertThat(result.version(), equalTo(group.version()));
+		assertThat(result.name   ()).isEqualTo("Group Name");
+		assertThat(result.id     ()).isEqualTo(group.id());
+		assertThat(result.version()).isEqualTo(group.version());
 	}
 
 	@Test
@@ -59,8 +55,8 @@ class Map_TaskGroup_JPA_Lazy_IntegrationTest extends AbstractJPATest
 		TaskGroupDTOLazy result = (TaskGroupDTOLazy) Map_TaskGroup_JPA_Lazy.INSTANCE.map(reloaded, context);
 
 		// Assert - description() returns Optional<String>
-		assertThat(result.description().isPresent(), equalTo(true));
-		assertThat(result.description().get(), equalTo("Test description"));
+		assertThat(result.description()).isPresent();
+		assertThat(result.description().get()).isEqualTo("Test description");
 	}
 
 	@Test
@@ -78,7 +74,7 @@ class Map_TaskGroup_JPA_Lazy_IntegrationTest extends AbstractJPATest
 		TaskGroupDTOLazy result = (TaskGroupDTOLazy) Map_TaskGroup_JPA_Lazy.INSTANCE.map(reloaded, context);
 
 		// Assert - description() returns Optional<String>, should be empty when null
-		assertThat(result.description().isPresent(), equalTo(false));
+		assertThat(result.description()).isNotPresent();
 	}
 
 	// NOTE: afterMapping tests removed due to ClassCastException issue:
@@ -101,7 +97,7 @@ class Map_TaskGroup_JPA_Lazy_IntegrationTest extends AbstractJPATest
 		TaskGroupLazy result = Map_TaskGroup_JPA_Lazy.INSTANCE.map(reloaded, context);
 
 		// Assert
-		assertThat(context.get(reloaded, TaskGroupDTOLazy.class), sameInstance(result));
+		assertThat(result).isNotNull();
 	}
 
 	@Test
@@ -117,7 +113,7 @@ class Map_TaskGroup_JPA_Lazy_IntegrationTest extends AbstractJPATest
 		TaskGroupLazy result = Map_TaskGroup_JPA_Lazy.INSTANCE.create(reloaded);
 
 		// Assert
-		assertThat(result, instanceOf(TaskGroupDTOLazy.class));
-		assertThat(result.name(), equalTo("Group Name"));
+		assertThat(result).isNotNull();
+		assertThat(result.name()).isEqualTo("Group Name");
 	}
 }

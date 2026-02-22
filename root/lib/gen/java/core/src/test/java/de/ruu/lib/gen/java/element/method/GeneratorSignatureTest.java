@@ -3,10 +3,7 @@ package de.ruu.lib.gen.java.element.method;
 import static de.ruu.lib.gen.java.context.CompilationUnitContext.context;
 import static de.ruu.lib.gen.java.element.method.GeneratorParameter.parameter;
 import static de.ruu.lib.gen.java.element.method.GeneratorSignature.signature;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,8 +25,8 @@ class GeneratorSignatureTest
 
 		GeneratorSignature generator = signature(context, name, GeneratorParameters.parameters(context));
 		
-		assertThat(generator, is(not(nullValue())));
-		assertThat(generator.generate().toString(), is(name + "()"));
+		assertThat(generator).isNotNull();
+		assertThat(generator.generate().toString()).isEqualTo(name + "()");
 	}
 
 	@Test void parameterisedGeneratorWithAnnotations() throws GeneratorException
@@ -96,10 +93,7 @@ class GeneratorSignatureTest
 		GeneratorSignature generatorSignature = signature(context, methodname, parameters);
 		
 		assertThat(
-				generatorSignature.generate().toString(),
-				is
-				(
-						  methodname
+				generatorSignature.generate().toString()).isEqualTo(methodname
 						+ "("
 						+    "@" + parameter1annotation1 + " "
 						+    "@" + parameter1annotation2 + " "
@@ -113,7 +107,6 @@ class GeneratorSignatureTest
 						+    "@" + parameter3annotation2 + " "
 						+    "@" + parameter3annotation3 + " "
 						+     parameter3type + " " + parameter3name
-						+ ")"
-				));
+						+ ")");
 	}
 }

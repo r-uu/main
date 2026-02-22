@@ -11,8 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static de.ruu.app.jeeeraaah.common.api.mapping.Mappings.toDTO;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class TestDTOsDataModel
 {
@@ -27,25 +26,22 @@ class TestDTOsDataModel
 		groups = new DataFactory(GROUP_COUNT, MAIN_TASKS_PER_GROUP_COUNT, SUB_TASKS_PER_MAIN_TASK_COUNT).data();
 	}
 
-	@Test void testGroupBeanCount() { assertThat(groups.size(), is(GROUP_COUNT)); }
+	@Test void testGroupBeanCount() { assertThat(groups.size()).isEqualTo(GROUP_COUNT); }
+
 	@Test void testTaskBeansPerGroupCount()
 	{
 		for (TaskGroupBean group : groups)
 		{
 			Optional<Set<TaskBean>> optional = group.tasks();
-			assertThat(optional.isPresent (), is(true));
-			assertThat
-			(
-					optional.get().size(),
-					is
-					(
-							// number of tasks has to be calculated
-								MAIN_TASKS_PER_GROUP_COUNT                                 //                 each main task
-							+ MAIN_TASKS_PER_GROUP_COUNT * SUB_TASKS_PER_MAIN_TASK_COUNT // each subtask of each main task
-					)
+			assertThat(optional).isPresent();
+			assertThat(optional.orElseThrow().size()).isEqualTo(
+					// number of tasks has to be calculated
+						MAIN_TASKS_PER_GROUP_COUNT                                 //                 each main task
+					+ MAIN_TASKS_PER_GROUP_COUNT * SUB_TASKS_PER_MAIN_TASK_COUNT // each subtask of each main task
 			);
 		}
 	}
+
 	@Test void testSubTaskBeansPerMainTaskBeans()
 	{
 		ReferenceCycleTracking context = new ReferenceCycleTracking();
@@ -53,22 +49,22 @@ class TestDTOsDataModel
 		for (TaskGroupBean group : groups)
 		{
 			Optional<Set<TaskBean>> optionalMainTasks = group.mainTasks();
-			assertThat(optionalMainTasks.isPresent(), is(true));
+			assertThat(optionalMainTasks).isPresent();
 
-			for (TaskBean mainTask : optionalMainTasks.get())
+			for (TaskBean mainTask : optionalMainTasks.orElseThrow())
 			{
 				Optional<Set<TaskBean>> optionalSubTasks = mainTask.subTasks();
-				assertThat(optionalSubTasks.isPresent (), is(true));
-				assertThat(optionalSubTasks.get().size(), is(SUB_TASKS_PER_MAIN_TASK_COUNT));
+				assertThat(optionalSubTasks).isPresent();
+				assertThat(optionalSubTasks.orElseThrow().size()).isEqualTo(SUB_TASKS_PER_MAIN_TASK_COUNT);
 
-				for (TaskBean subTask : optionalSubTasks.get())
+				for (TaskBean subTask : optionalSubTasks.orElseThrow())
 				{
 					TaskDTO taskDTO = toDTO(subTask, context);
-					assertThat("missing super task in mapped dto", taskDTO.superTask().isPresent(), is(true));
+					assertThat(taskDTO.superTask()).as("missing super task in mapped dto").isPresent();
 				}
 			}
 
-			assertThat(optionalMainTasks.get().size(), is(MAIN_TASKS_PER_GROUP_COUNT));
+			assertThat(optionalMainTasks.orElseThrow().size()).isEqualTo(MAIN_TASKS_PER_GROUP_COUNT);
 		}
 	}
 }

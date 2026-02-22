@@ -9,18 +9,15 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 
 class ConfigHealthCheckTest
 {
 	private Config testConfig;
-	private ClassLoader classLoader;
 
 	@BeforeEach
 	void setUp()
 	{
-		classLoader = Thread.currentThread().getContextClassLoader();
-
 		// Create a test config with all required properties
 		Map<String, String> props = new HashMap<>();
 
@@ -74,8 +71,8 @@ class ConfigHealthCheckTest
 			result.getErrors().forEach(System.out::println);
 		}
 
-		assertTrue(result.isHealthy(), "Valid configuration should pass");
-		assertTrue(result.getErrors().isEmpty(), "Should have no errors");
+		assertThat(result.isHealthy()).as("Valid configuration should pass").isTrue();
+		assertThat(result.getErrors()).as("Should have no errors").isEmpty();
 	}
 
 	@Test
@@ -90,11 +87,11 @@ class ConfigHealthCheckTest
 		ConfigHealthCheck check = new ConfigHealthCheck(incompleteConfig);
 		ConfigHealthCheck.Result result = check.validate();
 
-		assertFalse(result.isHealthy(), "Incomplete configuration should fail");
-		assertFalse(result.getErrors().isEmpty(), "Should have errors");
-		assertTrue(result.getErrors().stream()
-				.anyMatch(e -> e.contains("db.jeeeraaah.port") || e.contains("db.jeeeraaah.database")),
-				"Should report missing db.jeeeraaah properties");
+		assertThat(result.isHealthy()).as("Incomplete configuration should fail").isFalse();
+		assertThat(result.getErrors()).as("Should have errors").isNotEmpty();
+		assertThat(result.getErrors().stream()
+				.anyMatch(e -> e.contains("db.jeeeraaah.port") || e.contains("db.jeeeraaah.database")))
+				.as("Should report missing db.jeeeraaah properties").isTrue();
 	}
 
 	@Test
@@ -107,7 +104,7 @@ class ConfigHealthCheckTest
 		ConfigHealthCheck check = new ConfigHealthCheck(emptyValueConfig);
 		ConfigHealthCheck.Result result = check.validate();
 
-		assertFalse(result.isHealthy(), "Empty property values should fail");
+		assertThat(result.isHealthy()).as("Empty property values should fail").isFalse();
 	}
 
 	@Test
@@ -119,14 +116,17 @@ class ConfigHealthCheckTest
 		Map<String, String> validated = result.getValidatedProperties();
 
 		// Passwords should be masked
-		assertTrue(validated.get("db.jeeeraaah.password").startsWith("***"),
-				"Database password should be masked");
-		assertTrue(validated.get("keycloak.admin.password").startsWith("***"),
-				"Keycloak password should be masked");
+		assertThat(validated.get("db.jeeeraaah.password"))
+				.as("Database password should be masked")
+				.startsWith("***");
+		assertThat(validated.get("keycloak.admin.password"))
+				.as("Keycloak password should be masked")
+				.startsWith("***");
 
 		// Non-passwords should not be masked
-		assertEquals("localhost", validated.get("db.jeeeraaah.host"),
-				"Host should not be masked");
+		assertThat(validated.get("db.jeeeraaah.host"))
+				.as("Host should not be masked")
+				.isEqualTo("localhost");
 	}
 
 	@Test
@@ -140,8 +140,9 @@ class ConfigHealthCheckTest
 		ConfigHealthCheck check = new ConfigHealthCheck(prodConfig);
 		ConfigHealthCheck.Result result = check.validate();
 
-		assertFalse(result.getWarnings().isEmpty(),
-				"Should have warnings about weak passwords");
+		assertThat(result.getWarnings())
+				.as("Should have warnings about weak passwords")
+				.isNotEmpty();
 	}
 
 	@Test
@@ -151,9 +152,10 @@ class ConfigHealthCheckTest
 		ConfigHealthCheck.Result result = check.validate();
 
 		// In testing mode, weak passwords are allowed without warnings
-		assertTrue(result.getWarnings().isEmpty() ||
-				result.getWarnings().stream().noneMatch(w -> w.contains("password")),
-				"Should not warn about passwords in testing mode");
+		assertThat(result.getWarnings().isEmpty() ||
+				result.getWarnings().stream().noneMatch(w -> w.contains("password")))
+				.as("Should not warn about passwords in testing mode")
+				.isTrue();
 	}
 
 	@Test
@@ -166,8 +168,9 @@ class ConfigHealthCheckTest
 		ConfigHealthCheck check = new ConfigHealthCheck(emptyConfig);
 		ConfigHealthCheck.Result result = check.validate();
 
-		assertThrows(IllegalStateException.class, result::throwIfUnhealthy,
-				"Should throw exception for unhealthy config");
+		assertThatThrownBy(result::throwIfUnhealthy)
+				.as("Should throw exception for unhealthy config")
+				.isInstanceOf(IllegalStateException.class);
 	}
 
 	/**

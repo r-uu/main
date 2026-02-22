@@ -1,12 +1,6 @@
 package de.ruu.app.jeeeraaah.backend.common.mapping.lazy.jpa;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
@@ -39,10 +33,10 @@ class Map_TaskGroup_Lazy_JPA_IntegrationTest extends AbstractJPATest
 		TaskGroupJPA result = Map_TaskGroup_Lazy_JPA.INSTANCE.map(lazy);
 
 		// Assert
-		assertThat(result, notNullValue());
-		assertThat(result.name(), equalTo("Source Group"));
-		assertThat(result.id(), equalTo(sourceGroup.id()));
-		assertThat(result.version(), equalTo(sourceGroup.version()));
+		assertThat(result)          .isNotNull();
+		assertThat(result.name   ()).isEqualTo("Source Group");
+		assertThat(result.id     ()).isEqualTo(sourceGroup.id());
+		assertThat(result.version()).isEqualTo(sourceGroup.version());
 	}
 
 	@Test
@@ -63,7 +57,7 @@ class Map_TaskGroup_Lazy_JPA_IntegrationTest extends AbstractJPATest
 
 		// Assert: description mapping is ignored per @Mapping(target = "description", ignore = true)
 		// TaskGroupJPA.description() returns Optional<String>, should be empty
-		assertThat(result.description().isPresent(), equalTo(false));
+		assertThat(result.description().isPresent()).isFalse();
 	}
 
 	@Test
@@ -81,7 +75,7 @@ class Map_TaskGroup_Lazy_JPA_IntegrationTest extends AbstractJPATest
 		TaskGroupJPA result = Map_TaskGroup_Lazy_JPA.INSTANCE.map(lazy);
 
 		// Assert: tasks mapping is ignored per @Mapping(target = "tasks", ignore = true)
-		assertThat(result.tasks().isPresent(), is(false));
+		assertThat(result.tasks().isPresent()).isFalse();
 	}
 
 	@Test
@@ -99,8 +93,8 @@ class Map_TaskGroup_Lazy_JPA_IntegrationTest extends AbstractJPATest
 		TaskGroupJPA result = Map_TaskGroup_Lazy_JPA.INSTANCE.map(lazy);
 
 		// Assert - should be new instance, not same as source
-		assertThat(result, not(sameInstance(reloaded)));
-		assertThat(result.name(), equalTo(reloaded.name()));
+		assertThat(result).isNotSameAs(reloaded);
+		assertThat(result.name()).isEqualTo(reloaded.name());
 	}
 
 	@Test
@@ -118,8 +112,7 @@ class Map_TaskGroup_Lazy_JPA_IntegrationTest extends AbstractJPATest
 		TaskGroupJPA result = Map_TaskGroup_Lazy_JPA.INSTANCE.create(lazy);
 
 		// Assert
-		assertThat(result, notNullValue());
-		assertThat(result, instanceOf(TaskGroupJPA.class));
-		assertThat(result.name(), equalTo("Source Group"));
+		assertThat(result).isNotNull();
+		assertThat(result.name()).isEqualTo("Source Group");
 	}
 }

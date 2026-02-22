@@ -2,10 +2,7 @@ package de.ruu.lib.gen.java.doc;
 
 import static de.ruu.lib.gen.java.context.CompilationUnitContext.context;
 import static de.ruu.lib.gen.java.doc.GeneratorJavaDoc.javaDoc;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,8 +20,8 @@ class GeneratorJavaDocTest
 	{
 		GeneratorJavaDoc generator = javaDoc(context);
 
-		assertThat(generator, is(not(nullValue())));
-		assertThat(generator.generate().toString(), is(""));
+		assertThat(generator).isNotNull();
+		assertThat(generator.generate().toString()).isEqualTo("");
 	}
 
 	@Test void defaultGeneratorWithSingleLine() throws GeneratorException
@@ -34,7 +31,6 @@ class GeneratorJavaDocTest
 		assertThat(
 				javaDoc(context)
 						.add(line)
-						.generate().toString(),
-				is("/**" + System.lineSeparator() + " * " + line + System.lineSeparator() + " */"));
+						.generate().toString()).isEqualTo("/**" + System.lineSeparator() + " * " + line + System.lineSeparator() + " */");
 	}
 }

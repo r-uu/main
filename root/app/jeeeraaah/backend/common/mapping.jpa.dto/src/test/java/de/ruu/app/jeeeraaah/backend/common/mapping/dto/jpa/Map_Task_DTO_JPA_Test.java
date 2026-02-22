@@ -1,9 +1,6 @@
 package de.ruu.app.jeeeraaah.backend.common.mapping.dto.jpa;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
@@ -32,14 +29,14 @@ public class Map_Task_DTO_JPA_Test
 		TaskJPA jpa = Map_Task_DTO_JPA.INSTANCE.map(dto, context);
 
 		// assert: basic fields are copied
-		assertThat(jpa, notNullValue());
-		assertThat(jpa.name(), is("test task"));
-		assertThat(jpa.description().isPresent(), is(true));
-		assertThat(jpa.description().get(), is("test description"));
+		assertThat(jpa).isNotNull();
+		assertThat(jpa.name()).isEqualTo("test task");
+		assertThat(jpa.description().isPresent()).isTrue();
+		assertThat(jpa.description().get()).isEqualTo("test description");
 
 		// assert: task is added to context
 		TaskJPA jpaFromContext = context.get(dto, TaskJPA.class);
-		assertThat(jpaFromContext, notNullValue());
+		assertThat(jpaFromContext).isNotNull();
 	}
 
 	@Test
@@ -58,9 +55,9 @@ public class Map_Task_DTO_JPA_Test
 		TaskJPA jpa = Map_Task_DTO_JPA.INSTANCE.map(dto, context);
 
 		// assert: super task should be mapped and in context
-		assertThat(jpa.superTask().isPresent(), is(true));
-		assertThat(jpa.superTask().get().name(), is("super task"));
-		assertThat(context.get(superTaskDTO, TaskJPA.class), notNullValue());
+		assertThat(jpa.superTask().isPresent()).isTrue();
+		assertThat(jpa.superTask().get().name()).isEqualTo("super task");
+		assertThat(context.get(superTaskDTO, TaskJPA.class)).isNotNull();
 	}
 
 	@Test
@@ -81,10 +78,10 @@ public class Map_Task_DTO_JPA_Test
 		TaskJPA jpa = Map_Task_DTO_JPA.INSTANCE.map(dto, context);
 
 		// assert: sub tasks should be mapped and in context
-		assertThat(jpa.subTasks().isPresent(), is(true));
-		assertThat(jpa.subTasks().get().size(), is(2));
-		assertThat(context.get(subTask1, TaskJPA.class), notNullValue());
-		assertThat(context.get(subTask2, TaskJPA.class), notNullValue());
+		assertThat(jpa.subTasks().isPresent()).isTrue();
+		assertThat(jpa.subTasks().get().size()).isEqualTo(2);
+		assertThat(context.get(subTask1, TaskJPA.class)).isNotNull();
+		assertThat(context.get(subTask2, TaskJPA.class)).isNotNull();
 	}
 
 	@Test
@@ -102,7 +99,7 @@ public class Map_Task_DTO_JPA_Test
 		TaskJPA jpa = Map_Task_DTO_JPA.INSTANCE.map(dto, context);
 
 		// assert: no super task
-		assertThat(jpa.superTask().isPresent(), is(false));
+		assertThat(jpa.superTask().isPresent()).isFalse();
 	}
 
 	@Test
@@ -125,8 +122,8 @@ public class Map_Task_DTO_JPA_Test
 
 		// assert: super task should be the same instance from context
 		TaskJPA superTaskFromContext = context.get(superTaskDTO, TaskJPA.class);
-		assertThat(superTaskFromContext, sameInstance(preMappedSuperTask));
-		assertThat(jpa.superTask().get(), sameInstance(preMappedSuperTask));
+		assertThat(superTaskFromContext).isEqualTo(preMappedSuperTask);
+		assertThat(jpa.superTask().get()).isEqualTo(preMappedSuperTask);
 	}
 
 	@Test
@@ -144,8 +141,8 @@ public class Map_Task_DTO_JPA_Test
 		TaskJPA jpa = Map_Task_DTO_JPA.INSTANCE.map(dto, context);
 
 		// assert
-		assertThat(jpa.name(), is("test task"));
-		assertThat(jpa.description().isPresent(), is(false));
+		assertThat(jpa.name()).isEqualTo("test task");
+		assertThat(jpa.description().isPresent()).isFalse();
 	}
 
 	@Test
@@ -161,7 +158,7 @@ public class Map_Task_DTO_JPA_Test
 		TaskJPA jpa = Map_Task_DTO_JPA.INSTANCE.map(dto, context);
 
 		// assert: correct type is created
-		assertThat(jpa, notNullValue());
-		assertThat(jpa.getClass().getSimpleName(), is("TaskJPA"));
+		assertThat(jpa).isNotNull();
+		assertThat(jpa.getClass().getSimpleName()).isEqualTo("TaskJPA");
 	}
 }

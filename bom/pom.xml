@@ -46,8 +46,8 @@
 		<!-- ================================================================================== -->
 		<!-- Configuration properties loaded from .env file                                     -->
 		<!-- ================================================================================== -->
-		<!-- Default values (will be overridden by .env file if it exists)                     -->
-		<!-- The .env file is loaded via properties-maven-plugin in the load-env profile       -->
+		<!-- Default values (will be overridden by .env file if it exists)                      -->
+		<!-- The .env file is loaded via properties-maven-plugin in the load-env profile        -->
 		<!-- ================================================================================== -->
 
 		<!-- PostgreSQL Admin -->
@@ -113,9 +113,9 @@
 				<version>1.0.11</version>
 			</dependency>
 			<dependency>
-				<groupId>org.hamcrest</groupId>
-				<artifactId>hamcrest</artifactId>
-				<version>3.0</version>
+				<groupId>org.assertj</groupId>
+				<artifactId>assertj-core</artifactId>
+				<version>3.27.3</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>

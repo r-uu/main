@@ -9,9 +9,7 @@ import static de.ruu.lib.util.Files.readFromFile;
 import static de.ruu.lib.util.Files.toDirectoryName;
 import static de.ruu.lib.util.Files.toSourceFilePath;
 import static de.ruu.lib.util.Files.writeToFile;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
@@ -76,17 +74,17 @@ class FilesTest
 		// Test writing to file
 		writeToFile(content, filePath);
 		
-		assertThat(java.nio.file.Files.exists    (filePath), is(true));
-		assertThat(java.nio.file.Files.readString(filePath), equalTo(content));
-		
+		assertThat(java.nio.file.Files.exists    (filePath)).isEqualTo(true);
+		assertThat(java.nio.file.Files.readString(filePath)).isEqualTo(content);
+
 		// Test reading from file
 		Optional<String> readContent = readFromFile(filePath);
-		assertThat(readContent.isPresent(), is(true));
-		assertThat(readContent.get(), equalTo(content));
-		
+		assertThat(readContent.isPresent()).isEqualTo(true);
+		assertThat(readContent.get()).isEqualTo(content);
+
 		// Test reading non-existent file
 		Path nonExistentFile = tempDir.resolve("non-existent.txt");
-		assertThat(readFromFile(nonExistentFile).isPresent(), is(false));
+		assertThat(readFromFile(nonExistentFile).isPresent()).isEqualTo(false);
 	}
 	
 	@Test void testCreateFileIfNotExists() throws IOException
@@ -95,47 +93,47 @@ class FilesTest
 		
 		// Test creating new file
 		Path createdFile = createFileIfNotExists(newFile);
-		assertThat(createdFile, equalTo(newFile));
-		assertThat(java.nio.file.Files.exists(createdFile), is(true));
+		assertThat(createdFile).isEqualTo(newFile);
+		assertThat(java.nio.file.Files.exists(createdFile)).isEqualTo(true);
 		
 		// Test with existing file
 		Path existingFile = createFileIfNotExists(testFile);
-		assertThat(existingFile, equalTo(testFile));
+		assertThat(existingFile).isEqualTo(testFile);
 	}
 	
 	@Test void testDeleteRecursivelyStrict() throws IOException
 	{
 		// Test strict mode - should throw on failure
-		assertThat(deleteRecursively(testDir, DeleteMode.STRICT), is(true));
-		assertThat(java.nio.file.Files.exists(testDir), is(false));
+		assertThat(deleteRecursively(testDir, DeleteMode.STRICT)).isEqualTo(true);
+		assertThat(java.nio.file.Files.exists(testDir)).isEqualTo(false);
 		
 		// Test with non-existent directory
-		assertThat(deleteRecursively(Paths.get("non-existent"), DeleteMode.STRICT), is(false));
+		assertThat(deleteRecursively(Paths.get("non-existent"), DeleteMode.STRICT)).isEqualTo(false);
 	}
 	
 	@Test void testDeleteRecursivelyQuiet() throws IOException
 	{
 		// Test quiet mode
-		assertThat(deleteRecursively(testDir, DeleteMode.QUIET), is(true));
-		assertThat(java.nio.file.Files.exists(testDir), is(false));
+		assertThat(deleteRecursively(testDir, DeleteMode.QUIET)).isEqualTo(true);
+		assertThat(java.nio.file.Files.exists(testDir)).isEqualTo(false);
 	}
 	
 	@Test void testDeleteRecursivelyEfficient() throws IOException
 	{
 		// Test efficient mode
-		assertThat(deleteRecursively(testDir, DeleteMode.EFFICIENT), is(true));
-		assertThat(java.nio.file.Files.exists(testDir), is(false));
+		assertThat(deleteRecursively(testDir, DeleteMode.EFFICIENT)).isEqualTo(true);
+		assertThat(java.nio.file.Files.exists(testDir)).isEqualTo(false);
 	}
 	
 	@Test void testIsDirectoryEmpty() throws IOException
 	{
 		// Test with non-empty directory
-		assertThat(isDirectoryEmpty(testDir), is(false));
+		assertThat(isDirectoryEmpty(testDir)).isEqualTo(false);
 		
 		// Test with empty directory
 		Path emptyDir = tempDir.resolve("emptyDir");
 		java.nio.file.Files.createDirectories(emptyDir);
-		assertThat(isDirectoryEmpty(emptyDir), is(true));
+		assertThat(isDirectoryEmpty(emptyDir)).isEqualTo(true);
 	}
 	
 	@Test void testCopyDirectoryWithContent() throws IOException
@@ -145,12 +143,12 @@ class FilesTest
 		// Test copy directory with content
 		copyDirectoryWithContent(testDir, targetDir);
 		
-		assertThat(java.nio.file.Files.exists(targetDir), is(true));
-		assertThat(java.nio.file.Files.exists(targetDir.resolve("nested/nested.txt")), is(true));
+		assertThat(java.nio.file.Files.exists(targetDir)).isEqualTo(true);
+		assertThat(java.nio.file.Files.exists(targetDir.resolve("nested/nested.txt"))).isEqualTo(true);
 		
 		// Test with replace existing
 		copyDirectoryWithContentReplaceExisting(testDir, targetDir);
-		assertThat(java.nio.file.Files.exists(targetDir.resolve("nested/nested.txt")), is(true));
+		assertThat(java.nio.file.Files.exists(targetDir.resolve("nested/nested.txt"))).isEqualTo(true);
 	}
 	
 	@Test void testToSourceFilePath()
@@ -158,8 +156,8 @@ class FilesTest
 		// Test package to directory conversion
 		String packageName  = "com.example.test";
 		String expectedPath = "com/example/test".replace('/', File.separatorChar);
-		assertThat(toDirectoryName(packageName), equalTo(expectedPath));
-		
+		assertThat(toDirectoryName(packageName)).isEqualTo(expectedPath);
+
 		// Test class to source file path
 		Class<?> testClass = getClass();
 		String expectedFilePath = 
@@ -167,6 +165,6 @@ class FilesTest
 			File.separatorChar + 
 			testClass.getSimpleName() + 
 			".java";
-		assertThat(toSourceFilePath(testClass), equalTo(expectedFilePath));
+		assertThat(toSourceFilePath(testClass)).isEqualTo(expectedFilePath);
 	}
 }

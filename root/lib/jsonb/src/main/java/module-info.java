@@ -1,3 +1,6 @@
+/**
+ * JSON-B utilities module.
+ */
 module de.ruu.lib.jsonb
 {
 	exports de.ruu.lib.jsonb;

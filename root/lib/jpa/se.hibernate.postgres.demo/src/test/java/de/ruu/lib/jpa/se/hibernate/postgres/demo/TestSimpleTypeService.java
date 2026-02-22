@@ -14,10 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Optional;
 
 import static java.util.Objects.isNull;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Vetoed
 @DisabledOnServerNotListening(propertyNameHost = "database.host", propertyNamePort = "database.port")
@@ -72,25 +69,25 @@ class TestSimpleTypeService
 			return;
 		}
 		SimpleTypeService service = seContainer.select(SimpleTypeService.class).get();
-		assertThat(service, is(not(nullValue())));
+		assertThat(service).isNotNull();
 
 		String name = "schmottekk";
 		SimpleTypeEntity entity = new SimpleTypeEntity(name);
 		entity = service.save(entity);
-		assertThat(entity, is(not(nullValue())));
-		assertThat(entity.id(), is(not(nullValue())));
-		assertThat(entity.name(), is(name));
+		assertThat(entity).isNotNull();
+		assertThat(entity.id()).isNotNull();
+		assertThat(entity.name()).isEqualTo(name);
 
 		name = "äffchen";
 		entity.name(name);
 		entity = service.save(entity);
-		assertThat(entity, is(not(nullValue())));
-		assertThat(entity.id(), is(not(nullValue())));
-		assertThat(entity.name(), is(name));
+		assertThat(entity).isNotNull();
+		assertThat(entity.id()).isNotNull();
+		assertThat(entity.name()).isEqualTo(name);
 
 		service.delete(entity.getId());
 		Optional<SimpleTypeEntity> optional = service.find(entity.getId());
-		assertThat(optional, is(not(nullValue())));
-		assertThat(optional.isPresent(), is(false));
+		assertThat(optional).isNotNull();
+		assertThat(optional.isPresent()).isEqualTo(false);
 	}
 }

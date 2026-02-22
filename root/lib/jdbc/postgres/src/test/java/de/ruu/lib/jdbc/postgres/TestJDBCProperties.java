@@ -3,10 +3,7 @@ package de.ruu.lib.jdbc.postgres;
 import org.junit.jupiter.api.Test;
 import org.postgresql.Driver;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class TestJDBCProperties
 {
@@ -15,17 +12,15 @@ class TestJDBCProperties
 		String host     = "localhost";
 		int    port     = 5432;
 		String database = "lib_test";
-		String user     = database;
-		String password = database;
 
 		JDBCProperties jdbcProperties =
 				new JDBCProperties(
-						new JDBCURL(host, port, database), user, password);
+						new JDBCURL(host, port, database), database, database);
 
-		assertThat(jdbcProperties, is(not(nullValue())));
+		assertThat(jdbcProperties).isNotNull();
 
-		assertThat(jdbcProperties.user(),     is(user));
-		assertThat(jdbcProperties.password(), is(password));
-		assertThat(jdbcProperties.driver(),   is(Driver.class.getName()));
+		assertThat(jdbcProperties.user()).isEqualTo(database);
+		assertThat(jdbcProperties.password()).isEqualTo(database);
+		assertThat(jdbcProperties.driver()).isEqualTo(Driver.class.getName());
 	}
 }

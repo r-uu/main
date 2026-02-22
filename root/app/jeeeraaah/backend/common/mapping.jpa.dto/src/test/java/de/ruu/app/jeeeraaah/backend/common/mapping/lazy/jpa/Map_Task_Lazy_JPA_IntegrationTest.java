@@ -1,9 +1,6 @@
 package de.ruu.app.jeeeraaah.backend.common.mapping.lazy.jpa;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
@@ -31,8 +28,8 @@ class Map_Task_Lazy_JPA_IntegrationTest extends AbstractJPATest
 		TaskJPA result = Map_Task_Lazy_JPA.INSTANCE.create(lazyTask, group, context);
 
 		// Assert - ObjectFactory correctly sets name from lazyTask.name()
-		assertThat(result.taskGroup(), sameInstance(group));
-		assertThat(result.name(), equalTo("Task Name"));
+		assertThat(result.taskGroup()).isEqualTo(group);
+		assertThat(result.name()).isEqualTo("Task Name");
 	}
 
 	@Test
@@ -52,9 +49,9 @@ class Map_Task_Lazy_JPA_IntegrationTest extends AbstractJPATest
 		TaskJPA result = Map_Task_Lazy_JPA.INSTANCE.map(lazyTask, reloadedGroup, context);
 
 		// Assert - taskGroup and name are set correctly
-		assertThat(result, notNullValue());
-		assertThat(result.taskGroup(), sameInstance(reloadedGroup));
-		assertThat(result.name(), equalTo("Task Name"));
+		assertThat(result).isNotNull();
+		assertThat(result.taskGroup()).isEqualTo(reloadedGroup);
+		assertThat(result.name()).isEqualTo("Task Name");
 	}
 
 	@Test
@@ -76,9 +73,9 @@ class Map_Task_Lazy_JPA_IntegrationTest extends AbstractJPATest
 		TaskJPA result2 = Map_Task_Lazy_JPA.INSTANCE.map(lazyTask2, reloadedGroup, context);
 
 		// Assert - both tasks reference the same group and have correct names
-		assertThat(result1.taskGroup(), sameInstance(result2.taskGroup()));
-		assertThat(result1.taskGroup(), sameInstance(reloadedGroup));
-		assertThat(result1.name(), equalTo("Task 1"));
-		assertThat(result2.name(), equalTo("Task 2"));
+		assertThat(result1.taskGroup()).isSameAs(result2.taskGroup());
+		assertThat(result1.taskGroup()).isSameAs(reloadedGroup);
+		assertThat(result1.name()).isEqualTo("Task 1");
+		assertThat(result2.name()).isEqualTo("Task 2");
 	}
 }

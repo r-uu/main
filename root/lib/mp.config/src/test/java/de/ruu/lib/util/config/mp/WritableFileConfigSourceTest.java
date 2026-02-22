@@ -1,13 +1,6 @@
 package de.ruu.lib.util.config.mp;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -98,8 +91,8 @@ class WritableFileConfigSourceTest
 
 		String name = source.getName();
 
-		assertThat("Name should contain class name", name, containsString("WritableFileConfigSource"));
-		assertThat("Name should contain file path", name, containsString(testConfigFile.getAbsolutePath()));
+		assertThat(name).as("Name should contain class name").contains("WritableFileConfigSource");
+		assertThat(name).as("Name should contain file path").contains(testConfigFile.getAbsolutePath());
 	}
 
 	/**
@@ -113,7 +106,7 @@ class WritableFileConfigSourceTest
 
 		int ordinal = source.getOrdinal();
 
-		assertThat("Ordinal should be 500", ordinal, is(500));
+		assertThat(ordinal).as("Ordinal should be 500").isEqualTo(500);
 	}
 
 	/** tests that properties are loaded from the file when first accessed. */
@@ -125,7 +118,7 @@ class WritableFileConfigSourceTest
 		// Properties should be loaded on first access
 		String value = source.getValue("test.property.one");
 
-		assertThat("Property should be loaded from file", value, is("value1"));
+		assertThat(value).as("Property should be loaded from file").isEqualTo("value1");
 	}
 
 	/** Tests retrieving a property value by key. */
@@ -138,9 +131,9 @@ class WritableFileConfigSourceTest
 		String value2 = source.getValue("test.property.two");
 		String value3 = source.getValue("test.number");
 
-		assertThat("First property value should match", value1, is("value1"));
-		assertThat("Second property value should match", value2, is("value2"));
-		assertThat("Numeric property value should match", value3, is("42"));
+		assertThat(value1).as("First property value should match").isEqualTo("value1");
+		assertThat(value2).as("Second property value should match").isEqualTo("value2");
+		assertThat(value3).as("Numeric property value should match").isEqualTo("42");
 	}
 
 	/** tests retrieving a non-existent property returns null. */
@@ -151,7 +144,7 @@ class WritableFileConfigSourceTest
 
 		String value = source.getValue("non.existent.key");
 
-		assertThat("Non-existent property should return null", value, is(nullValue()));
+		assertThat(value).as("Non-existent property should return null").isNull();
 	}
 
 	/** tests getting all property names. */
@@ -162,11 +155,11 @@ class WritableFileConfigSourceTest
 
 		Set<String> propertyNames = source.getPropertyNames();
 
-		assertThat("Property names should not be null", propertyNames, is(notNullValue()));
-		assertThat("Should contain all loaded properties", propertyNames, hasSize(3));
-		assertThat("Should contain first property", propertyNames, hasItem("test.property.one"));
-		assertThat("Should contain second property", propertyNames, hasItem("test.property.two"));
-		assertThat("Should contain third property", propertyNames, hasItem("test.number"));
+		assertThat(propertyNames).as("Property names should not be null").isNotNull();
+		assertThat(propertyNames).as("Should contain all loaded properties").hasSize(3);
+		assertThat(propertyNames).as("Should contain first property").contains("test.property.one");
+		assertThat(propertyNames).as("Should contain second property").contains("test.property.two");
+		assertThat(propertyNames).as("Should contain third property").contains("test.number");
 	}
 
 	/** tests getting all properties as a map. */
@@ -177,11 +170,11 @@ class WritableFileConfigSourceTest
 
 		Map<String, String> properties = source.getProperties();
 
-		assertThat("Properties map should not be null", properties, is(notNullValue()));
-		assertThat("Properties map should contain all entries", properties.entrySet(), hasSize(3));
-		assertThat("Properties map should contain correct value", properties, hasEntry("test.property.one", "value1"));
-		assertThat("Properties map should contain correct value", properties, hasEntry("test.property.two", "value2"));
-		assertThat("Properties map should contain correct value", properties, hasEntry("test.number", "42"));
+		assertThat(properties).as("Properties map should not be null").isNotNull();
+		assertThat(properties.entrySet()).as("Properties map should contain all entries").hasSize(3);
+		assertThat(properties).as("Properties map should contain correct value").containsEntry("test.property.one", "value1");
+		assertThat(properties).as("Properties map should contain correct value").containsEntry("test.property.two", "value2");
+		assertThat(properties).as("Properties map should contain correct value").containsEntry("test.number", "42");
 	}
 
 	/** tests that the returned properties map is unmodifiable. */
@@ -195,12 +188,12 @@ class WritableFileConfigSourceTest
 		try
 		{
 			properties.put("new.key", "new.value");
-			assertThat("Should have thrown UnsupportedOperationException", false);
+			assertThat(false).as("Should have thrown UnsupportedOperationException").isTrue();
 		}
 		catch (UnsupportedOperationException e)
 		{
 			// Expected - map should be unmodifiable
-			assertThat("Exception should be thrown when trying to modify", true);
+			assertThat(true).as("Exception should be thrown when trying to modify").isTrue();
 		}
 	}
 
@@ -215,7 +208,7 @@ class WritableFileConfigSourceTest
 
 		// Verify it's in the config source
 		String value = source.getValue("new.property");
-		assertThat("New property should be retrievable", value, is("new.value"));
+		assertThat(value).as("New property should be retrievable").isEqualTo("new.value");
 
 		// Verify it's persisted to file
 		Properties fileProps = new Properties();
@@ -224,7 +217,7 @@ class WritableFileConfigSourceTest
 			fileProps.load(fis);
 		}
 
-		assertThat("New property should be persisted to file", fileProps.getProperty("new.property"), is("new.value"));
+		assertThat(fileProps.getProperty("new.property")).as("New property should be persisted to file").isEqualTo("new.value");
 	}
 
 	/** tests updating an existing property value. */
@@ -238,7 +231,7 @@ class WritableFileConfigSourceTest
 
 		// Verify it's updated
 		String value = source.getValue("test.property.one");
-		assertThat("Property should be updated", value, is("updated.value"));
+		assertThat(value).as("Property should be updated").isEqualTo("updated.value");
 
 		// Verify it's persisted to file
 		Properties fileProps = new Properties();
@@ -247,8 +240,7 @@ class WritableFileConfigSourceTest
 			fileProps.load(fis);
 		}
 
-		assertThat("Updated property should be persisted to file", fileProps.getProperty("test.property.one"),
-				is("updated.value"));
+		assertThat(fileProps.getProperty("test.property.one")).as("Updated property should be persisted to file").isEqualTo("updated.value");
 	}
 
 	/** tests removing a property. */
@@ -262,10 +254,10 @@ class WritableFileConfigSourceTest
 
 		// Verify it's removed from config source
 		String value = source.getValue("test.property.one");
-		assertThat("Removed property should return null", value, is(nullValue()));
+		assertThat(value).as("Removed property should return null").isNull();
 
 		// Verify other properties still exist
-		assertThat("Other properties should still exist", source.getValue("test.property.two"), is("value2"));
+		assertThat(source.getValue("test.property.two")).as("Other properties should still exist").isEqualTo("value2");
 
 		// Verify removal is persisted to file
 		Properties fileProps = new Properties();
@@ -274,8 +266,8 @@ class WritableFileConfigSourceTest
 			fileProps.load(fis);
 		}
 
-		assertThat("Removed property should not be in file", fileProps.containsKey("test.property.one"), is(false));
-		assertThat("Other properties should still be in file", fileProps.getProperty("test.property.two"), is("value2"));
+		assertThat(fileProps.containsKey("test.property.one")).as("Removed property should not be in file").isEqualTo(false);
+		assertThat(fileProps.getProperty("test.property.two")).as("Other properties should still be in file").isEqualTo("value2");
 	}
 
 	/**
@@ -292,7 +284,7 @@ class WritableFileConfigSourceTest
 		// Should not throw exception, just have empty properties
 		Map<String, String> properties = source.getProperties();
 
-		assertThat("Properties should be empty when file doesn't exist", properties.entrySet(), hasSize(0));
+		assertThat(properties.entrySet()).as("Properties should be empty when file doesn't exist").hasSize(0);
 	}
 
 	/** tests that multiple operations maintain consistency. */
@@ -311,10 +303,10 @@ class WritableFileConfigSourceTest
 		source.removeProperty("test.property.two");
 
 		// Verify state
-		assertThat("New property should exist", source.getValue("prop.a"), is("valueA"));
-		assertThat("Updated property should have new value", source.getValue("test.number"), is("100"));
-		assertThat("Removed property should be null", source.getValue("test.property.two"), is(nullValue()));
-		assertThat("Unchanged property should still exist", source.getValue("test.property.one"), is("value1"));
+		assertThat(source.getValue("prop.a")).as("New property should exist").isEqualTo("valueA");
+		assertThat(source.getValue("test.number")).as("Updated property should have new value").isEqualTo("100");
+		assertThat(source.getValue("test.property.two")).as("Removed property should be null").isNull();
+		assertThat(source.getValue("test.property.one")).as("Unchanged property should still exist").isEqualTo("value1");
 
 		// Verify file persistence
 		Properties fileProps = new Properties();
@@ -323,9 +315,9 @@ class WritableFileConfigSourceTest
 			fileProps.load(fis);
 		}
 
-		assertThat("File should have 3 properties", fileProps.size(), is(3));
-		assertThat("File should contain new property", fileProps.getProperty("prop.a"), is("valueA"));
-		assertThat("File should contain updated property", fileProps.getProperty("test.number"), is("100"));
-		assertThat("File should not contain removed property", fileProps.containsKey("test.property.two"), is(false));
+		assertThat(fileProps.size()).as("File should have 3 properties").isEqualTo(3);
+		assertThat(fileProps.getProperty("prop.a")).as("File should contain new property").isEqualTo("valueA");
+		assertThat(fileProps.getProperty("test.number")).as("File should contain updated property").isEqualTo("100");
+		assertThat(fileProps.containsKey("test.property.two")).as("File should not contain removed property").isEqualTo(false);
 	}
 }

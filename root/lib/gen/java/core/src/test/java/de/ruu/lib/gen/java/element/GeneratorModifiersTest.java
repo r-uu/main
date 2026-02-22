@@ -2,10 +2,7 @@ package de.ruu.lib.gen.java.element;
 
 import static de.ruu.lib.gen.java.context.CompilationUnitContext.context;
 import static de.ruu.lib.gen.java.element.GeneratorModifiers.modifiers;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +20,7 @@ class GeneratorModifiersTest
 	{
 		GeneratorModifiers generator = modifiers(context);
 		
-		assertThat(generator, is(not(nullValue())));
-		assertThat(generator.generate().toString(), is(""));
+		assertThat(generator).isNotNull();
+		assertThat(generator.generate().toString()).isEqualTo("");
 	}
 }

@@ -8,7 +8,7 @@ import org.keycloak.representations.idm.UserRepresentation;
 
 import lombok.extern.slf4j.Slf4j;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 
 /**
  * Integration tests for KeycloakUserManager.
@@ -76,16 +76,16 @@ class KeycloakUserManagerIT
 
 		createdUserId = manager.createUser(username, email);
 
-		assertNotNull(createdUserId);
-		assertFalse(createdUserId.isEmpty());
+		assertThat(createdUserId).isNotNull();
+		assertThat(createdUserId).isNotEmpty();
 
 		// Verify user exists
 		UserRepresentation user = manager.findUserByUsername(username);
-		assertNotNull(user);
-		assertEquals(username, user.getUsername());
-		assertEquals(email, user.getEmail());
-		assertTrue(user.isEnabled());
-		assertTrue(user.isEmailVerified());
+		assertThat(user).isNotNull();
+		assertThat(user.getUsername()).isEqualTo(username);
+		assertThat(user.getEmail()).isEqualTo(email);
+		assertThat(user.isEnabled()).isTrue();
+		assertThat(user.isEmailVerified()).isTrue();
 	}
 
 	@Test
@@ -97,12 +97,12 @@ class KeycloakUserManagerIT
 
 		createdUserId = manager.createUser(username, email, password, "task-admin");
 
-		assertNotNull(createdUserId);
+		assertThat(createdUserId).isNotNull();
 
 		// Verify user exists
 		UserRepresentation user = manager.findUserByUsername(username);
-		assertNotNull(user);
-		assertEquals(username, user.getUsername());
+		assertThat(user).isNotNull();
+		assertThat(user.getUsername()).isEqualTo(username);
 	}
 
 	@Test
@@ -114,7 +114,8 @@ class KeycloakUserManagerIT
 		createdUserId = manager.createUser(username, email);
 
 		// Should not throw exception
-		assertDoesNotThrow(() -> manager.setPassword(createdUserId, "new-password", false));
+		assertThatCode(() -> manager.setPassword(createdUserId, "new-password", false))
+				.doesNotThrowAnyException();
 	}
 
 	@Test
@@ -131,13 +132,13 @@ class KeycloakUserManagerIT
 
 		// Verify user no longer exists
 		UserRepresentation user = manager.findUserByUsername(username);
-		assertNull(user);
+		assertThat(user).isNull();
 	}
 
 	@Test
 	void testFindNonExistentUser()
 	{
 		UserRepresentation user = manager.findUserByUsername("this-user-does-not-exist-12345");
-		assertNull(user);
+		assertThat(user).isNull();
 	}
 }

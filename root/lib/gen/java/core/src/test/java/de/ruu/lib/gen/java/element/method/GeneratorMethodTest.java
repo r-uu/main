@@ -10,10 +10,7 @@ import static de.ruu.lib.gen.java.element.method.GeneratorMethod.method;
 import static de.ruu.lib.gen.java.element.method.GeneratorMethodInterface.interfaceMethod;
 import static de.ruu.lib.util.Constants.LS;
 import static de.ruu.lib.util.Strings.normaliseLineSeparator;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,8 +33,8 @@ class GeneratorMethodTest
 				method(context, type, name)
 						.childNodesSeparator(LS);
 
-		assertThat(generator, is(not(nullValue())));
-		assertThat(generator.generate().toString(), is(type + " " + name + "()" + LS + "{" + LS + "}"));
+		assertThat(generator).isNotNull();
+		assertThat(generator.generate().toString()).isEqualTo(type + " " + name + "()" + LS + "{" + LS + "}");
 	}
 
 	@Test void generatorAnnotations() throws GeneratorException
@@ -53,10 +50,10 @@ class GeneratorMethodTest
 								annotations(context)
 										.add(annotation(context, annotation)));
 
-		assertThat(generator, is(not(nullValue())));
+		assertThat(generator).isNotNull();
 		StringBuilder actual   = generator.generate();
 		String        expected = "@" + annotation + LS + type + " " + name + "()" + LS + "{" + LS + "}";
-		assertThat(actual.toString(), is(expected));
+		assertThat(actual.toString()).isEqualTo(expected);
 	}
 
 	@Test void generatorModifiers() throws GeneratorException
@@ -74,10 +71,9 @@ class GeneratorMethodTest
 										.setStatic(true)
 						);
 
-		assertThat(generator, is(not(nullValue())));
+		assertThat(generator).isNotNull();
 		assertThat(
-				generator.generate().toString(),
-				is("public final static " + type + " " + name + "();"));
+				generator.generate().toString()).isEqualTo("public final static " + type + " " + name + "();");
 	}
 
 	@Test void generatorJavaDocModifiers() throws GeneratorException
@@ -102,7 +98,7 @@ class GeneratorMethodTest
 										.setStatic(true)
 						);
 
-		assertThat(generator, is(not(nullValue())));
+		assertThat(generator).isNotNull();
 
 		String expected =
 				"""
@@ -115,7 +111,6 @@ class GeneratorMethodTest
 //		log.debug(LS + "/**" + LS + " * javaDoc" + LS + " */" + LS + "public final static " + type + " " + name + " = " + value + ";");
 
 		assertThat(
-				normaliseLineSeparator(generator.generate().toString()),
-				is(normaliseLineSeparator(expected)));
+				normaliseLineSeparator(generator.generate().toString())).isEqualTo(normaliseLineSeparator(expected));
 	}
 }

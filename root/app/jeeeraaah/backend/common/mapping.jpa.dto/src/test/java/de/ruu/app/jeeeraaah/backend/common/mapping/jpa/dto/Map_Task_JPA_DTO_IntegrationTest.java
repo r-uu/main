@@ -1,10 +1,6 @@
 package de.ruu.app.jeeeraaah.backend.common.mapping.jpa.dto;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
@@ -44,7 +40,7 @@ public class Map_Task_JPA_DTO_IntegrationTest extends AbstractJPATest
 
 		// Verify superTask is loaded
 		PersistenceUtil persistenceUtil = Persistence.getPersistenceUtil();
-		assertThat("superTask should be loaded", persistenceUtil.isLoaded(reloadedSubTask, "superTask"), is(true));
+		assertThat(persistenceUtil.isLoaded(reloadedSubTask, "superTask")).as("superTask should be loaded").isTrue();
 
 		ReferenceCycleTracking context = new ReferenceCycleTracking();
 
@@ -52,15 +48,15 @@ public class Map_Task_JPA_DTO_IntegrationTest extends AbstractJPATest
 		TaskDTO dto = Map_Task_JPA_DTO.INSTANCE.map(reloadedSubTask, context);
 
 		// assert: superTask should be mapped
-		assertThat(dto.superTask().isPresent(), is(true));
+		assertThat(dto.superTask().isPresent()).isTrue();
 		TaskDTO mappedSuperTask = dto.superTask().get();
-		assertThat(mappedSuperTask, notNullValue());
-		assertThat(mappedSuperTask.name(), is("super task"));
+		assertThat(mappedSuperTask).isNotNull();
+		assertThat(mappedSuperTask.name()).isEqualTo("super task");
 
 		// assert: superTask should be in context
 		TaskDTO superFromContext = context.get(superTask, TaskDTO.class);
-		assertThat(superFromContext, notNullValue());
-		assertThat(superFromContext, sameInstance(mappedSuperTask));
+		assertThat(superFromContext).isNotNull();
+		assertThat(superFromContext).isEqualTo(mappedSuperTask);
 	}
 
 	@Test
@@ -85,7 +81,7 @@ public class Map_Task_JPA_DTO_IntegrationTest extends AbstractJPATest
 
 		// Verify subTasks are loaded
 		PersistenceUtil persistenceUtil = Persistence.getPersistenceUtil();
-		assertThat("subTasks should be loaded", persistenceUtil.isLoaded(reloadedSuperTask, "subTasks"), is(true));
+		assertThat(persistenceUtil.isLoaded(reloadedSuperTask, "subTasks")).as("subTasks should be loaded").isTrue();
 
 		ReferenceCycleTracking context = new ReferenceCycleTracking();
 
@@ -93,14 +89,14 @@ public class Map_Task_JPA_DTO_IntegrationTest extends AbstractJPATest
 		TaskDTO dto = Map_Task_JPA_DTO.INSTANCE.map(reloadedSuperTask, context);
 
 		// assert: subTasks should be mapped
-		assertThat(dto.subTasks().isPresent(), is(true));
-		assertThat(dto.subTasks().get().size(), is(2));
+		assertThat(dto.subTasks().isPresent()).isTrue();
+		assertThat(dto.subTasks().get().size()).isEqualTo(2);
 
 		// assert: subTasks should be in context
 		TaskDTO sub1FromContext = context.get(subTask1, TaskDTO.class);
 		TaskDTO sub2FromContext = context.get(subTask2, TaskDTO.class);
-		assertThat(sub1FromContext, notNullValue());
-		assertThat(sub2FromContext, notNullValue());
+		assertThat(sub1FromContext).isNotNull();
+		assertThat(sub2FromContext).isNotNull();
 	}
 
 	@Test
@@ -125,7 +121,7 @@ public class Map_Task_JPA_DTO_IntegrationTest extends AbstractJPATest
 
 		// Verify predecessors are loaded
 		PersistenceUtil persistenceUtil = Persistence.getPersistenceUtil();
-		assertThat("predecessors should be loaded", persistenceUtil.isLoaded(reloadedTask, "predecessors"), is(true));
+		assertThat(persistenceUtil.isLoaded(reloadedTask, "predecessors")).as("predecessors should be loaded").isTrue();
 
 		ReferenceCycleTracking context = new ReferenceCycleTracking();
 
@@ -133,14 +129,14 @@ public class Map_Task_JPA_DTO_IntegrationTest extends AbstractJPATest
 		TaskDTO dto = Map_Task_JPA_DTO.INSTANCE.map(reloadedTask, context);
 
 		// assert: predecessors should be mapped
-		assertThat(dto.predecessors().isPresent(), is(true));
-		assertThat(dto.predecessors().get().size(), is(2));
+		assertThat(dto.predecessors().isPresent()).isTrue();
+		assertThat(dto.predecessors().get().size()).isEqualTo(2);
 
 		// assert: predecessors should be in context
 		TaskDTO pred1FromContext = context.get(predecessor1, TaskDTO.class);
 		TaskDTO pred2FromContext = context.get(predecessor2, TaskDTO.class);
-		assertThat(pred1FromContext, notNullValue());
-		assertThat(pred2FromContext, notNullValue());
+		assertThat(pred1FromContext).isNotNull();
+		assertThat(pred2FromContext).isNotNull();
 	}
 
 	@Test
@@ -165,7 +161,7 @@ public class Map_Task_JPA_DTO_IntegrationTest extends AbstractJPATest
 
 		// Verify successors are loaded
 		PersistenceUtil persistenceUtil = Persistence.getPersistenceUtil();
-		assertThat("successors should be loaded", persistenceUtil.isLoaded(reloadedTask, "successors"), is(true));
+		assertThat(persistenceUtil.isLoaded(reloadedTask, "successors")).as("successors should be loaded").isTrue();
 
 		ReferenceCycleTracking context = new ReferenceCycleTracking();
 
@@ -173,14 +169,14 @@ public class Map_Task_JPA_DTO_IntegrationTest extends AbstractJPATest
 		TaskDTO dto = Map_Task_JPA_DTO.INSTANCE.map(reloadedTask, context);
 
 		// assert: successors should be mapped
-		assertThat(dto.successors().isPresent(), is(true));
-		assertThat(dto.successors().get().size(), is(2));
+		assertThat(dto.successors().isPresent()).isTrue();
+		assertThat(dto.successors().get().size()).isEqualTo(2);
 
 		// assert: successors should be in context
 		TaskDTO succ1FromContext = context.get(successor1, TaskDTO.class);
 		TaskDTO succ2FromContext = context.get(successor2, TaskDTO.class);
-		assertThat(succ1FromContext, notNullValue());
-		assertThat(succ2FromContext, notNullValue());
+		assertThat(succ1FromContext).isNotNull();
+		assertThat(succ2FromContext).isNotNull();
 	}
 
 	@Test
@@ -200,7 +196,7 @@ public class Map_Task_JPA_DTO_IntegrationTest extends AbstractJPATest
 
 		// Do NOT force loading of subTasks - they should remain unloaded
 		PersistenceUtil persistenceUtil = Persistence.getPersistenceUtil();
-		assertThat("subTasks should NOT be loaded", persistenceUtil.isLoaded(reloadedSuperTask, "subTasks"), is(false));
+		assertThat(persistenceUtil.isLoaded(reloadedSuperTask, "subTasks")).as("subTasks should NOT be loaded").isFalse();
 
 		ReferenceCycleTracking context = new ReferenceCycleTracking();
 
@@ -208,11 +204,11 @@ public class Map_Task_JPA_DTO_IntegrationTest extends AbstractJPATest
 		TaskDTO dto = Map_Task_JPA_DTO.INSTANCE.map(reloadedSuperTask, context);
 
 		// assert: subTasks should NOT be mapped (they were not loaded)
-		assertThat("unloaded subTasks should not be mapped", dto.subTasks().isPresent(), is(false));
+		assertThat(dto.subTasks().isPresent()).as("unloaded subTasks should not be mapped").isFalse();
 
 		// assert: subTask should NOT be in context (was not mapped because collection was not loaded)
 		TaskDTO subFromContext = context.get(subTask, TaskDTO.class);
-		assertThat("unloaded subTask should not be in context", subFromContext, is(nullValue()));
+		assertThat(subFromContext).as("unloaded subTask should not be in context").isNull();
 	}
 
 	@Test
@@ -238,14 +234,14 @@ public class Map_Task_JPA_DTO_IntegrationTest extends AbstractJPATest
 
 		// pre-map superTask into context
 		TaskDTO preMappedSuper = Map_Task_JPA_DTO.INSTANCE.map(reloadedSuperTask, context);
-		assertThat(preMappedSuper, notNullValue());
+		assertThat(preMappedSuper).isNotNull();
 
 		// act: mapping the subTask should reuse the existing superTask mapping
 		TaskDTO dto = Map_Task_JPA_DTO.INSTANCE.map(reloadedSubTask, context);
 
 		// assert: superTask mapping still the same instance in context
 		TaskDTO superFromContext = context.get(superTask, TaskDTO.class);
-		assertThat(superFromContext, sameInstance(preMappedSuper));
-		assertThat(dto.superTask().get(), sameInstance(preMappedSuper));
+		assertThat(superFromContext).isEqualTo(preMappedSuper);
+		assertThat(dto.superTask().get()).isEqualTo(preMappedSuper);
 	}
 }

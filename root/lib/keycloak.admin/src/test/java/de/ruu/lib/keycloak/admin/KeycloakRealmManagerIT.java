@@ -8,7 +8,7 @@ import org.keycloak.representations.idm.RoleRepresentation;
 
 import lombok.extern.slf4j.Slf4j;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,9 +82,9 @@ class KeycloakRealmManagerIT
 
 		// Verify role exists
 		RoleRepresentation role = manager.findRoleByName(roleName);
-		assertNotNull(role);
-		assertEquals(roleName, role.getName());
-		assertEquals("Test role description", role.getDescription());
+		assertThat(role).isNotNull();
+		assertThat(role.getName()).isEqualTo(roleName);
+		assertThat(role.getDescription()).isEqualTo("Test role description");
 	}
 
 	@Test
@@ -97,8 +97,8 @@ class KeycloakRealmManagerIT
 
 		// Verify role exists
 		RoleRepresentation role = manager.findRoleByName(roleName);
-		assertNotNull(role);
-		assertEquals(roleName, role.getName());
+		assertThat(role).isNotNull();
+		assertThat(role.getName()).isEqualTo(roleName);
 	}
 
 	@Test
@@ -113,7 +113,7 @@ class KeycloakRealmManagerIT
 
 		// Verify role no longer exists
 		RoleRepresentation role = manager.findRoleByName(roleName);
-		assertNull(role);
+		assertThat(role).isNull();
 	}
 
 	@Test
@@ -137,13 +137,13 @@ class KeycloakRealmManagerIT
 
 		// Verify
 		List<RoleRepresentation> composites = manager.getCompositeRoles(parentRole);
-		assertEquals(2, composites.size());
-		
+		assertThat(composites).hasSize(2);
+
 		List<String> compositeNames = composites.stream()
 				.map(RoleRepresentation::getName)
 				.toList();
-		assertTrue(compositeNames.contains(childRole1));
-		assertTrue(compositeNames.contains(childRole2));
+		assertThat(compositeNames).contains(childRole1);
+		assertThat(compositeNames).contains(childRole2);
 	}
 
 	@Test
@@ -164,14 +164,14 @@ class KeycloakRealmManagerIT
 
 		// Verify added
 		List<RoleRepresentation> composites = manager.getCompositeRoles(parentRole);
-		assertEquals(1, composites.size());
+		assertThat(composites).hasSize(1);
 
 		// Remove composite role
 		manager.removeCompositeRole(parentRole, childRole);
 
 		// Verify removed
 		composites = manager.getCompositeRoles(parentRole);
-		assertEquals(0, composites.size());
+		assertThat(composites).hasSize(0);
 	}
 
 	@Test
@@ -187,27 +187,27 @@ class KeycloakRealmManagerIT
 
 		// Verify
 		RoleRepresentation role = manager.findRoleByName(roleName);
-		assertEquals("Updated description", role.getDescription());
+		assertThat(role.getDescription()).isEqualTo("Updated description");
 	}
 
 	@Test
 	void testGetAllRoles()
 	{
 		List<RoleRepresentation> roles = manager.getAllRoles();
-		assertNotNull(roles);
-		assertFalse(roles.isEmpty());
-		
+		assertThat(roles).isNotNull();
+		assertThat(roles).isNotEmpty();
+
 		// Should contain default roles
 		List<String> roleNames = roles.stream()
 				.map(RoleRepresentation::getName)
 				.toList();
-		assertTrue(roleNames.contains("offline_access"));
+		assertThat(roleNames).contains("offline_access");
 	}
 
 	@Test
 	void testFindNonExistentRole()
 	{
 		RoleRepresentation role = manager.findRoleByName("this-role-does-not-exist-12345");
-		assertNull(role);
+		assertThat(role).isNull();
 	}
 }

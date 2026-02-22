@@ -3,10 +3,7 @@ package de.ruu.lib.gen.java.element;
 import static de.ruu.lib.gen.java.context.CompilationUnitContext.context;
 import static de.ruu.lib.gen.java.element.GeneratorAnnotationParameter.parameter;
 import static de.ruu.lib.gen.java.element.GeneratorAnnotationParameters.parameters;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,8 +21,8 @@ class GeneratorAnnotationParametersTest
 	{
 		GeneratorAnnotationParameters generator = parameters(context);
 		
-		assertThat(generator, is(not(nullValue())));
-		assertThat(generator.generate().toString(), is("()"));
+		assertThat(generator).isNotNull();
+		assertThat(generator.generate().toString()).isEqualTo("()");
 	}
 
 	@Test void parameterisedGenerator() throws GeneratorException
@@ -46,6 +43,6 @@ class GeneratorAnnotationParametersTest
 						.add(parameter(context, name3, value3))
 						;
 		
-		assertThat(generator.generate().toString(), is("(name1 = value1, name2 = value2, name3 = value3)"));
+		assertThat(generator.generate().toString()).isEqualTo("(name1 = value1, name2 = value2, name3 = value3)");
 	}
 }

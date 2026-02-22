@@ -8,9 +8,10 @@ import org.keycloak.representations.idm.ClientRepresentation;
 
 import lombok.extern.slf4j.Slf4j;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Integration tests for KeycloakClientManager.
@@ -76,19 +77,19 @@ class KeycloakClientManagerIT
 
 		createdClientUuid = manager.createPublicClient(
 				clientId,
-				Arrays.asList("http://localhost:3000/*"),
-				Arrays.asList("http://localhost:3000")
+				List.of("http://localhost:3000/*"),
+				List.of("http://localhost:3000")
 		);
 
-		assertNotNull(createdClientUuid);
-		assertFalse(createdClientUuid.isEmpty());
+		assertThat(createdClientUuid).isNotNull();
+		assertThat(createdClientUuid).isNotEmpty();
 
 		// Verify client exists
 		ClientRepresentation client = manager.findClientByClientId(clientId);
-		assertNotNull(client);
-		assertEquals(clientId, client.getClientId());
-		assertTrue(client.isPublicClient());
-		assertTrue(client.isDirectAccessGrantsEnabled());
+		assertThat(client).isNotNull();
+		assertThat(client.getClientId()).isEqualTo(clientId);
+		assertThat(client.isPublicClient()).isTrue();
+		assertThat(client.isDirectAccessGrantsEnabled()).isTrue();
 	}
 
 	@Test
@@ -102,19 +103,19 @@ class KeycloakClientManagerIT
 				true
 		);
 
-		assertNotNull(createdClientUuid);
+		assertThat(createdClientUuid).isNotNull();
 
 		// Verify client exists
 		ClientRepresentation client = manager.findClientByClientId(clientId);
-		assertNotNull(client);
-		assertEquals(clientId, client.getClientId());
-		assertFalse(client.isPublicClient());
-		assertTrue(client.isServiceAccountsEnabled());
+		assertThat(client).isNotNull();
+		assertThat(client.getClientId()).isEqualTo(clientId);
+		assertThat(client.isPublicClient()).isFalse();
+		assertThat(client.isServiceAccountsEnabled()).isTrue();
 
 		// Get client secret
 		String secret = manager.getClientSecret(createdClientUuid);
-		assertNotNull(secret);
-		assertFalse(secret.isEmpty());
+		assertThat(secret).isNotNull();
+		assertThat(secret).isNotEmpty();
 	}
 
 	@Test
@@ -124,13 +125,13 @@ class KeycloakClientManagerIT
 
 		createdClientUuid = manager.createBearerOnlyClient(clientId);
 
-		assertNotNull(createdClientUuid);
+		assertThat(createdClientUuid).isNotNull();
 
 		// Verify client exists
 		ClientRepresentation client = manager.findClientByClientId(clientId);
-		assertNotNull(client);
-		assertEquals(clientId, client.getClientId());
-		assertTrue(client.isBearerOnly());
+		assertThat(client).isNotNull();
+		assertThat(client.getClientId()).isEqualTo(clientId);
+		assertThat(client.isBearerOnly()).isTrue();
 	}
 
 	@Test
@@ -140,8 +141,8 @@ class KeycloakClientManagerIT
 
 		createdClientUuid = manager.createPublicClient(
 				clientId,
-				Arrays.asList("http://localhost:3000/*"),
-				Arrays.asList("http://localhost:3000")
+				List.of("http://localhost:3000/*"),
+				List.of("http://localhost:3000")
 		);
 
 		// Disable direct access grants
@@ -149,14 +150,14 @@ class KeycloakClientManagerIT
 
 		// Verify
 		ClientRepresentation client = manager.findClientByClientId(clientId);
-		assertFalse(client.isDirectAccessGrantsEnabled());
+		assertThat(client.isDirectAccessGrantsEnabled()).isFalse();
 
 		// Re-enable
 		manager.setDirectAccessGrantsEnabled(createdClientUuid, true);
 
 		// Verify
 		client = manager.findClientByClientId(clientId);
-		assertTrue(client.isDirectAccessGrantsEnabled());
+		assertThat(client.isDirectAccessGrantsEnabled()).isTrue();
 	}
 
 	@Test
@@ -166,8 +167,8 @@ class KeycloakClientManagerIT
 
 		String clientUuid = manager.createPublicClient(
 				clientId,
-				Arrays.asList("http://localhost:3000/*"),
-				Arrays.asList("http://localhost:3000")
+				List.of("http://localhost:3000/*"),
+				List.of("http://localhost:3000")
 		);
 
 		// Delete client
@@ -176,13 +177,13 @@ class KeycloakClientManagerIT
 
 		// Verify client no longer exists
 		ClientRepresentation client = manager.findClientByClientId(clientId);
-		assertNull(client);
+		assertThat(client).isNull();
 	}
 
 	@Test
 	void testFindNonExistentClient()
 	{
 		ClientRepresentation client = manager.findClientByClientId("this-client-does-not-exist-12345");
-		assertNull(client);
+		assertThat(client).isNull();
 	}
 }

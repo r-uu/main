@@ -2,10 +2,7 @@ package de.ruu.lib.gen.java.element;
 
 import static de.ruu.lib.gen.java.context.CompilationUnitContext.context;
 import static javax.lang.model.element.ElementKind.CLASS;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import javax.lang.model.element.ElementKind;
 
@@ -37,9 +34,8 @@ class GeneratorElementTest
 		String name = "name";
 		GeneratorElement generator = new GeneratorElementSimple(context, name);
 		
-		assertThat(generator, is(not(nullValue())));
+		assertThat(generator).isNotNull();
 		assertThat(
-				generator.generate().toString(),
-				is(generator.elementKind().toString().toLowerCase() + " " + name));
+				generator.generate().toString()).isEqualTo(generator.elementKind().toString().toLowerCase() + " " + name);
 	}
 }

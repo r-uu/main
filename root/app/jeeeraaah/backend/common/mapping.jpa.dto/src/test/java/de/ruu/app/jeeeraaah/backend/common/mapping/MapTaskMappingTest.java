@@ -1,6 +1,6 @@
 package de.ruu.app.jeeeraaah.backend.common.mapping;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 
@@ -25,9 +25,9 @@ public class MapTaskMappingTest
         TaskDTO dto = Mappings.toDTO(jpa, ctx);
 
         // check forward mapping (JPA -> DTO) using fluent API
-        assertEquals("desc-jpa", dto.description().orElse(null));
-        assertEquals(LocalDate.of(2025,12,31), dto.start().orElse(null));
-        assertEquals(LocalDate.of(2026,1,1), dto.end().orElse(null));
+        assertThat(dto.description().orElse(null)).isEqualTo("desc-jpa");
+        assertThat(dto.start().orElse(null)).isEqualTo(LocalDate.of(2025, 12, 31));
+        assertThat(dto.end().orElse(null)).isEqualTo(LocalDate.of(2026, 1, 1));
 
         // change dto fields (fluent setters) and map back to JPA
         dto.description("desc-dto");
@@ -36,8 +36,8 @@ public class MapTaskMappingTest
 
         TaskJPA jpa2 = Mappings.toJPA(dto, new ReferenceCycleTracking());
 
-        assertEquals("desc-dto", jpa2.description().orElse(null));
-        assertEquals(LocalDate.of(2024,1,1), jpa2.start().orElse(null));
-        assertEquals(LocalDate.of(2024,12,31), jpa2.end().orElse(null));
+        assertThat(jpa2.description().orElse(null)).isEqualTo("desc-dto");
+        assertThat(jpa2.start().orElse(null)).isEqualTo(LocalDate.of(2024, 1, 1));
+        assertThat(jpa2.end().orElse(null)).isEqualTo(LocalDate.of(2024, 12, 31));
     }
 }

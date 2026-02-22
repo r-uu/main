@@ -15,6 +15,7 @@ module de.ruu.app.jeeeraaah.frontend.ui.fx
 	requires de.ruu.lib.mapstruct;
 	requires de.ruu.lib.ws.rs;
 	requires de.ruu.lib.docker.health;
+	requires de.ruu.lib.keycloak.admin;  // Required for docker.health auto-fix
 	requires transitive de.ruu.app.jeeeraaah.common.api.bean;
 	requires transitive de.ruu.app.jeeeraaah.common.api.domain;
 	requires de.ruu.app.jeeeraaah.common.api.ws.rs;

@@ -2,10 +2,7 @@ package de.ruu.lib.gen.java.element.method;
 
 import static de.ruu.lib.gen.java.context.CompilationUnitContext.context;
 import static de.ruu.lib.gen.java.element.method.GeneratorParameter.parameter;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,8 +25,8 @@ class GeneratorParameterTest
 
 		GeneratorParameter generator = parameter(context, type, name);
 		
-		assertThat(generator, is(not(nullValue())));
-		assertThat(generator.generate().toString(), is(type + " " + name));
+		assertThat(generator).isNotNull();
+		assertThat(generator.generate().toString()).isEqualTo(type + " " + name);
 	}
 
 	@Test void parameterisedGeneratorWithAnnotation() throws GeneratorException
@@ -51,13 +48,10 @@ class GeneratorParameterTest
 						.add(GeneratorAnnotation.annotation(context, annotation3))
 		);
 		
-		assertThat(generator, is(not(nullValue())));
+		assertThat(generator).isNotNull();
 		assertThat(
-				generator.generate().toString(),
-				is
-				(
-						"@" + annotation1 + " " +
+				generator.generate().toString()).isEqualTo("@" + annotation1 + " " +
 						"@" + annotation2 + " " +
-						"@" + annotation3 + " " + type + " " + name));
+						"@" + annotation3 + " " + type + " " + name);
 	}
 }

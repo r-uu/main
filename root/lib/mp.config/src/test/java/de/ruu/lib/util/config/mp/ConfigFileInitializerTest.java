@@ -10,9 +10,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConfigFileInitializer}.
@@ -54,11 +52,11 @@ class ConfigFileInitializerTest
 		WritableFileConfigSource config = ConfigFileInitializer.initializeConfigFile(configFile.getAbsolutePath(),
 				defaults);
 
-		assertThat("Config file should be created", configFile.exists(), is(true));
-		assertThat("Should have all default properties", config.getPropertyNames(), hasSize(3));
-		assertThat("Should have correct value for app.name", config.getValue("app.name"), is("TestApp"));
-		assertThat("Should have correct value for app.version", config.getValue("app.version"), is("1.0.0"));
-		assertThat("Should have correct value for app.debug", config.getValue("app.debug"), is("false"));
+		assertThat(configFile.exists()).as("Config file should be created").isEqualTo(true);
+		assertThat(config.getPropertyNames()).as("Should have all default properties").hasSize(3);
+		assertThat(config.getValue("app.name")).as("Should have correct value for app.name").isEqualTo("TestApp");
+		assertThat(config.getValue("app.version")).as("Should have correct value for app.version").isEqualTo("1.0.0");
+		assertThat(config.getValue("app.debug")).as("Should have correct value for app.debug").isEqualTo("false");
 	}
 
 	/**
@@ -89,9 +87,9 @@ class ConfigFileInitializerTest
 		WritableFileConfigSource config2 = ConfigFileInitializer.initializeConfigFile(configFile.getAbsolutePath(),
 				newDefaults);
 
-		assertThat("Existing modified value should be preserved", config2.getValue("app.name"), is("ModifiedName"));
-		assertThat("Existing value should be preserved", config2.getValue("app.version"), is("1.0.0"));
-		assertThat("New property should be added", config2.getValue("app.debug"), is("true"));
+		assertThat(config2.getValue("app.name")).as("Existing modified value should be preserved").isEqualTo("ModifiedName");
+		assertThat(config2.getValue("app.version")).as("Existing value should be preserved").isEqualTo("1.0.0");
+		assertThat(config2.getValue("app.debug")).as("New property should be added").isEqualTo("true");
 	}
 
 	/**
@@ -118,11 +116,11 @@ class ConfigFileInitializerTest
 
 		int addedCount = ConfigFileInitializer.ensureRequiredProperties(config, requiredDefaults);
 
-		assertThat("Should have added 2 properties", addedCount, is(2));
-		assertThat("Should preserve existing value", config.getValue("prop.a"), is("valueA"));
-		assertThat("Should have added prop.c", config.getValue("prop.c"), is("valueC"));
-		assertThat("Should have added prop.d", config.getValue("prop.d"), is("valueD"));
-		assertThat("Should have 4 properties total", config.getPropertyNames(), hasSize(4));
+		assertThat(addedCount).as("Should have added 2 properties").isEqualTo(2);
+		assertThat(config.getValue("prop.a")).as("Should preserve existing value").isEqualTo("valueA");
+		assertThat(config.getValue("prop.c")).as("Should have added prop.c").isEqualTo("valueC");
+		assertThat(config.getValue("prop.d")).as("Should have added prop.d").isEqualTo("valueD");
+		assertThat(config.getPropertyNames()).as("Should have 4 properties total").hasSize(4);
 	}
 
 	/**
@@ -147,8 +145,8 @@ class ConfigFileInitializerTest
 
 		int addedCount = ConfigFileInitializer.ensureRequiredProperties(config, requiredDefaults);
 
-		assertThat("Should not have added any properties", addedCount, is(0));
-		assertThat("Should still have 2 properties", config.getPropertyNames(), hasSize(2));
+		assertThat(addedCount).as("Should not have added any properties").isEqualTo(0);
+		assertThat(config.getPropertyNames()).as("Should still have 2 properties").hasSize(2);
 	}
 
 	/**
@@ -164,7 +162,7 @@ class ConfigFileInitializerTest
 		WritableFileConfigSource config = ConfigFileInitializer.initializeConfigFile(configFile.getAbsolutePath(),
 				emptyDefaults);
 
-		assertThat("Config file should be created even with empty defaults", configFile.exists(), is(true));
-		assertThat("Should have no properties", config.getPropertyNames(), hasSize(0));
+		assertThat(configFile.exists()).as("Config file should be created even with empty defaults").isEqualTo(true);
+		assertThat(config.getPropertyNames()).as("Should have no properties").hasSize(0);
 	}
 }

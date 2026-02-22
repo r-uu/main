@@ -10,8 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import static de.ruu.app.jeeeraaah.frontend.common.mapping.Mappings.toBean;
 import static de.ruu.app.jeeeraaah.frontend.common.mapping.Mappings.toFXBean;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class Test_Map_Task_Bean_FXBean
 {
@@ -20,14 +19,14 @@ class Test_Map_Task_Bean_FXBean
 		String   name = "name";
 		TaskBean task = createTaskBean(createTaskGroupBean(), name);
 
-		assertThat(task.name  (), is(name));
+		assertThat(task.name  ()).isEqualTo(name);
 
-		assertThat(task.closed      ()            , is(false));
-		assertThat(task.description ().isPresent(), is(false));
-		assertThat(task.superTask   ().isPresent(), is(false));
-		assertThat(task.subTasks    ().isPresent(), is(false));
-		assertThat(task.predecessors().isPresent(), is(false));
-		assertThat(task.successors  ().isPresent(), is(false));
+		assertThat(task.closed      ()            ).isEqualTo(false);
+		assertThat(task.description ().isPresent()).isEqualTo(false);
+		assertThat(task.superTask   ().isPresent()).isEqualTo(false);
+		assertThat(task.subTasks    ().isPresent()).isEqualTo(false);
+		assertThat(task.predecessors().isPresent()).isEqualTo(false);
+		assertThat(task.successors  ().isPresent()).isEqualTo(false);
 	}
 
 	@Test void standaloneMapped()
@@ -58,8 +57,8 @@ class Test_Map_Task_Bean_FXBean
 		TaskGroupBean group = createTaskGroupBean();
 		createTasks(group, 3);
 
-		assertThat(group.tasks().isPresent() , is(true ));
-		assertThat(group.tasks().get().size(), is(count));
+		assertThat(group.tasks().isPresent() ).isEqualTo(true );
+		assertThat(group.tasks().get().size()).isEqualTo(count);
 
 		ReferenceCycleTracking context = new ReferenceCycleTracking();
 
@@ -75,30 +74,30 @@ class Test_Map_Task_Bean_FXBean
 
 	private void assertIs(TaskBean taskBean, TaskFXBean taskFXBean)
 	{
-		assertThat("unexpected name"       , taskFXBean.name       (), is(taskBean.name       ()));
-		assertThat("unexpected description", taskFXBean.description(), is(taskBean.description()));
-		assertThat("unexpected start"      , taskFXBean.start      (), is(taskBean.start      ()));
-		assertThat("unexpected end"        , taskFXBean.end        (), is(taskBean.end        ()));
-		assertThat("unexpected closed"     , taskFXBean.closed     (), is(taskBean.closed     ()));
+		assertThat(taskFXBean.name       ()).as("unexpected name").isEqualTo(taskBean.name       ());
+		assertThat(taskFXBean.description()).as("unexpected description").isEqualTo(taskBean.description());
+		assertThat(taskFXBean.start      ()).as("unexpected start").isEqualTo(taskBean.start      ());
+		assertThat(taskFXBean.end        ()).as("unexpected end").isEqualTo(taskBean.end        ());
+		assertThat(taskFXBean.closed     ()).as("unexpected closed").isEqualTo(taskBean.closed     ());
 
 		assertIs(taskFXBean.taskGroup(), taskBean.taskGroup());
 
-		assertThat("unexpected parent"      , taskFXBean.superTask().isPresent(), is(taskBean.superTask().isPresent()));
-		assertThat("unexpected children"    , taskFXBean.subTasks().isPresent(), is(taskBean.subTasks().isPresent()));
-		assertThat("unexpected predecessors", taskFXBean.predecessors().isPresent(), is(taskBean.predecessors().isPresent()));
-		assertThat("unexpected successors"  , taskFXBean.successors  ().isPresent(), is(taskBean.successors  ().isPresent()));
+		assertThat(taskFXBean.superTask().isPresent()).as("unexpected parent").isEqualTo(taskBean.superTask().isPresent());
+		assertThat(taskFXBean.subTasks().isPresent()).as("unexpected children").isEqualTo(taskBean.subTasks().isPresent());
+		assertThat(taskFXBean.predecessors().isPresent()).as("unexpected predecessors").isEqualTo(taskBean.predecessors().isPresent());
+		assertThat(taskFXBean.successors().isPresent()).as("unexpected successors").isEqualTo(taskBean.successors().isPresent());
 
-		taskFXBean.subTasks().ifPresent(ts -> assertThat("unexpected children size"    , ts.size(), is(taskBean.subTasks().get().size())));
-		taskFXBean.predecessors().ifPresent(ts -> assertThat("unexpected predecessors size", ts.size(), is(taskBean.predecessors().get().size())));
-		taskFXBean.successors  ().ifPresent(ts -> assertThat("unexpected successors size"  , ts.size(), is(taskBean.successors  ().get().size())));
+		taskFXBean.subTasks().ifPresent(ts -> assertThat(ts.size()).as("unexpected children size").isEqualTo(taskBean.subTasks().get().size()));
+		taskFXBean.predecessors().ifPresent(ts -> assertThat(ts.size()).as("unexpected predecessors size").isEqualTo(taskBean.predecessors().get().size()));
+		taskFXBean.successors().ifPresent(ts -> assertThat(ts.size()).as("unexpected successors size").isEqualTo(taskBean.successors().get().size()));
 	}
 
 	private void assertIs(@NonNull TaskGroupFXBean fxBean, @NonNull TaskGroupBean bean)
 	{
-		assertThat(fxBean.id         (), is(bean.id         ()));
-		assertThat(fxBean.version    (), is(bean.version    ()));
-		assertThat(fxBean.name       (), is(bean.name       ()));
-		assertThat(fxBean.description(), is(bean.description()));
+		assertThat(fxBean.id         ()).isEqualTo(bean.id         ());
+		assertThat(fxBean.version    ()).isEqualTo(bean.version    ());
+		assertThat(fxBean.name       ()).isEqualTo(bean.name       ());
+		assertThat(fxBean.description()).isEqualTo(bean.description());
 	}
 
 	private TaskGroupBean createTaskGroupBean() { return new TaskGroupBean("name"); }

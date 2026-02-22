@@ -1,3 +1,6 @@
+/**
+ * Frontend API client for JAX-RS web services.
+ */
 module de.ruu.app.jeeeraaah.frontend.api.client.ws.rs
 {
 	exports de.ruu.app.jeeeraaah.frontend.api.client.ws.rs;

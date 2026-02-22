@@ -4,10 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class SampleBiMappingTest
 {
@@ -27,8 +24,8 @@ class SampleBiMappingTest
 			target = new SampleBiMappedTarget(source);
 		}
 
-		assertThat(target       , is(not(nullValue())));
-		assertThat(target.name(), is(source.name()));
+		assertThat(target       ).isNotNull();
+		assertThat(target.name()).isEqualTo(source.name());
 
 		SampleBiMappedSource remapped = null;
 
@@ -39,7 +36,7 @@ class SampleBiMappingTest
 			remapped = optionalSource.get();
 		}
 
-		assertThat(remapped, is(not(nullValue())));
-		assertThat(remapped, is(source));
+		assertThat(remapped).isNotNull();
+		assertThat(remapped).isEqualTo(source);
 	}
 }

@@ -1,7 +1,7 @@
 package de.ruu.app.jeeeraaah.frontend.common.mapping;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -285,14 +285,9 @@ class MapperFieldCompletenessTest
 
 		// Verify there are no duplicates across sets
 		Set<String> duplicates = findDuplicates(mappedInConstructor, mappedAutomatically, explicitlyIgnored);
-		assertTrue(
-				duplicates.isEmpty(),
-				String.format(
-						"%s: Found duplicate field declarations across mapping categories: %s",
-						mapperName,
-						duplicates
-				)
-		);
+		assertThat(duplicates)
+				.as("%s: Found duplicate field declarations across mapping categories: %s", mapperName, duplicates)
+				.isEmpty();
 	}
 
 	/**

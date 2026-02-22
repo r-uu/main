@@ -1,14 +1,16 @@
 package de.ruu.lib.util;
 
+import static org.assertj.core.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
-public class ExampleTest {
-    public ExampleTest() { }
-    
-    @Test
-    void testAlwaysTrue() {
-        assertTrue(true);
-    }
+public class ExampleTest
+{
+	public ExampleTest() { }
+
+	@Test
+	void testAlwaysTrue()
+	{
+		assertThat(true).isTrue();
+	}
 }
-

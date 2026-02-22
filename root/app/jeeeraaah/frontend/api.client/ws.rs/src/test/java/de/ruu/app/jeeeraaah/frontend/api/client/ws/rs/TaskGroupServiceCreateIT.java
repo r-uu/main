@@ -15,8 +15,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 import static java.util.Objects.nonNull;
 
 /**
@@ -68,10 +68,10 @@ class TaskGroupServiceCreateIT
 		// call backend via client
 		TaskGroupBean created = taskGroupServiceClient.create(dto);
 
-		// assertions using Hamcrest
-		assertThat("created result should not be null", created, notNullValue());
+		// assertions using AssertJ
+		assertThat(created).as("created result should not be null").isNotNull();
 		// id should be present after creation
-		assertThat("created id should not be null", created.id(), notNullValue());
-		assertThat("created name should match request", created.name(), equalTo(name));
+		assertThat(created.id()).as("created id should not be null").isNotNull();
+		assertThat(created.name()).as("created name should match request").isEqualTo(name);
 	}
 }

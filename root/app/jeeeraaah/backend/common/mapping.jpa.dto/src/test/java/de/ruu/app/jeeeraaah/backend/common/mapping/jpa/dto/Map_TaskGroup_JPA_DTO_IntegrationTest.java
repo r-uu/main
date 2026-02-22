@@ -1,10 +1,6 @@
 package de.ruu.app.jeeeraaah.backend.common.mapping.jpa.dto;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
@@ -44,7 +40,7 @@ public class Map_TaskGroup_JPA_DTO_IntegrationTest extends AbstractJPATest
 
 		// Verify tasks are loaded
 		PersistenceUtil persistenceUtil = Persistence.getPersistenceUtil();
-		assertThat("tasks should be loaded", persistenceUtil.isLoaded(reloadedGroup, "tasks"), is(true));
+		assertThat(persistenceUtil.isLoaded(reloadedGroup, "tasks")).as("tasks should be loaded").isTrue();
 
 		ReferenceCycleTracking context = new ReferenceCycleTracking();
 
@@ -54,12 +50,12 @@ public class Map_TaskGroup_JPA_DTO_IntegrationTest extends AbstractJPATest
 		// assert: tasks should be mapped into context
 		TaskDTO task1FromContext = context.get(task1, TaskDTO.class);
 		TaskDTO task2FromContext = context.get(task2, TaskDTO.class);
-		assertThat("task1 should be in context", task1FromContext, notNullValue());
-		assertThat("task2 should be in context", task2FromContext, notNullValue());
+		assertThat(task1FromContext).as("task1 should be in context").isNotNull();
+		assertThat(task2FromContext).as("task2 should be in context").isNotNull();
 
 		// assert: tasks are in DTO (tasks are automatically added to group via TaskDTO constructor)
-		assertThat("dto should have tasks", dto.tasks().isPresent(), is(true));
-		assertThat("dto should have 2 tasks", dto.tasks().get().size(), is(2));
+		assertThat(dto.tasks().isPresent()).as("dto should have tasks").isTrue();
+		assertThat(dto.tasks().get().size()).as("dto should have 2 tasks").isEqualTo(2);
 	}
 
 	@Test
@@ -78,7 +74,7 @@ public class Map_TaskGroup_JPA_DTO_IntegrationTest extends AbstractJPATest
 
 		// Do NOT force loading of tasks - they should remain unloaded
 		PersistenceUtil persistenceUtil = Persistence.getPersistenceUtil();
-		assertThat("tasks should NOT be loaded", persistenceUtil.isLoaded(reloadedGroup, "tasks"), is(false));
+		assertThat(persistenceUtil.isLoaded(reloadedGroup, "tasks")).as("tasks should NOT be loaded").isFalse();
 
 		ReferenceCycleTracking context = new ReferenceCycleTracking();
 
@@ -86,13 +82,13 @@ public class Map_TaskGroup_JPA_DTO_IntegrationTest extends AbstractJPATest
 		TaskGroupDTO dto = Map_TaskGroup_JPA_DTO.INSTANCE.map(reloadedGroup, context);
 
 		// assert: tasks should NOT be mapped (they were not loaded)
-		assertThat("unloaded tasks should not be mapped", dto.tasks().isPresent(), is(false));
+		assertThat(dto.tasks().isPresent()).as("unloaded tasks should not be mapped").isFalse();
 
 		// assert: tasks should NOT be in context (were not mapped because collection was not loaded)
 		TaskDTO task1FromContext = context.get(task1, TaskDTO.class);
 		TaskDTO task2FromContext = context.get(task2, TaskDTO.class);
-		assertThat("unloaded task1 should not be in context", task1FromContext, is(nullValue()));
-		assertThat("unloaded task2 should not be in context", task2FromContext, is(nullValue()));
+		assertThat(task1FromContext).as("unloaded task1 should not be in context").isNull();
+		assertThat(task2FromContext).as("unloaded task2 should not be in context").isNull();
 	}
 
 	@Test
@@ -115,17 +111,17 @@ public class Map_TaskGroup_JPA_DTO_IntegrationTest extends AbstractJPATest
 
 		// pre-map task into context
 		TaskDTO preMappedTask = Map_Task_JPA_DTO.INSTANCE.map(reloadedTask, context);
-		assertThat(preMappedTask, notNullValue());
+		assertThat(preMappedTask).isNotNull();
 
 		// act: mapping the group should reuse the existing task mapping
 		TaskGroupDTO dto = Map_TaskGroup_JPA_DTO.INSTANCE.map(reloadedGroup, context);
 
 		// assert: task mapping still the same instance in context
 		TaskDTO taskFromContext = context.get(task, TaskDTO.class);
-		assertThat("task should be same instance in context", taskFromContext, sameInstance(preMappedTask));
+		assertThat(taskFromContext).as("task should be same instance in context").isEqualTo(preMappedTask);
 
 		// assert: task is in DTO (added via TaskDTO constructor when first mapped)
-		assertThat("dto should have tasks", dto.tasks().isPresent(), is(true));
+		assertThat(dto.tasks().isPresent()).as("dto should have tasks").isTrue();
 	}
 
 	@Test
@@ -148,7 +144,7 @@ public class Map_TaskGroup_JPA_DTO_IntegrationTest extends AbstractJPATest
 
 		// Verify tasks are loaded
 		PersistenceUtil persistenceUtil = Persistence.getPersistenceUtil();
-		assertThat("tasks should be loaded", persistenceUtil.isLoaded(reloadedGroup, "tasks"), is(true));
+		assertThat(persistenceUtil.isLoaded(reloadedGroup, "tasks")).as("tasks should be loaded").isTrue();
 
 		ReferenceCycleTracking context = new ReferenceCycleTracking();
 
@@ -156,13 +152,13 @@ public class Map_TaskGroup_JPA_DTO_IntegrationTest extends AbstractJPATest
 		TaskGroupDTO dto = Map_TaskGroup_JPA_DTO.INSTANCE.map(reloadedGroup, context);
 
 		// assert: all tasks should be mapped into context
-		assertThat(context.get(task1, TaskDTO.class), notNullValue());
-		assertThat(context.get(task2, TaskDTO.class), notNullValue());
-		assertThat(context.get(task3, TaskDTO.class), notNullValue());
+		assertThat(context.get(task1, TaskDTO.class)).isNotNull();
+		assertThat(context.get(task2, TaskDTO.class)).isNotNull();
+		assertThat(context.get(task3, TaskDTO.class)).isNotNull();
 
 		// assert: all tasks are in DTO
-		assertThat(dto.tasks().isPresent(), is(true));
-		assertThat(dto.tasks().get().size(), is(3));
+		assertThat(dto.tasks().isPresent()).isTrue();
+		assertThat(dto.tasks().get().size()).isEqualTo(3);
 	}
 
 	@Test
@@ -183,8 +179,8 @@ public class Map_TaskGroup_JPA_DTO_IntegrationTest extends AbstractJPATest
 		TaskGroupDTO dto = Map_TaskGroup_JPA_DTO.INSTANCE.map(reloadedGroup, context);
 
 		// assert: description should be mapped correctly
-		assertThat(dto.description().isPresent(), is(true));
-		assertThat(dto.description().get(), is("A detailed description"));
+		assertThat(dto.description().isPresent()).isTrue();
+		assertThat(dto.description().get()).isEqualTo("A detailed description");
 	}
 
 	@Test
@@ -204,8 +200,8 @@ public class Map_TaskGroup_JPA_DTO_IntegrationTest extends AbstractJPATest
 		TaskGroupDTO dto = Map_TaskGroup_JPA_DTO.INSTANCE.map(reloadedGroup, context);
 
 		// assert: id and version should be copied from JPA entity (via TaskGroupDTO constructor)
-		assertThat("id should be copied", dto.id(), is(reloadedGroup.id()));
-		assertThat("version should be copied", dto.version(), is(reloadedGroup.version()));
-		assertThat("name should be copied", dto.name(), is("test group"));
+		assertThat(dto.id()).as("id should be copied").isEqualTo(reloadedGroup.id());
+		assertThat(dto.version()).as("version should be copied").isEqualTo(reloadedGroup.version());
+		assertThat(dto.name()).as("name should be copied").isEqualTo("test group");
 	}
 }
