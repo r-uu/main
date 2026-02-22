@@ -1,0 +1,35 @@
+name: jeeeraaah
+description: jeeeraaah task management – Flutter Windows desktop port of the JavaFX client.
+publish_to: 'none'
+version: 0.0.1+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+  flutter: '>=3.19.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # HTTP client for REST API calls to the Open Liberty backend
+  http: ^1.2.2
+
+  # State management (replaces JavaFX Properties / CDI)
+  provider: ^6.1.2
+
+  # Declarative routing (replaces JavaFX FXML scene graph navigation)
+  go_router: ^14.2.0
+
+  # Secure storage for Keycloak JWT tokens (replaces in-memory token in JavaFX CDI bean)
+  flutter_secure_storage: ^9.2.2
+
+  # Date/time formatting (start, end fields on Task)
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true

@@ -89,3 +89,13 @@ Thumbs.db
 local.properties
 **/local.properties
 config/shared/docker/.env
+
+# Flutter build artifacts and dependencies
+**/flutter/.dart_tool/
+**/flutter/.flutter-plugins
+**/flutter/.flutter-plugins-dependencies
+**/flutter/build/
+**/flutter/pubspec.lock
+**/flutter/windows/flutter/generated_plugin_registrant.cc
+**/flutter/windows/flutter/generated_plugin_registrant.h
+**/flutter/windows/flutter/generated_plugins.cmake
