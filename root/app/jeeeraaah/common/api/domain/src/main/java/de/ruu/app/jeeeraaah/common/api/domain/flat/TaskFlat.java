@@ -3,7 +3,14 @@ package de.ruu.app.jeeeraaah.common.api.domain.flat;
 import de.ruu.app.jeeeraaah.common.api.domain.TaskEntity;
 import de.ruu.lib.jpa.core.Entity;
 import jakarta.annotation.Nullable;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
@@ -22,12 +29,14 @@ public interface TaskFlat extends Entity<Long>
 	Optional<LocalDate>     start();
 	Optional<LocalDate>     end();
 	Optional<Long>          superTaskId(); // Just the ID, not the full object!
+	@NonNull Boolean        closed();
 
 	@NonNull TaskFlat name       (@NonNull  String    name);
 	@NonNull TaskFlat description(@Nullable String    description);
 	@NonNull TaskFlat start      (@Nullable LocalDate start);
 	@NonNull TaskFlat end        (@Nullable LocalDate end);
 	@NonNull TaskFlat superTaskId(@Nullable Long      superTaskId);
+	@NonNull TaskFlat closed     (@NonNull  Boolean   closed);
 
 	@Getter
 	@Setter
@@ -39,14 +48,15 @@ public interface TaskFlat extends Entity<Long>
 	class TaskFlatSimple implements TaskFlat
 	{
 		@Setter(AccessLevel.NONE)
-		private @Nullable Long            id;
+		private @Nullable Long                id;
 		@Setter(AccessLevel.NONE)
-		private @Nullable Short           version;
-		private @NonNull  String          name;
+		private @Nullable Short               version;
+		private @NonNull  String              name;
 		private           Optional<String>    description = Optional.empty();
 		private           Optional<LocalDate> start       = Optional.empty();
 		private           Optional<LocalDate> end         = Optional.empty();
 		private           Optional<Long>      superTaskId = Optional.empty();
+		private @NonNull  Boolean             closed      = false;
 
 		public TaskFlatSimple(@NonNull String name)
 		{

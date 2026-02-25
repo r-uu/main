@@ -50,13 +50,13 @@ Ein Ziel des POCs ist, die Versionen der eingesetzten Technologien dauerhaft auf
 
 Jeeeraaah ist eine client-server Java Anwendung, deren Bestandteile (bis auf eine Ausnahme, dazu später mehr) mit Java 25 entwickelt wurden. Dabei kommen aktuell folgende Technologien zum Einsatz:
 
-Das backend ist eine Jakarta EE 10 / Microprofile 6.1 Anwendung. Als Application Server wird Open Liberty verwendet. Im frontend kommt JavaFX 25 zum Einsatz.
+Das Backend ist eine Jakarta EE 10 / Microprofile 6.1 Anwendung. Als Application Server wird Open Liberty verwendet. Im Frontend kommt JavaFX 25 zum Einsatz.
 
 Frontend und Backend sind weitestgehend mit JPMS modularisiert. Die Kommunikation zwischen ihnen erfolgt über REST APIs, die mit Jakarta-RS implementiert wurden. Die (De-) Serialisierung der Daten erfolgt mit Jackson, was einen komfortablen und gleichzeitig effizienten Umgang auch mit zirkulären Datenstrukturen (siehe Task / TaskGroup Objektmodell) erlaubt. Die build Prozesse für beide Anwendungen werden mit Apache Maven realisiert.
 
 Für das Identity and Access Management (IAM) wird Keycloak verwendet. Das frontend kommuniziert direkt mit Keycloak, um die Authentifizierung der Benutzer durchführen zu lassen. Das Open Liberty backend ist so konfiguriert, dass es die von keycloak ausgestellten token akzeptiert und die Autorisierung für alle eingehenden Requests durchführen kann.
 
-Die persistente Datenhaltung im backend wird mit einer postgres Datenbank realisiert. Sie wird genau wie keycloak in einem von docker-compose orchestrierten Container betrieben. In diesem POC liegen die jeeeraaah- zusammen mit den keycloak-Daten in ein und derselben Datenbank, sie sind aber jeweils explizit einem eigenen Schema zugeordnet. Die jeeeraaah Zugriffe auf die Datenbank sind durchgängig mit JPA (hibernate) umgesetzt.
+Die persistente Datenhaltung im Backend wird mit einer postgres Datenbank realisiert. Sie wird genau wie keycloak in einem von docker-compose orchestrierten Container betrieben. In diesem POC liegen die jeeeraaah- zusammen mit den keycloak-Daten in ein und derselben Datenbank, sie sind aber jeweils explizit einem eigenen Schema zugeordnet. Die jeeeraaah Zugriffe auf die Datenbank sind durchgängig mit JPA (hibernate) umgesetzt.
 
 ## Die Modulstruktur
 
@@ -73,44 +73,40 @@ jeeeraaah/
 └── common/api/                 # API Domain Model Types (geteilt)
 ```
 
-Bis auf das maven Modul r-uu.app.jeeeraaah.backend.api sind alle Module mit JPMS modularisiert. Das Modul r-uu.app.jeeeraaah.backend.api ist nicht modularisiert, da es die REST API Schnittstellen enthält, die mit Jakarta-RS implementiert wurden. 
-
-xxx folgender Abschnitt muss noch überarbeitet werden, da er so nicht mehr ganz korrekt ist, siehe weiter unten xxx
-
-Jakarta-RS verwendet reflection, um die REST API Schnittstellen zu implementieren, was mit JPMS nicht kompatibel ist. Daher wurde dieses Modul bewusst nicht modularisiert, um die Verwendung von Jakarta-RS zu ermöglichen. Alle anderen Module sind modularisiert, um die Vorteile von Modularisierung mit JPMS nutzen zu können, z. B. die Möglichkeit, die Abhängigkeiten zwischen den Modulen explizit zu machen.
+Bis auf das maven Modul r-uu.app.jeeeraaah.backend.api sind alle Module mit JPMS modularisiert. Warum das Modul r-uu.app.jeeeraaah.backend.api eine Ausnahme ist, wird in [module backend](#modul-backend) beschrieben.
 
 ## Architektur
 
-Das backend ist in zwei Hauptmodule aufgeteilt: api und persistence. Das api Modul enthält die REST API Schnittstellen, die mit Jakarta-RS implementiert wurden. Im persistence Modul befindet sich die Datenzugriffsschicht, die mit JPA (hibernate) implementiert wurde.
+Das Backend ist in zwei maven Hauptmodule aufgeteilt: `api` und `persistence`. Das `api` Modul enthält die REST API Schnittstellen, die mit Jakarta-RS implementiert wurden. Im `persistence` Modul befindet sich die Datenzugriffsschicht, die mit JPA (hibernate) implementiert wurde.
 
-Das frontend ist ebenfalls in zwei Module aufgeteilt: ui und api.client. Das ui Modul enthält die JavaFX Komponenten, die für die Darstellung der Benutzeroberfläche verantwortlich sind. Das api.client Modul enthält die Logik für die Kommunikation mit dem backend über REST APIs.
+Das frontend ist ebenfalls in zwei maven Module aufgeteilt: `ui` und `api.client`. Das `ui` Modul enthält die JavaFX Komponenten, die für die Darstellung der Benutzeroberfläche verantwortlich sind. Das `api.client` Modul enthält die Logik für die Kommunikation mit dem backend über REST APIs.
 
-Das Bindeglied zwischen frontend und backend ist das common Modul, das Objekte und Objekt-Mappings enthält, die von beiden Seiten verwendet werden.
+Das Bindeglied zwischen frontend und backend ist das maven Modul `common`, das Objekte und Objekt-Mappings enthält, die von beiden Seiten verwendet werden.
 
 ### Modul common
 
-Das common.api.domain Modul enthält zentrale Schnittstellen und Basisklassen des Domänenmodells. Dieses Modul bildet das Fundament für das Jeeeraaah Task-Management-System und definiert:
+Das `common.api.domain` maven Modul enthält zentrale Schnittstellen und Basisklassen des Domänenmodells. Dieses Modul bildet das Fundament für das Jeeeraaah Task-Management-System und definiert:
 
 - Zentrale Domain-Entitäten und deren Verträge
 - **Lazy-Loading-Varianten** zur Performanceoptimierung (`domain.lazy` Package)
 - **Flache Repräsentationen** für vereinfachten Datentransfer (`domain.flat` Package)
 - Konfigurationen für Beziehungen zwischen Tasks
 
-Das Modul ist so konzipiert, dass es transitiv sowohl vom Frontend als auch vom Backend benötigt wird, um ein konsistentes Domänenmodell über alle Anwendungsschichten hinweg zu gewährleisten.
+Das Modul ist so konzipiert, dass es als Bindeglied zwischen Frontend und Backend fungiert, um ein konsistentes Domänenmodell über alle Anwendungsschichten hinweg zu gewährleisten.
 
 Der Aufbau des Moduls spiegelt die Struktur des gesamten Projekts wider:
 
-- das Submodul **common.api.domain** enthält vor allem die zentralen Interfaces des Domänenmodells, die von beiden Seiten (frontend und backend) verwendet werden. Um die Verwendung der Interfaces auf beiden Seiten möglichst konsistent halten zu können, sind sie generisch, was eine sehr starke Typisierung in den implementierenden Klassen ermöglicht.
+- das Submodul **...common.api.domain** enthält vor allem die zentralen Interfaces des Domänenmodells, die von beiden Seiten (Frontend und Backend) verwendet werden. Um die Verwendung der Interfaces auf beiden Seiten möglichst konsistent halten zu können, sind sie generisch, was eine sehr starke Typisierung in den implementierenden Klassen ermöglicht.
 
-- das Submodul **common.api.domain.flat** enthält flache (flat) Repräsentationen von Domain-Objekten, die nur Kern-Felder ohne teure Beziehungen enthalten. Diese sind für Performance-optimierte Szenarien gedacht, z.B. beim Aufbau von Hierarchien im Gantt-Diagramm.
+- das Submodul **...common.api.domain.flat** enthält "flache" Repräsentationen von Domain-Objekten, die nur Kern-Felder ohne teure Beziehungen enthalten.
 
-- das Submodul **common.api.domain.lazy** enthält Lazy-Loading-Varianten, die IDs anstelle von vollständigen Objekten verwenden. Dies ermöglicht verzögertes Laden von Beziehungen und reduziert die Netzwerk- und Speicherlast.
+- das Submodul **...common.api.domain.lazy** enthält Lazy-Loading-Varianten, die IDs anstelle von vollständigen Objekten verwenden. Dies ermöglicht verzögertes Laden von Beziehungen und reduziert die Netzwerk- und Speicherlast. Lazy Typen sind für Performance-optimierte Szenarien gedacht, z.B. beim Aufbau von Hierarchien im Gantt-Diagramm.
 
-- das Submodul **common.api.ws.rs** enthält die DTO Klassen, mit deren Hilfe frontend und backend kommunizieren. Die DTO Klassen implementieren die generischen Interfaces aus common.api.domain.
+- das Submodul **...common.api.ws.rs** enthält die DTO Klassen, mit deren Hilfe frontend und backend kommunizieren. Die DTO Klassen implementieren die generischen Interfaces aus common.api.domain.
 
-- das Submodul **common.api.bean** enthält (Java-)Bean-Implementierungen der Interfaces aus common.api.domain. Genaugenommen sind die Implementierungen keine Java-Beans, da sie fluent accessors anstelle der Java-Beans üblichen get-/set-accessors verwenden. Die Bean-Implementierungen aus diesem Modul sind für die Realisierung von Geschäftslogik im Projekt vorgesehen.
+- das Submodul **...common.api.bean** enthält (Java-)Bean-Implementierungen der Interfaces aus common.api.domain. Genaugenommen sind die Implementierungen keine Java-Beans, da sie fluent accessors anstelle der Java-Beans üblichen get-/set-accessors verwenden. Die Bean-Implementierungen aus diesem Modul sind für die Realisierung von Geschäftslogik im Projekt vorgesehen.
 
-Ergänzend zu den Submodulen enthält das common Modul noch das Submodul **common.api.mapping**, in dem die Mappings zwischen Java-Beans und DTOs definiert werden. Die Mappings werden aktuell mit MapStruct implementiert.
+Ergänzend zu den Submodulen enthält das `common` Modul noch das Submodul **common.api.mapping**, in dem die Mappings zwischen Java-Beans und DTOs definiert werden. Die Mappings werden aktuell mit MapStruct implementiert.
 
 ---
 
@@ -130,11 +126,22 @@ Im Nachhinein wäre ein Verzicht auf MapStruct und die Implementierung der Mappi
 
 ### Modul backend
 
-Das backend besteht aus zwei Hauptmodulen: api und persistence. Das api Modul enthält die REST API Schnittstellen, die mit Jakarta-RS implementiert wurden. Im persistence Modul befindet sich die mit JPA (hibernate) implementiert Datenzugriffsschicht. Auch hier gibt es ein common Modul, das die Mappings zwischen JPA-Entity-Typen und Jakarta-RS-DTOs definiert.
+Das `backend` maven Modul besteht wieder aus zwei Hauptmodulen: `api.ws.rs` und `persistence`.
+
+Das `api.ws.rs` Modul enthält die REST API Schnittstellen, die mit Jakarta-RS implementiert wurden. Es ist das einzige maven Modul im Projekt jeeeraaah, das nicht mit JPMS implementiert wurde.
+
+Der Grund hierfür liegt in der WAR Deployment Architektur, die Standard für Jakarta EE Application Server wie Open Liberty ist. Jakarta EE Application Server deployen WAR-Dateien standardmäßig auf dem `classpath`. Theoretisch ließe sich das WAR auch mit JPMS bauen und auf dem `modulepath` deployen. Die Jakarta EE Server APIs, mit denen das WAR interagiert, sind aber selbst nicht JPMS konform, was dazu führt, dass die JPMS Kapselungsmechanismen nicht greifen würden. Da JPMS in diesem Kontext also keine signifikanten Vorteile bringen würde, wurde auf die in diesem Fall entstehende zusätzlische Komplexität für das Deployment des Moduls mit JPMS verzichtet.
+
+Im `persistence` maven Modul befindet sich die mit JPA (hibernate) implementierte Datenzugriffsschicht. Auch hier gibt es ein `common` Modul, das die Mappings zwischen JPA-Entity-Typen und Jakarta-WS-RS-DTOs definiert.
 
 ### Modul frontend
 
-Das frontend ist ebenfalls in zwei Module aufgeteilt: ui und api.client. Das ui Modul enthält die JavaFX Komponenten, die für die Darstellung der Benutzeroberfläche verantwortlich sind. Das api.client Modul enthält die Logik für die Kommunikation mit dem backend über REST APIs. Auch hier gibt es ein common Modul, das die Mappings zwischen JavaFX-Objekten und Jakarta-RS-DTOs definiert.
+Das `frontend` ist ebenfalls in zwei maven Module aufgeteilt: `ui` und `api.client`. Das `ui` Modul enthält die JavaFX Komponenten, die für die Darstellung der Benutzeroberfläche verantwortlich sind. Das `api.client` Modul enthält die Logik für die Kommunikation mit dem backend über REST APIs. Auch hier gibt es ein `common` Modul, das die Mappings zwischen JavaFX-Objekten und Jakarta-RS-DTOs definiert.
+
+## Vorteile von JPMS im Projekt jeeeraaah
+
+
+
 
 ## Identity and Access Management mit Keycloak
 

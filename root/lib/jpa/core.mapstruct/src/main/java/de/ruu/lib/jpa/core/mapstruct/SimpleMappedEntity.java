@@ -1,7 +1,5 @@
 package de.ruu.lib.jpa.core.mapstruct;
 
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +7,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import static de.ruu.lib.util.Strings.isEmptyOrBlank;
-import static de.ruu.lib.util.Strings.isNotEmptyOrBlank;
 import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)

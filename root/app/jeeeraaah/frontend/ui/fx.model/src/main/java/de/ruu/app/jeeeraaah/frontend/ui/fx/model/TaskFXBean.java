@@ -12,6 +12,7 @@ import java.util.Set;
 import de.ruu.app.jeeeraaah.common.api.domain.TaskEntity;
 import de.ruu.lib.jpa.core.AbstractEntity;
 import de.ruu.lib.util.Strings;
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -150,7 +151,7 @@ public class TaskFXBean implements TaskEntity<TaskGroupFXBean, TaskFXBean>
 		return this;
 	}
 
-	@Override public @NonNull TaskFXBean closed(Boolean closed)
+	@Override public @NonNull TaskFXBean closed(@Nonnull Boolean closed)
 	{
 		closedProperty.setValue(closed);
 		return this;

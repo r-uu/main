@@ -1,8 +1,6 @@
 package de.ruu.app.jeeeraaah.common.api.domain.lazy;
 
-import de.ruu.app.jeeeraaah.common.api.domain.TaskData;
 import de.ruu.app.jeeeraaah.common.api.domain.flat.TaskFlat;
-import de.ruu.lib.jpa.core.Entity;
 import jakarta.annotation.Nullable;
 import lombok.NonNull;
 
@@ -12,12 +10,11 @@ import java.util.Set;
 
 public interface TaskLazy extends TaskFlat
 {
-	@NonNull TaskLazy name(@NonNull String name);
-
-	@NonNull TaskLazy description(@Nullable String    description);
-	@NonNull TaskLazy start      (@Nullable LocalDate startEstimated);
-	@NonNull TaskLazy end        (@Nullable LocalDate finishEstimated);
-	@NonNull TaskLazy closed     (@NonNull  Boolean   closed);
+	@Override @NonNull TaskLazy name       (@NonNull String     name);
+	@Override @NonNull TaskLazy description(@Nullable String    description);
+	@Override @NonNull TaskLazy start      (@Nullable LocalDate startEstimated);
+	@Override @NonNull TaskLazy end        (@Nullable LocalDate finishEstimated);
+	@Override @NonNull TaskLazy closed     (@NonNull  Boolean   closed);
 
 	@NonNull  Long taskGroupId();
 	// superTaskId() is inherited from TaskFlat as Optional<Long>
