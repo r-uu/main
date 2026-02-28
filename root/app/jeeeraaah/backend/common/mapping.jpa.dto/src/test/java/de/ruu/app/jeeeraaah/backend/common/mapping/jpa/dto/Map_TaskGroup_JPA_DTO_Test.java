@@ -6,9 +6,8 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import de.ruu.app.jeeeraaah.backend.persistence.jpa.JPAFactory;
-import de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskGroupJPA;
-import de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskJPA;
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.entity.TaskGroupJPA;
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.entity.TaskJPA;
 import de.ruu.app.jeeeraaah.common.api.ws.rs.TaskDTO;
 import de.ruu.app.jeeeraaah.common.api.ws.rs.TaskGroupDTO;
 import de.ruu.lib.mapstruct.ReferenceCycleTracking;
@@ -19,7 +18,7 @@ class Map_TaskGroup_JPA_DTO_Test
 	{
 		// arrange
 		String       name  = "group A";
-		TaskGroupJPA group = JPAFactory.createTaskGroupJPAWithName(name);
+		TaskGroupJPA group = new TaskGroupJPA(name);
 
 		ReferenceCycleTracking context = new ReferenceCycleTracking();
 
@@ -179,7 +178,7 @@ class Map_TaskGroup_JPA_DTO_Test
 	@Test void objectFactory_createsCorrectDTOType()
 	{
 		// arrange
-		TaskGroupJPA group = JPAFactory.createTaskGroupJPAWithName("factory test");
+		TaskGroupJPA group = new TaskGroupJPA("factory test");
 
 		ReferenceCycleTracking context = new ReferenceCycleTracking();
 

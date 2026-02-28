@@ -1,7 +1,5 @@
 package de.ruu.app.jeeeraaah.backend.api.ws.rs;
 
-import static de.ruu.app.jeeeraaah.backend.common.mapping.Mappings.toDTO;
-import static de.ruu.app.jeeeraaah.backend.common.mapping.Mappings.toJPA;
 import static de.ruu.app.jeeeraaah.common.api.domain.PathsCommon.TOKEN_BY_ID;
 import static de.ruu.app.jeeeraaah.common.api.domain.PathsTaskGroup.TOKEN_ALL_FLAT;
 import static de.ruu.app.jeeeraaah.common.api.domain.PathsTaskGroup.TOKEN_DOMAIN;
@@ -26,11 +24,9 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
-import de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskGroupJPA;
-import de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskGroupServiceJPA;
-import de.ruu.app.jeeeraaah.common.api.domain.TaskGroupService.TaskGroupNotFoundException;
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskGroupDTOService;
+import de.ruu.app.jeeeraaah.common.api.domain.exception.EntityNotFoundException;
 import de.ruu.app.jeeeraaah.common.api.ws.rs.TaskGroupDTO;
-import de.ruu.lib.mapstruct.ReferenceCycleTracking;
 import de.ruu.lib.ws.rs.ErrorResponse;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -48,12 +44,11 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * REST controller providing REST endpoints.
+ * REST controller providing REST endpoints for task group operations.
  * <p>
- * Methods accepting DTO parameters, transform DTOs to entities, delegate to {@link #service} and transform entity
- * return values from {@link #service} back to DTOs. The transformations from entities to DTOs are intentionally done
- * here after transactions were committed in {@link #service}. This ensures that version attributes of DTOs are
- * respected with their new values after commit in returned DTOs.
+ * Works exclusively with DTOs - no JPA entities are exposed.
+ * All mapping between DTOs and JPA entities happens within the service layer,
+ * ensuring proper JPMS encapsulation.
  *
  * @author r-uu
  */
@@ -70,7 +65,7 @@ public class TaskGroupService
 	private static final String MSG_TASK_REMOVAL_FAILED = "failed to remove task with id %d from group %d: %s";
 
 	@Inject
-	private TaskGroupServiceJPA service;
+	private TaskGroupDTOService service;
 
 	@Operation
 	(
@@ -101,9 +96,8 @@ public class TaskGroupService
 	{
 		try
 		{
-			ReferenceCycleTracking context = new ReferenceCycleTracking();
-			TaskGroupJPA entity = service.create(toJPA(dto, context));
-			return status(CREATED).entity(toDTO(entity, context)).build();
+			TaskGroupDTO result = service.create(dto);
+			return status(CREATED).entity(result).build();
 		}
 		catch (Exception e)
 		{
@@ -121,7 +115,7 @@ public class TaskGroupService
 	{
 		try
 		{
-			return service.read(id).map(taskGroup -> ok(toDTO(taskGroup, new ReferenceCycleTracking())).build())
+			return service.read(id).map(taskGroup -> ok(taskGroup).build())
 					.orElseGet(() -> status(NOT_FOUND).entity(String.format(MSG_TASK_GROUP_NOT_FOUND, id)).build());
 		}
 		catch (Exception e)
@@ -139,11 +133,10 @@ public class TaskGroupService
 	{
 		try
 		{
-			ReferenceCycleTracking context = new ReferenceCycleTracking();
-			TaskGroupJPA entity = service.update(toJPA(dto, context));
-			return ok(toDTO(entity, context)).build();
+			TaskGroupDTO result = service.update(dto);
+			return ok(result).build();
 		}
-		catch (TaskGroupNotFoundException e)
+		catch (EntityNotFoundException e)
 		{
 			return status(NOT_FOUND).entity(String.format(MSG_TASK_GROUP_NOT_FOUND, dto.getId())).build();
 		}
@@ -168,7 +161,7 @@ public class TaskGroupService
 			service.delete(id);
 			return ok().build();
 		}
-		catch (TaskGroupNotFoundException e)
+		catch (EntityNotFoundException e)
 		{
 			return status(NOT_FOUND).entity(String.format(MSG_TASK_GROUP_NOT_FOUND, id)).build();
 		}
@@ -215,12 +208,11 @@ public class TaskGroupService
 		log.debug("attempting to retrieve task group with id {}", id);
 		try
 		{
-			Optional<TaskGroupJPA> optional = service.findWithTasks(id);
+			Optional<TaskGroupDTO> optional = service.findWithTasks(id);
 
 			if (optional.isPresent())
 			{
-				TaskGroupDTO result = toDTO(optional.get(), new ReferenceCycleTracking());
-				return ok(result).build();
+				return ok(optional.get()).build();
 			}
 			else
 			{
@@ -244,12 +236,11 @@ public class TaskGroupService
 		log.debug("attempting to retrieve task group with tasks and direct neighbours, id {}", id);
 		try
 		{
-			Optional<TaskGroupJPA> optional = service.findWithTasksAndDirectNeighbours(id);
+			Optional<TaskGroupDTO> optional = service.findWithTasksAndDirectNeighbours(id);
 
 			if (optional.isPresent())
 			{
-				TaskGroupDTO result = toDTO(optional.get(), new ReferenceCycleTracking());
-				return ok(result).build();
+				return ok(optional.get()).build();
 			}
 			else
 			{

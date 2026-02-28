@@ -8,7 +8,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.ObjectFactory;
 import org.mapstruct.factory.Mappers;
 
-import de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskGroupJPA;
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.entity.TaskGroupJPA;
 import de.ruu.app.jeeeraaah.common.api.domain.lazy.TaskGroupLazy;
 import de.ruu.app.jeeeraaah.common.api.ws.rs.TaskGroupDTO;
 import lombok.NonNull;

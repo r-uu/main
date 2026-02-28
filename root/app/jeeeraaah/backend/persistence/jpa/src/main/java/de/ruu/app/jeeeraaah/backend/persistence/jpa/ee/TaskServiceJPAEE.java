@@ -2,9 +2,10 @@ package de.ruu.app.jeeeraaah.backend.persistence.jpa.ee;
 
 import static java.util.Objects.nonNull;
 
-import de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskGroupRepositoryJPA;
-import de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskRepositoryJPA;
-import de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskServiceJPA;
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskLazyMapper;
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.internal.TaskGroupRepositoryJPA;
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.internal.TaskRepositoryJPA;
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.internal.TaskServiceJPA;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

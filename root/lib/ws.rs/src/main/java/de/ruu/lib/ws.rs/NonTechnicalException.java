@@ -2,7 +2,7 @@ package de.ruu.lib.ws.rs;
 
 import lombok.Getter;
 
-public class NonTechnicalException extends Exception {
+public class NonTechnicalException extends RuntimeException {
 	@Getter
 	private final ErrorResponse errorResponse;
 

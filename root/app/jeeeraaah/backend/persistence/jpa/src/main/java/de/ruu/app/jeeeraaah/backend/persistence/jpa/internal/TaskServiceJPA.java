@@ -1,4 +1,4 @@
-package de.ruu.app.jeeeraaah.backend.persistence.jpa;
+package de.ruu.app.jeeeraaah.backend.persistence.jpa.internal;
 
 import static de.ruu.lib.util.BooleanFunctions.not;
 import static java.util.Objects.isNull;
@@ -7,31 +7,41 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskCreationService;
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.entity.TaskGroupJPA;
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.entity.TaskJPA;
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskLazyMapper;
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskRelationService;
 import de.ruu.app.jeeeraaah.common.api.domain.RemoveNeighboursFromTaskConfig;
 import de.ruu.app.jeeeraaah.common.api.domain.lazy.TaskLazy;
 import de.ruu.app.jeeeraaah.common.api.domain.TaskRelationException;
 import de.ruu.app.jeeeraaah.common.api.domain.TaskEntityService;
+import de.ruu.app.jeeeraaah.common.api.domain.exception.EntityNotFoundException;
 import de.ruu.app.jeeeraaah.common.api.ws.rs.TaskCreationData;
 import jakarta.annotation.PostConstruct;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.ws.rs.NotFoundException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * JPA-based implementation of TaskEntityService.
+ * JPA-based implementation of TaskEntityService, TaskCreationService, and TaskRelationService.
  * Provides CRUD operations and queries for TaskJPA entities.
+ * <p>
+ * This is an internal implementation class. External modules should use
+ * the TaskEntityService, TaskCreationService, and TaskRelationService interfaces.
  * <p>
  * Note: The repositories are CDI-managed beans and should NOT be closed manually.
  * The @SuppressWarnings("resource") annotation suppresses false-positive warnings
  * about try-with-resources for the repository() calls.
  *
  * @see TaskEntityService
+ * @see TaskCreationService
+ * @see TaskRelationService
  * @see TaskJPA
  */
 @Slf4j
 @SuppressWarnings("resource") // Repositories are CDI-managed, not manually closed
-public abstract class TaskServiceJPA implements TaskEntityService<TaskGroupJPA, TaskJPA>
+public abstract class TaskServiceJPA implements TaskEntityService<TaskGroupJPA, TaskJPA>, TaskCreationService, TaskRelationService
 {
 	protected abstract TaskRepositoryJPA repository();
 
@@ -46,14 +56,6 @@ public abstract class TaskServiceJPA implements TaskEntityService<TaskGroupJPA, 
 	public @NonNull TaskJPA create(@NonNull TaskJPA entity) {
 		return repository().create(entity);
 	}
-
-	/**
-	 * Functional interface for mapping TaskLazy to TaskJPA. Allows injection of
-	 * mapper implementation without circular
-	 * dependency.
-	 */
-	@FunctionalInterface
-	public interface TaskLazyMapper { @NonNull TaskJPA map(@NonNull TaskGroupJPA taskGroup, @NonNull TaskLazy taskLazy); }
 
 	protected abstract TaskLazyMapper taskLazyMapper();
 
@@ -74,7 +76,7 @@ public abstract class TaskServiceJPA implements TaskEntityService<TaskGroupJPA, 
 		// accessed
 		Optional<? extends TaskGroupJPA> optional = taskGroupRepository().find(data.getTaskGroupId());
 		if (optional.isEmpty()) {
-			throw new EntityNotFoundException("task group with id " + data.getTaskGroupId() + " not found");
+			throw new EntityNotFoundException(TaskGroupJPA.class, data.getTaskGroupId());
 		}
 		TaskGroupJPA taskGroup = optional.get();
 

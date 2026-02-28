@@ -2,7 +2,6 @@ module de.ruu.lib.jpa.core
 {
 	exports de.ruu.lib.jpa.core;
 	exports de.ruu.lib.jpa.core.criteria;
-	exports de.ruu.lib.jpa.core.criteria.restriction;
 
 	requires com.fasterxml.jackson.annotation;
 	requires de.ruu.lib.util;

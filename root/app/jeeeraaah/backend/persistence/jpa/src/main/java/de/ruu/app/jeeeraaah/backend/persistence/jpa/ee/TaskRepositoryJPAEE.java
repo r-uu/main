@@ -1,6 +1,6 @@
 package de.ruu.app.jeeeraaah.backend.persistence.jpa.ee;
 
-import de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskRepositoryJPA;
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.internal.TaskRepositoryJPA;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;

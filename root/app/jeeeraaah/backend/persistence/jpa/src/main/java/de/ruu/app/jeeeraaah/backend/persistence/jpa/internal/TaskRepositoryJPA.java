@@ -1,5 +1,7 @@
-package de.ruu.app.jeeeraaah.backend.persistence.jpa;
+package de.ruu.app.jeeeraaah.backend.persistence.jpa.internal;
 
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.entity.TaskJPA;
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.entity.TaskJPA_;
 import de.ruu.app.jeeeraaah.common.api.domain.RemoveNeighboursFromTaskConfig;
 import de.ruu.app.jeeeraaah.common.api.domain.TaskRelationException;
 import de.ruu.lib.jpa.core.AbstractRepository;

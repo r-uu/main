@@ -1,7 +1,5 @@
 package de.ruu.app.jeeeraaah.backend.api.ws.rs;
 
-import static de.ruu.app.jeeeraaah.backend.common.mapping.Mappings.toDTO;
-import static de.ruu.app.jeeeraaah.backend.common.mapping.Mappings.toJPA;
 import static de.ruu.app.jeeeraaah.common.api.domain.PathsCommon.TOKEN_BY_ID;
 import static de.ruu.app.jeeeraaah.common.api.domain.PathsTask.TOKEN_ADD_PREDECESSOR;
 import static de.ruu.app.jeeeraaah.common.api.domain.PathsTask.TOKEN_ADD_SUB;
@@ -19,7 +17,6 @@ import static jakarta.ws.rs.core.Response.Status.CONFLICT;
 import static jakarta.ws.rs.core.Response.Status.CREATED;
 import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -27,15 +24,12 @@ import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
 import org.eclipse.microprofile.openapi.annotations.info.Info;
 
-import de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskGroupServiceJPA;
-import de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskJPA;
-import de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskServiceJPA;
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskDTOService;
 import de.ruu.app.jeeeraaah.common.api.domain.InterTaskRelationData;
 import de.ruu.app.jeeeraaah.common.api.domain.RemoveNeighboursFromTaskConfig;
 import de.ruu.app.jeeeraaah.common.api.domain.TaskRelationException;
 import de.ruu.app.jeeeraaah.common.api.ws.rs.TaskCreationData;
 import de.ruu.app.jeeeraaah.common.api.ws.rs.TaskDTO;
-import de.ruu.lib.mapstruct.ReferenceCycleTracking;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -56,14 +50,12 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * REST controller providing REST endpoints for task operations.
  * <p>
- * Methods accept DTO parameters, transform DTOs to entities, delegate to {@link #taskService} and transform entity
- * return values from {@link #taskService} back to DTOs. The transformations from entities to DTOs are intentionally
- * done here after transactions were committed in {@link #taskService}. This ensures that version attributes of DTOs are
- * respected with their new values after commit in returned DTOs.
+ * Works exclusively with DTOs - no JPA entities are exposed.
+ * All mapping between DTOs and JPA entities happens within the service layer,
+ * ensuring proper JPMS encapsulation.
  *
  * @author r-uu
  */
-// TODO fix exception handling
 @ApplicationScoped
 @Path(TOKEN_DOMAIN)
 @Consumes(APPLICATION_JSON)
@@ -73,8 +65,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TaskService
 {
-	@Inject private TaskGroupServiceJPA taskGroupService;
-	@Inject private TaskServiceJPA      taskService;
+	@Inject private TaskDTOService taskService;
 
 	@POST
 	@RolesAllowed("task-create")
@@ -85,10 +76,8 @@ public class TaskService
 		log.debug("  taskGroupId: {}", data != null ? data.getTaskGroupId() : "data is null");
 		log.debug("  task: {}", data != null ? data.getTask() : "data is null");
 
-		// delegate to service which handles mapping and creation within transaction to
-		// avoid lazy initialization issues
-		TaskJPA taskJPAPersistent = taskService.createFromData(data);
-		TaskDTO result = toDTO(taskJPAPersistent, new ReferenceCycleTracking());
+		// Service handles mapping and transaction internally
+		TaskDTO result = taskService.create(data);
 		return Response.status(CREATED).entity(result).build();
 	}
 
@@ -98,26 +87,20 @@ public class TaskService
 	@RolesAllowed("task-read")
 	public Response read(@PathParam("id") Long id)
 	{
-		Optional<? extends TaskJPA> optional = taskService.read(id);
-		if (not(optional.isPresent())) return Response.status(NOT_FOUND).entity("task with id " + id + " not found").build();
-		else
-		{
-			ReferenceCycleTracking context = new ReferenceCycleTracking();
-
-			TaskDTO result = toDTO(optional.get(), context);
-			log.debug("found task for id {}\n{}", id, result);
-			return Response.ok(result).build();
-		}
+		Optional<TaskDTO> optional = taskService.read(id);
+		if (not(optional.isPresent()))
+			return Response.status(NOT_FOUND).entity("task with id " + id + " not found").build();
+		
+		TaskDTO result = optional.get();
+		log.debug("found task for id {}\n{}", id, result);
+		return Response.ok(result).build();
 	}
 
 	@PUT
 	@RolesAllowed("task-update")
 	public Response update(@NonNull TaskDTO dto)
 	{
-		ReferenceCycleTracking context = new ReferenceCycleTracking();
-
-		TaskJPA entity = taskService.update(toJPA(dto, context));
-		TaskDTO result = toDTO(entity, context);
+		TaskDTO result = taskService.update(dto);
 		return Response.ok(result).build();
 	}
 
@@ -137,17 +120,8 @@ public class TaskService
 	@RolesAllowed("task-read")
 	public Response findAll()
 	{
-		Set<TaskDTO> result = new HashSet<>();
-
-		ReferenceCycleTracking context = new ReferenceCycleTracking();
-
-		for (TaskJPA taskJPA : taskService.findAll())
-		{
-			TaskDTO dto = toDTO(taskJPA, context);
-			result.add(dto);
-			log.debug("found task {}", dto);
-		}
-
+		Set<TaskDTO> result = taskService.findAll();
+		log.debug("found {} tasks", result.size());
 		return Response.ok(result).build();
 	}
 
@@ -157,14 +131,11 @@ public class TaskService
 	@RolesAllowed("task-read")
 	public Response findByIdWithRelated(@PathParam("id") Long id)
 	{
-		Optional<? extends TaskJPA> optional = taskService.findWithRelated(id);
+		Optional<TaskDTO> optional = taskService.findWithRelated(id);
 		if (not(optional.isPresent()))
-				return Response.status(NOT_FOUND).entity("task with id " + id + " not found").build();
-		else
-		{
-			TaskDTO result = toDTO(optional.get(), new ReferenceCycleTracking());
-			return Response.ok(result).build();
-		}
+			return Response.status(NOT_FOUND).entity("task with id " + id + " not found").build();
+		
+		return Response.ok(optional.get()).build();
 	}
 
 	// @POST // use POST for bulk operations

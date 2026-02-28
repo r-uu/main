@@ -30,8 +30,8 @@ public class TestPersistenceUnitInfo implements PersistenceUnitInfo
 
 	public TestPersistenceUnitInfo() {
 		// Add entity classes
-		managedClassNames.add("de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskGroupJPA");
-		managedClassNames.add("de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskJPA");
+		managedClassNames.add("de.ruu.app.jeeeraaah.backend.persistence.jpa.entity.TaskGroupJPA");
+		managedClassNames.add("de.ruu.app.jeeeraaah.backend.persistence.jpa.entity.TaskJPA");
 	}
 
 	@Override

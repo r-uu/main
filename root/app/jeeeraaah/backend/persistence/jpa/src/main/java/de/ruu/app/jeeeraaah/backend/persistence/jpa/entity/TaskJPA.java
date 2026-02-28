@@ -1,4 +1,4 @@
-package de.ruu.app.jeeeraaah.backend.persistence.jpa;
+package de.ruu.app.jeeeraaah.backend.persistence.jpa.entity;
 
 import static java.lang.System.identityHashCode;
 import static java.util.Objects.isNull;

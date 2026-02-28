@@ -22,6 +22,7 @@
 module de.ruu.app.jeeeraaah.common.api.domain
 {
 	exports de.ruu.app.jeeeraaah.common.api.domain;
+	exports de.ruu.app.jeeeraaah.common.api.domain.exception;
 	exports de.ruu.app.jeeeraaah.common.api.domain.flat;
 	exports de.ruu.app.jeeeraaah.common.api.domain.lazy;
 

@@ -1,7 +1,7 @@
 package de.ruu.app.jeeeraaah.backend.common.mapping.jpa.dto;
 
-import de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskGroupJPA;
-import de.ruu.app.jeeeraaah.backend.persistence.jpa.TaskJPA;
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.entity.TaskGroupJPA;
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.entity.TaskJPA;
 import de.ruu.app.jeeeraaah.common.api.ws.rs.TaskDTO;
 import de.ruu.app.jeeeraaah.common.api.ws.rs.TaskGroupDTO;
 import de.ruu.lib.mapstruct.ReferenceCycleTracking;

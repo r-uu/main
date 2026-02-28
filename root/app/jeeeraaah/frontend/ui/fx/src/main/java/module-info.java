@@ -29,31 +29,9 @@ module de.ruu.app.jeeeraaah.frontend.ui.fx
 	requires de.ruu.lib.util.config.mp;
 	requires de.ruu.lib.postgres.util.ui;
 
-	// Export packages explicitly for CDI and JavaFX
+	// Export only main package for fx.executable (classpath) access to MainAppRunner
+	// All other packages remain encapsulated - they only need 'opens' for CDI/JavaFX reflection
 	exports de.ruu.app.jeeeraaah.frontend.ui.fx;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.auth;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.dash;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task.edit;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task.gantt;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task.selector;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task.view;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task.view.directneighbours;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task.view.hierarchy;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task.view.hierarchy.predecessor;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task.view.hierarchy.predecessor.add;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task.view.hierarchy.predecessor.add.super_sub_or_predecessor;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task.view.hierarchy.successor;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task.view.hierarchy.successor.add;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task.view.hierarchy.successor.add.super_sub_or_successor;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task.view.hierarchy.supersub;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task.view.hierarchy.supersub.add;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.task.view.list.directneighbours;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.taskgroup;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.taskgroup.edit;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.taskgroup.selector;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.test;
-	exports de.ruu.app.jeeeraaah.frontend.ui.fx.util;  // Session retry executor
 
 	// Open packages for CDI bean discovery and proxy generation (Weld SE) and JavaFX reflection
 	// Opens are open without restrictions because:

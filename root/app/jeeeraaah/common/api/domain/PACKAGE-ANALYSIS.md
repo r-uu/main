@@ -24,11 +24,11 @@ de.ruu.app.jeeeraaah.common.api.domain/
 ├── TaskData.java                      ✅ Data holder
 ├── InterTaskRelationData.java         ✅ Relationship data
 ├── RemoveNeighboursFromTaskConfig.java ✅ Configuration
-├── TaskNotFoundException.java         ✅ Exception
 ├── TaskRelationException.java         ✅ Exception
 ├── PathsCommon.java                   ✅ REST path constants
 ├── PathsTask.java                     ✅ REST path constants
 ├── PathsTaskGroup.java                ✅ REST path constants
+├── exception/                         ✅ Domain exceptions (sub-package)
 ├── flat/                              ✅ Flat representations (sub-package)
 └── lazy/                              ✅ Lazy loading variants (sub-package)
 ```
@@ -104,7 +104,7 @@ public interface TaskGroupEntity<T extends TaskEntity<?, ?>>
   - CRUD: `create`, `read`, `update`, `delete`
   - Finder: `findAllFlat`, `findWithTasks`, `findWithTasksAndDirectNeighbours`
   - Task-Management: `removeTaskFromGroup`
-  - Exception: `TaskGroupNotFoundException`
+- **Exceptions:** Verwendet generische Domain-Exceptions (EntityNotFoundException, etc.)
 - **Status:** ✅ Gut designed
 
 ---

@@ -1,5 +1,7 @@
-package de.ruu.app.jeeeraaah.backend.persistence.jpa;
+package de.ruu.app.jeeeraaah.backend.persistence.jpa.internal;
 
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.entity.TaskGroupJPA;
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.entity.TaskJPA;
 import de.ruu.app.jeeeraaah.common.api.domain.TaskGroupEntityService;
 import de.ruu.app.jeeeraaah.common.api.domain.flat.TaskGroupFlat;
 import jakarta.annotation.PostConstruct;
@@ -15,6 +17,9 @@ import static java.util.Objects.isNull;
 /**
  * JPA-based implementation of TaskGroupEntityService.
  * Provides CRUD operations and queries for TaskGroupJPA entities.
+ * <p>
+ * This is an internal implementation class. External modules should use
+ * the TaskGroupEntityService interface.
  * <p>
  * Note: The repository is a CDI-managed bean and should NOT be closed manually.
  * The @SuppressWarnings("resource") annotation suppresses false-positive warnings

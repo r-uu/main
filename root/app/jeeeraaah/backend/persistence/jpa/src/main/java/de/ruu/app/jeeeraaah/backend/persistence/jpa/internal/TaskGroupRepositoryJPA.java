@@ -1,5 +1,9 @@
-package de.ruu.app.jeeeraaah.backend.persistence.jpa;
+package de.ruu.app.jeeeraaah.backend.persistence.jpa.internal;
 
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.entity.TaskGroupJPA;
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.entity.TaskGroupJPA_;
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.entity.TaskJPA;
+import de.ruu.app.jeeeraaah.backend.persistence.jpa.entity.TaskJPA_;
 import de.ruu.app.jeeeraaah.common.api.domain.flat.TaskGroupFlat;
 import de.ruu.app.jeeeraaah.common.api.ws.rs.TaskGroupDTOFlat;
 import de.ruu.lib.jpa.core.AbstractRepository;
