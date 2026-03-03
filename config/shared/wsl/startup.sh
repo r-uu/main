@@ -1,1 +1,0 @@
-/home/r-uu/develop/github/main/config/shared/wsl/wsl-startup.sh
