@@ -1,2 +1,4 @@
 exclude:
   - config/shared/wsl/
+  - .google/
+  - .cache/
