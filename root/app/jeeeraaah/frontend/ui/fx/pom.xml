@@ -176,7 +176,7 @@
 							<systemProperties>
 								<systemProperty>
 									<key>glass.gtk.uiScale</key>
-									<value>1.5</value>
+									<value>1.0</value>
 								</systemProperty>
 							</systemProperties>
 							<additionalClasspathElements>
@@ -194,7 +194,7 @@
 							<systemProperties>
 								<systemProperty>
 									<key>glass.gtk.uiScale</key>
-									<value>1.5</value>
+									<value>1.0</value>
 								</systemProperty>
 							</systemProperties>
 						</configuration>
@@ -209,7 +209,7 @@
 							<systemProperties>
 								<systemProperty>
 									<key>glass.gtk.uiScale</key>
-									<value>1.5</value>
+									<value>1.0</value>
 								</systemProperty>
 							</systemProperties>
 						</configuration>
