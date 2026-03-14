@@ -150,6 +150,27 @@ ruu-postgres-shell-admin # psql als postgres-Admin
 
 ---
 
+## Shell-Konfiguration & Maschinenübergreifende Synchronisation
+
+### Architektur
+- **Aliase:** ausschließlich in `config/shared/wsl/aliases.sh` (versioniert) — niemals Aliase direkt in `.bashrc` definieren
+- **`.bashrc` selbst:** lebt als versionierte Datei in `config/shared/wsl/.bashrc`; `~/.bashrc` ist ein Symlink darauf
+- Git selbst ist das Backup — keine separate Backup-Datei nötig
+
+### Einmalig einrichten (pro Maschine)
+```bash
+ln -sf ~/develop/github/main/config/shared/wsl/.bashrc ~/.bashrc
+```
+Danach synchronisiert `git pull/push` `.bashrc` automatisch zwischen allen Maschinen.
+
+### Regel für Claude: .bashrc-Änderungen
+`~/.bashrc` ist ein Symlink → Änderungen direkt in `config/shared/wsl/.bashrc` vornehmen. Kein manuelles Kopieren nötig.
+
+### Bekannte Einschränkung
+Installer (sdkman, nvm, conda) die `~/.bashrc` **ersetzen** statt ergänzen, löschen den Symlink. Danach einfach neu anlegen: `ln -sf .../aliases.sh ~/.bashrc`
+
+---
+
 ## Offene Prioritäten (Stand 2026-03-01)
 
 1. **KRITISCH:** Keycloak-Kapitel in "JPMS in Action" vervollständigen  

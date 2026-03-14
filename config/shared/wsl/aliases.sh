@@ -16,6 +16,15 @@ export RUU_JASPER="$RUU_ROOT/sandbox/office/microsoft/word/jasperreports"
 alias ruu-reload-aliases='source $RUU_WSL/aliases.sh && echo "✅ Aliase neu geladen"'
 
 # ═══════════════════════════════════════════════════════════════════
+# Shell-Werkzeuge
+# ═══════════════════════════════════════════════════════════════════
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+# ═══════════════════════════════════════════════════════════════════
 # Navigation
 # ═══════════════════════════════════════════════════════════════════
 alias ruu-home='cd $RUU_HOME'
