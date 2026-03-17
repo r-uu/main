@@ -8,8 +8,8 @@
 
 JEEERAAAH ist eine Jakarta EE 10 Enterprise-Aufgabenverwaltung und dient als Referenzimplementierung für modulares Java mit JPMS. Basis für zwei Publikationen:
 
-- **"JPMS in Action – jeeeraaah"** ⚠️ Unvollständig — Keycloak-Kapitel endet abrupt
-- **"Modular Software in Java"** ✅ Vollständig
+- **"JPMS in Action – jeeeraaah"** ✅ Vollständig
+- **"Modular Software in Java"**   ✅ Vollständig
 
 ---
 
@@ -64,13 +64,13 @@ ruu-docker-startup    # startet postgres-jeeeraaah, postgres-keycloak, keycloak,
 
 ### 3. Projekt bauen
 ```bash
-ruu-install-fast      # mvn clean install -DskipTests (schnell)
-ruu-build-all         # mvn clean install (mit Tests)
+ruu-mvn-install-fast  # mvn clean install -DskipTests (schnell)
+ruu-mvn-build-all     # mvn clean install (mit Tests)
 ```
 
 ### 4. Backend starten
 ```bash
-ruu-liberty-dev       # cd .../backend/api/ws_rs && mvn liberty:dev
+ruu-ol-start          # cd .../backend/api/ws_rs && mvn liberty:dev
 # oder VS Code Task: "🚀 Liberty: Start (Dev Mode)"
 ```
 
@@ -118,19 +118,44 @@ Keycloak Realm: `jeeeraaah-realm` | Client-ID: `jeeeraaah-frontend`
 ## Wichtige Aliases
 
 ```bash
-ruu-build-all            # Vollständiger Projekt-Build
-ruu-install-fast         # Build ohne Tests
+# Build (ruu-mvn-*)
+ruu-mvn-build-all        # Vollständiger Projekt-Build
+ruu-mvn-install-fast     # Build ohne Tests
+
+# Docker Stack (ruu-docker-*)
 ruu-docker-startup       # Alle Container starten (inkl. Setup)
 ruu-docker-up/down       # docker compose up/down
 ruu-docker-restart       # Container neu starten
 ruu-docker-status        # Container-Status prüfen
 ruu-docker-reset         # Docker-Umgebung komplett zurücksetzen
-ruu-liberty-dev          # Backend im Dev-Mode starten
-ruu-liberty-run          # Backend im Prod-Mode starten
-ruu-liberty-stop         # Backend stoppen
-ruu-keycloak-setup       # Keycloak Realm/User konfigurieren
-ruu-postgres-shell       # psql in jeeeraaah-DB
-ruu-postgres-shell-admin # psql als postgres-Admin
+
+# Open Liberty Backend (ruu-ol-*)
+ruu-ol-start             # Backend im Dev-Mode starten (liberty:dev)
+ruu-ol-run               # Backend im Prod-Mode starten
+ruu-ol-stop              # Backend stoppen
+
+# Keycloak (ruu-kc-*)
+ruu-kc-setup             # Keycloak Realm/User konfigurieren
+ruu-kc-reset             # Container + Realm komplett zurücksetzen
+
+# PostgreSQL (ruu-pg-*)
+ruu-pg-shell             # psql in jeeeraaah-DB
+ruu-pg-shell-admin       # psql als postgres-Admin
+
+# Greenbone (ruu-gb-*)
+ruu-gb-up/down           # Greenbone Vulnerability Scanner starten/stoppen
+ruu-gb-status            # Greenbone Container-Status
+
+# Navigation (ruu-cd-*)
+ruu-cd-home              # Wechsel zu $RUU_MAIN
+ruu-cd-root              # Wechsel zu root/
+
+# Git (ruu-git-*)
+ruu-git-status / pull / push / log
+
+# Hilfe
+ruu-help                 # Alle Aliase auflisten
+ruu-groups               # Übersicht aller Alias-Gruppen
 ```
 
 ---
@@ -167,7 +192,7 @@ Danach synchronisiert `git pull/push` `.bashrc` automatisch zwischen allen Masch
 `~/.bashrc` ist ein Symlink → Änderungen direkt in `config/shared/wsl/.bashrc` vornehmen. Kein manuelles Kopieren nötig.
 
 ### Bekannte Einschränkung
-Installer (sdkman, nvm, conda) die `~/.bashrc` **ersetzen** statt ergänzen, löschen den Symlink. Danach einfach neu anlegen: `ln -sf .../aliases.sh ~/.bashrc`
+Installer (sdkman, nvm, conda) die `~/.bashrc` **ersetzen** statt ergänzen, löschen den Symlink. Danach einfach neu anlegen: `ln -sf ~/develop/github/main/config/shared/wsl/.bashrc ~/.bashrc`
 
 ---
 

@@ -254,7 +254,7 @@ alias ruu-ol-stop='cd $RUU_ROOT/app/jeeeraaah/backend/api/ws_rs && mvn liberty:s
 export GIT_ASKPASS=""
 export SSH_ASKPASS=""
 
-echo "  ✓  aliases loaded"
+echo "✓  aliases loaded"
 echo "  📚 help:        ruu-help | ruu-groups"
 echo "  🚀 quick start: ruu-docker-startup"
 echo "  🔨 build:       ruu-mvn-install-fast"
