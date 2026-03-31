@@ -56,7 +56,14 @@
             
             <!-- JMX -->
             <property name="hibernate.jmx.enabled" value="false"/>
-            
+
+            <!-- Disable runtime bytecode enhancement (JPMS+Liberty compatibility)
+                 ByteBuddy cannot resolve JPMS-encapsulated parent types at runtime.
+                 Build-time enhancement or no enhancement is the correct approach here. -->
+            <property name="hibernate.enhancer.enableDirtyTracking" value="false"/>
+            <property name="hibernate.enhancer.enableAssociationManagement" value="false"/>
+            <property name="hibernate.enhancer.enableLazyInitialization" value="false"/>
+
             <!-- Remove duplicate/legacy properties -->
             <!-- hibernate.hbm2ddl.ddl_auto is redundant with hibernate.hbm2ddl.auto -->
         </properties>

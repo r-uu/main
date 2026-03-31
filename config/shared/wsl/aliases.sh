@@ -240,6 +240,11 @@ ruu-groups() {
 alias ruu-app-dash='cd $RUU_ROOT/app/jeeeraaah/frontend/ui/fx && mvn exec:java'
 
 # ═══════════════════════════════════════════════════════════════════
+# PostgresUtil UI
+# ═══════════════════════════════════════════════════════════════════
+alias ruu-postgres-util-ui='cd $RUU_ROOT/lib/postgres_util_ui && mvn exec:java'
+
+# ═══════════════════════════════════════════════════════════════════
 # Application - Backend (Open Liberty)
 # ═══════════════════════════════════════════════════════════════════
 alias ruu-ol-start='cd $RUU_ROOT/app/jeeeraaah/backend/api/ws_rs && mvn liberty:dev'

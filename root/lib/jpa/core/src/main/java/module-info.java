@@ -12,7 +12,8 @@ module de.ruu.lib.jpa.core
 	requires static lombok;
 	requires java.desktop;
 
-	// Opens for reflection by JPA providers (Hibernate)
+	// Opens for reflection by JPA providers (Hibernate) and CDI (Weld)
 	// - org.hibernate.orm.core: for entity scanning and persistence operations
-	opens de.ruu.lib.jpa.core to org.hibernate.orm.core;
+	// - org.jboss.weld.core: for CDI bean discovery
+	opens de.ruu.lib.jpa.core to org.hibernate.orm.core, org.jboss.weld.core;
 }
